@@ -1730,13 +1730,12 @@
         fire:{title:'산불·화재 대피 안내',badge:'전용 자료 없음',note:'전용 대피소 자료 없음 · 현장 지시를 따르세요',sourceUrl:'https://www.safetydata.go.kr/disaster-data/disasterNotification'},
         storm:{title:'태풍·강풍 대피 안내',badge:'전용 자료 없음',note:'전용 대피소 자료 없음 · 문자 안내를 따르세요',sourceUrl:'https://www.safetydata.go.kr/disaster-data/disasterNotification'}
       };
-      const generalNearby=['flood','water','fire','storm'].includes(type);
-      const source=generalNearby?{title:'주변 민방위 시설',badge:'참고용 · 재난 비지정',note:`재난별 지정 장소 아님 · 주변 ${data?.items?.length??0}곳`,sourceUrl:sources.civil.sourceUrl}:sources[type]||sources.civil;
-      setDynamicSiteHeading(document.getElementById('shelterPanelTitle'),source.title);
+       const source=sources[type]||sources.civil;
+       setDynamicSiteHeading(document.getElementById('shelterPanelTitle'),source.title);
       document.getElementById('shelterDataBadge').textContent=source.badge;
       const note=document.getElementById('shelterDataNote');
       note.replaceChildren(document.createTextNode(`${source.note} `));
-      const sampleLink=document.createElement('a');sampleLink.href=source.sourceUrl;sampleLink.target='_blank';sampleLink.rel='noreferrer';sampleLink.textContent=generalNearby||type==='civil'?'민방위 자료':type==='tsunami'?'샘플 자료':'지역 목록';note.append(sampleLink);
+        const sampleLink=document.createElement('a');sampleLink.href=source.sourceUrl;sampleLink.target='_blank';sampleLink.rel='noreferrer';sampleLink.textContent=type==='civil'?'민방위 자료':type==='tsunami'?'샘플 자료':['flood','water','fire','storm'].includes(type)?'공식 안내':'지역 목록';note.append(sampleLink);
     }
     function updateShelterGuidance(type){
       const guidance={
@@ -1753,7 +1752,7 @@
       const item=guidance[type]||guidance.civil;const panel=document.getElementById('shelterGuidance');panel.replaceChildren();panel.classList.toggle('is-guidance-only',type==='flood'||type==='water'||type==='fire'||type==='storm');
       const title=document.createElement('strong');title.textContent=item.title;const body=document.createElement('p');body.textContent=item.body;const steps=document.createElement('ul');item.steps.forEach(text=>{const step=document.createElement('li');step.textContent=text;steps.append(step);});panel.append(title,body,steps);
     }
-    function showPlaces(places,type,data){
+     function showPlaces(places,type,data){
       list.replaceChildren();
       shelterLayer?.clearLayers();
       if(!places.length){
@@ -1782,17 +1781,31 @@
         if(shelterLayer&&Number.isFinite(lat)&&Number.isFinite(lon)){const popup=document.createElement('div');const markerTitle=document.createElement('strong');markerTitle.textContent=`${index+1}. ${name}`;const address=document.createElement('div');address.textContent=place.address;const markerDistance=document.createElement('div');markerDistance.textContent=`약 ${place.distanceKm.toFixed(1)} km`;popup.append(markerTitle,address,markerDistance);const icon=L.divIcon({className:`shelter-number-marker ${markerType}`,html:`<span>${index+1}</span>`,iconSize:[30,30],iconAnchor:[15,15]});marker=L.marker([lat,lon],{icon}).bindPopup(popup).addTo(shelterLayer);}
         row.addEventListener('click',()=>{if(map&&marker){map.setView([lat,lon],16);marker.openPopup();}document.querySelectorAll('.place-row').forEach(el=>el.classList.remove('selected'));row.classList.add('selected');});
         directions.addEventListener('click',()=>{document.querySelectorAll('.place-row').forEach(el=>el.classList.remove('selected'));row.classList.add('selected');showRouteTo(place,directions);});entry.append(row,directions);list.append(entry);
-      });
-    }
-    async function findShelters(lat,lon,{keepRoute=false,areaName=''}={}){
+       });
+     }
+     function showGeneralShelterUnavailable(type){
+       const messages={
+         flood:'호우·홍수 전용 대피소 목록은 제공되지 않아요. 재난문자와 지자체의 대피 지시를 확인해 주세요.',
+         water:'하천·계곡 안전은 지정 대피소 목록이 없어요. 물가에서 벗어나고 긴급하면 119에 연락해 주세요.',
+         fire:'산불·화재 전용 대피소 목록은 제공되지 않아요. 현장과 지자체의 대피 지시를 따라 주세요.',
+         storm:'태풍·강풍 전용 대피소 목록은 제공되지 않아요. 재난문자와 지자체의 대피 지시를 확인해 주세요.'
+       };
+       list.replaceChildren();shelterLayer?.clearLayers();
+       const message=document.createElement('div');message.className='empty-list';message.textContent=messages[type]||'이 재난의 전용 대피소 목록을 제공하지 않아요.';
+       const button=document.createElement('button');button.type='button';button.className='place-route-link';button.textContent='일반 민방위 시설을 참고용으로 보기';
+       button.addEventListener('click',()=>{const select=document.getElementById('shelterType');select.value='civil';select.dispatchEvent(new Event('change',{bubbles:true}));});
+       list.append(message,button);
+     }
+     async function findShelters(lat,lon,{keepRoute=false,areaName=''}={}){
       const requestId=++shelterListRequestId;
       mapSlideReady=true;mapNeedsShelterRefresh=false;ensureMapTiles();
       lastShelterSearch={lat,lon,areaName};
       const type=document.getElementById('shelterType').value;
       const guidanceOnly=['flood','water','fire','storm'].includes(type);const lookupType=guidanceOnly?'civil':type;
-      updateShelterSource(type);updateShelterGuidance(type);
-      if(!keepRoute){routeRequestId+=1;routeLayer?.clearLayers();lastRoutePlace=null;document.getElementById('routePanel').hidden=true;}
-      list.innerHTML=guidanceOnly?'<div class="empty-list">주변 일반 대피시설 불러오는 중…</div>':lookupType==='civil'?'<div class="empty-list">전국 민방위 시설 불러오는 중…</div>':lookupType==='tsunami'?'<div class="empty-list">지진해일 장소 불러오는 중…</div>':'지역 대피시설 불러오는 중…';
+       updateShelterSource(type);updateShelterGuidance(type);
+       if(!keepRoute){routeRequestId+=1;routeLayer?.clearLayers();lastRoutePlace=null;document.getElementById('routePanel').hidden=true;}
+       if(guidanceOnly){showGeneralShelterUnavailable(type);return;}
+       list.innerHTML=lookupType==='civil'?'<div class="empty-list">전국 민방위 시설 불러오는 중…</div>':lookupType==='tsunami'?'<div class="empty-list">지진해일 장소 불러오는 중…</div>':'지역 대피시설 불러오는 중…';
       try{
         const params=new URLSearchParams({lat:String(lat),lon:String(lon),radiusKm:'8'});
         if(areaName)params.set('area',areaName);
