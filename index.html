@@ -367,6 +367,8 @@
 
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
   <script>
+    const apiOrigin='https://9frk13yeqtv8pdsw.jitda.io';
+    const apiUrl=path=>new URL(path,apiOrigin).toString();
     const actions = {
       flood: ['하천과 낮은 곳에서 멀어지세요.', '가까운 높은 곳이나 대피소로 이동하세요.', '안내 방송과 주변 상황을 확인하세요.'],
       heat: ['햇볕을 피해 시원한 실내로 이동하세요.', '물을 조금씩 자주 마시고 무리하지 마세요.', '몸이 이상하면 주변에 도움을 요청하세요.'],
@@ -1020,7 +1022,7 @@
       const requestId=++disasterRequestId;disasterArchiveLoaded=true;reloadButton.disabled=true;searchButton.disabled=true;regionSelect.disabled=true;previousButton.disabled=true;nextButton.disabled=true;document.getElementById('disasterPagination').hidden=true;status.textContent=`최근 ${days}일 불러오는 중…`;list.replaceChildren();
       try{
         const params=new URLSearchParams({days,keyword,region,page:String(disasterPage),pageSize:'50'});
-        const response=await fetch(`/api/disaster-messages?${params}`);const data=await response.json();
+        const response=await fetch(apiUrl(`/api/disaster-messages?${params}`));const data=await response.json();
         if(!response.ok)throw new Error(data.error||'전국 재난문자 목록을 불러오지 못했어요.');
         if(requestId!==disasterRequestId)return;
         const selectedRegion=regionSelect.value;const availableRegions=data.regions||[];const currentOptions=[...regionSelect.options].slice(1).map(option=>option.value);
@@ -1697,7 +1699,7 @@
         lastRouteRefresh={...origin,at:Date.now()};
         if(map){if(currentMarker){currentMarker.setLatLng([origin.lat,origin.lon]);currentMarker.setPopupContent('현재 위치');}else currentMarker=L.marker([origin.lat,origin.lon]).addTo(map).bindPopup('현재 위치');}
         const params=new URLSearchParams({originLat:String(origin.lat),originLon:String(origin.lon),destLat:String(place.lat),destLon:String(place.lon),mode});
-        const response=await fetch(`/api/directions?${params}`);const data=await response.json();
+        const response=await fetch(apiUrl(`/api/directions?${params}`));const data=await response.json();
         if(!response.ok)throw new Error(data.error||'경로를 찾지 못했어요.');
         if(requestId!==routeRequestId)return;
         routeLayer?.clearLayers();
@@ -1795,7 +1797,7 @@
         const params=new URLSearchParams({lat:String(lat),lon:String(lon),radiusKm:'8'});
         if(areaName)params.set('area',areaName);
         const endpoint=lookupType==='civil'?`/api/shelters?${params}`:`/api/shelter-samples?type=${encodeURIComponent(lookupType)}&${params}`;
-        const response=await fetch(endpoint);
+         const response=await fetch(apiUrl(endpoint));
         const data=await response.json();
         if(!response.ok)throw new Error(data.error||'대피시설 정보를 불러오지 못했어요.');
         if(requestId!==shelterListRequestId)return;
