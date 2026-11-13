@@ -107,7 +107,7 @@
     @media(max-width:760px){.notice-test-controls{grid-template-columns:1fr}.recommend-shelter-button{width:100%}}
   </style>
   <style>
-    body.app-mode{overflow:hidden;padding-bottom:0}.app-mode .topbar{position:fixed;top:0;left:0;right:0}.app-main{position:fixed;z-index:1;top:74px;right:0;bottom:calc(68px + env(safe-area-inset-bottom));left:0;overflow:hidden}.app-slides{position:relative;display:flex;width:100%;height:100%;overflow-x:auto;overflow-y:hidden;scroll-snap-type:x mandatory;scrollbar-width:none;overscroll-behavior-x:contain;touch-action:pan-x pan-y}.app-slides::-webkit-scrollbar{display:none}.app-slides>section{flex:0 0 100%;width:100%;height:100%;min-height:0;overflow-x:hidden;overflow-y:auto;overscroll-behavior:contain;scroll-snap-align:start;scroll-snap-stop:always}.bottom-tabs{position:fixed;z-index:1300;right:0;bottom:0;left:0;display:grid;grid-template-columns:repeat(5,minmax(0,1fr));height:calc(68px + env(safe-area-inset-bottom));padding:4px max(8px,calc((100vw - 780px)/2)) env(safe-area-inset-bottom);border-top:1px solid var(--line);background:#fffffffa;backdrop-filter:blur(12px)}.bottom-tab{display:flex;min-width:0;min-height:58px;flex-direction:column;align-items:center;justify-content:center;gap:2px;border:0;border-top:2px solid transparent;background:transparent;color:#67756c;font-size:11px;font-weight:700;white-space:nowrap}.bottom-tab svg{width:20px;height:20px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}.bottom-tab.active{border-top-color:#177f84;background:#eaf3ef;color:#12696e}
+    body.app-mode{overflow:hidden;padding-bottom:0}.app-mode .topbar{position:fixed;top:0;left:0;right:0}.app-main{position:fixed;z-index:1;top:74px;right:0;bottom:calc(68px + env(safe-area-inset-bottom));left:0;overflow:hidden}.app-slides{position:relative;display:flex;width:100%;height:100%;overflow-x:auto;overflow-y:hidden;scroll-snap-type:x mandatory;scrollbar-width:none;overscroll-behavior-x:contain;touch-action:pan-x pan-y}.app-slides::-webkit-scrollbar{display:none}.app-slides>section{flex:0 0 100%;width:100%;height:100%;min-height:0;overflow-x:hidden;overflow-y:auto;overscroll-behavior:contain;scroll-snap-align:start;scroll-snap-stop:always}.bottom-tabs{position:fixed;z-index:1300;right:0;bottom:0;left:0;display:grid;grid-template-columns:repeat(6,minmax(0,1fr));height:calc(68px + env(safe-area-inset-bottom));padding:4px max(8px,calc((100vw - 780px)/2)) env(safe-area-inset-bottom);border-top:1px solid var(--line);background:#fffffffa;backdrop-filter:blur(12px)}.bottom-tab{display:flex;min-width:0;min-height:58px;flex-direction:column;align-items:center;justify-content:center;gap:2px;border:0;border-top:2px solid transparent;background:transparent;color:#67756c;font-size:11px;font-weight:700;white-space:nowrap}.bottom-tab svg{width:20px;height:20px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}.bottom-tab.active{border-top-color:#177f84;background:#eaf3ef;color:#12696e}
     @media(max-width:760px){.app-main{top:64px;bottom:calc(164px + env(safe-area-inset-bottom))}.bottom-tabs{height:calc(64px + env(safe-area-inset-bottom));padding-right:4px;padding-left:4px}.bottom-tab{gap:1px;padding:0 2px;font-size:9px;line-height:1.15;text-align:center;white-space:normal}.bottom-tab span{max-width:100%;overflow-wrap:anywhere}.bottom-tab svg{width:18px;height:18px;flex:none}.accessibility-rail{bottom:calc(64px + env(safe-area-inset-bottom))}}
     @media(prefers-reduced-motion:reduce){.app-slides{scroll-behavior:auto}}
   </style>
@@ -237,6 +237,9 @@
     @media(max-width:390px){.message-image-tools{gap:6px;padding:5px}.message-image-button{padding:0 8px;font-size:11px}.message-image-status{font-size:10px}}
     :root{--coral:#c43d32;--accent:#c43d32}:root[data-theme="dark"]{--coral:#ff8275;--accent:#ff8275}
     .accent,.guide-tag,.result-region,.easy-line-marker,.action-guide-group{color:var(--accent)!important}.action-guide-group{border-color:#e5c9bf}.message-easy{color:#a83329}.action-pictogram-grid .action-pictogram-number{background:var(--accent)}.bottom-tab.active{background:#f4e8e2;color:#ae3329;border-top-color:var(--accent)}.nav-links a.active{color:var(--accent)}.result-region{border-color:#d7a49a}.result-steps strong{color:#ffe3ad}
+    .dictionary-section{background:#f2eee5}.dictionary-intro{max-width:720px;margin:0 0 24px;color:var(--muted);font-size:18px;line-height:1.7}.dictionary-toolbar{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:14px;align-items:center;margin-bottom:18px}.dictionary-search{width:100%;min-height:52px;padding:0 16px;border:1px solid var(--line);background:#fffdf8;color:var(--ink);font-size:18px}.dictionary-filters{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:18px}.dictionary-filter{min-height:46px;padding:0 15px;border:1px solid var(--line);background:#fffdf8;color:var(--ink);font-size:16px;font-weight:700}.dictionary-filter[aria-pressed="true"]{background:#303934;color:white;border-color:#303934}.dictionary-count{margin:0;color:var(--muted);font-size:16px}.dictionary-entries{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}.dictionary-entry{min-width:0;padding:20px;background:#fffdf8;border:1px solid var(--line)}.dictionary-entry-head{display:flex;align-items:center;gap:12px;flex-wrap:wrap}.dictionary-hard,.dictionary-easy{font-size:20px;line-height:1.5;font-weight:800;overflow-wrap:anywhere}.dictionary-hard{color:#58645c}.dictionary-arrow{font-size:20px;color:#818b83}.dictionary-easy{color:#173d4d}.dictionary-reason{margin:9px 0 13px;color:#526057;font-size:17px;line-height:1.65}.dictionary-tags{display:flex;flex-wrap:wrap;gap:6px}.dictionary-tag{display:inline-flex;min-height:32px;align-items:center;padding:3px 10px;border:1px solid #d7e2db;background:#eef3ef;color:#405148;font-size:14px;font-weight:700}.dictionary-empty{grid-column:1/-1;padding:28px;background:#fffdf8;border:1px solid var(--line);color:var(--muted);font-size:18px;text-align:center}.dictionary-form-panel{margin-top:30px;padding:24px;background:#e5e8e3;border:1px solid var(--line)}.dictionary-form-panel h3{margin:0 0 7px;font-size:24px}.dictionary-form-note{margin:0 0 18px;color:#526057;font-size:16px;line-height:1.6}.dictionary-form{display:grid;grid-template-columns:1fr 1fr;gap:14px}.dictionary-field{display:grid;gap:6px;min-width:0}.dictionary-field label,.dictionary-field legend{font-size:16px;font-weight:800}.dictionary-field input,.dictionary-field textarea,.dictionary-field select{width:100%;min-height:50px;padding:10px 12px;border:1px solid #bdc9bf;background:#fffdf8;color:var(--ink);font-size:18px}.dictionary-field textarea{min-height:90px;resize:vertical}.dictionary-field-wide{grid-column:1/-1}.dictionary-tag-options{display:flex;flex-wrap:wrap;gap:8px}.dictionary-tag-option{display:inline-flex;min-height:44px;align-items:center;gap:8px;padding:5px 10px;background:#fffdf8;border:1px solid #bdc9bf;font-size:16px}.dictionary-tag-option input{width:19px;height:19px;accent-color:#177f84}.dictionary-form-actions{display:flex;flex-wrap:wrap;gap:10px;grid-column:1/-1}.dictionary-form-button,.dictionary-export-button{min-height:50px;padding:0 18px;border:0;background:#303934;color:#fff;font-size:17px;font-weight:800}.dictionary-export-button{border:1px solid #657169;background:transparent;color:#303934}.dictionary-draft-status{grid-column:1/-1;min-height:24px;margin:0;color:#405148;font-size:15px}.dictionary-draft-json{grid-column:1/-1;margin:0;padding:16px;overflow:auto;background:#17231f;color:#eef2ee;font:14px/1.6 ui-monospace,monospace;white-space:pre-wrap;overflow-wrap:anywhere}.dictionary-applied{display:inline;color:inherit;text-decoration:underline;text-decoration-color:#43806c;text-decoration-thickness:2px;text-underline-offset:3px}.dictionary-book{margin-left:3px;font-size:.72em;vertical-align:super;line-height:1}.dictionary-add-suggestion{display:inline-flex;min-height:36px;align-items:center;margin:2px 4px;padding:2px 9px;border:1px solid #b8c4bb;background:#fffdf8;color:#30473a;font-size:13px;font-weight:800;vertical-align:middle}.dictionary-legend{margin:4px 0 0;color:#465249;font-size:14px}.dictionary-content{overflow-wrap:anywhere}
+    :root[data-theme="dark"] .dictionary-section{background:#151916}:root[data-theme="dark"] .dictionary-entry,:root[data-theme="dark"] .dictionary-empty,:root[data-theme="dark"] .dictionary-search,:root[data-theme="dark"] .dictionary-filter,:root[data-theme="dark"] .dictionary-field input,:root[data-theme="dark"] .dictionary-field textarea,:root[data-theme="dark"] .dictionary-field select,:root[data-theme="dark"] .dictionary-tag-option,:root[data-theme="dark"] .dictionary-add-suggestion{background:#1a261f;color:var(--ink);border-color:var(--line)}:root[data-theme="dark"] .dictionary-form-panel{background:#1a211c;border-color:var(--line)}:root[data-theme="dark"] .dictionary-hard,:root[data-theme="dark"] .dictionary-reason,:root[data-theme="dark"] .dictionary-intro,:root[data-theme="dark"] .dictionary-count,:root[data-theme="dark"] .dictionary-form-note,:root[data-theme="dark"] .dictionary-draft-status{color:#bac5bd}:root[data-theme="dark"] .dictionary-tag{background:#222d26;color:#d9e3dc;border-color:#46554a}:root[data-theme="dark"] .dictionary-filter[aria-pressed="true"]{background:#d1f188;color:#142016;border-color:#d1f188}:root[data-theme="dark"] .dictionary-export-button{color:var(--ink);border-color:var(--line)}
+    @media(max-width:760px){.dictionary-toolbar{grid-template-columns:1fr}.dictionary-entries{grid-template-columns:1fr}.dictionary-entry{padding:18px}.dictionary-hard,.dictionary-easy{font-size:19px}.dictionary-reason,.dictionary-intro{font-size:17px}.dictionary-form-panel{padding:18px}.dictionary-form{grid-template-columns:1fr}.dictionary-field-wide,.dictionary-form-actions,.dictionary-draft-status,.dictionary-draft-json{grid-column:1}.dictionary-filter{font-size:15px}.dictionary-form-button,.dictionary-export-button{flex:1}.bottom-tabs{grid-template-columns:repeat(6,minmax(0,1fr))}}
     :root[data-theme="dark"] .bottom-tab.active{background:#342321;color:#ff9a8e;border-top-color:#ff8275}:root[data-theme="dark"] .action-guide-group{border-color:#58403b}:root[data-theme="dark"] .result-steps strong{color:#ffca91}
     button,input,select,textarea,dialog,.brand-mark,.btn,.btn-lime,.message-card,.message-image-tools,.message-image-button,.panel,.result-panel,.guide-card,.guide-visual,.action-guide-detail,.action-pictogram-grid li,.library-browser,.geochang-panel,.library-item,.library-filter,.library-lang,.notice-card,.notice-button,.notice-button-secondary,.nav-tool-button,.side-language-option,.side-font-button,.side-font-reset,.map-side,.map-pill,.geochang-reload,.geochang-controls select,.disaster-search input,.disaster-search button,.settings-dialog,.help-dialog,.language-start-dialog,.language-start-dialog select,.font-option,.accessibility-rail,.geochang-source,.message-hazard-visual{border-radius:2px!important}
   </style>
@@ -245,7 +248,7 @@
   <header class="topbar">
     <nav class="wrap nav" aria-label="주요 메뉴">
       <a class="brand" href="#home" aria-label="재난 문자 순화 홈"><span class="brand-mark"><svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M12 3.5v10m0 4v.2" stroke="currentColor" stroke-width="3" stroke-linecap="round"/><path d="M12 2 21 19H3L12 2Z" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></svg></span><span>재난 문자 순화 <em>●</em></span></a>
-       <div class="nav-links"><a href="#translate">문자 순화</a><a href="#map-section">대피소</a><a href="#action-guide">행동 요령</a><a href="#library">재난문자</a></div>
+        <div class="nav-links"><a href="#translate">문자 순화</a><a href="#dictionary">쉬운 말 사전</a><a href="#map-section">대피소</a><a href="#action-guide">행동 요령</a><a href="#library">재난문자</a></div>
       <div class="nav-tools">
          <button class="nav-tool-button" id="helpOpen" type="button" aria-label="사용법 열기" aria-haspopup="dialog" aria-controls="helpDialog"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M9.5 9a2.6 2.6 0 1 1 4.4 1.9c-1.2 1-1.9 1.4-1.9 3m0 3v.1"/></svg><span>더보기</span></button>
         <button class="nav-tool-button theme-toggle" id="themeToggle" type="button" aria-pressed="false"><svg class="theme-moon" viewBox="0 0 24 24" aria-hidden="true"><path d="M20.5 15.5A8.5 8.5 0 0 1 8.5 3.5 8.5 8.5 0 1 0 20.5 15.5Z"/></svg><svg class="theme-sun" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="4"/><path d="M12 2v2m0 16v2M4.93 4.93l1.42 1.42m11.3 11.3 1.42 1.42M2 12h2m16 0h2M4.93 19.07l1.42-1.42m11.3-11.3 1.42-1.42"/></svg><span id="themeToggleLabel">다크 모드</span></button>
@@ -258,6 +261,7 @@
       <ol class="help-steps">
         <li><strong>이동</strong><span>좌우 밀기 · 아래 탭</span></li>
         <li><strong>문자 순화</strong><span>문자 입력 · 언어 선택 · 원문 보존</span></li>
+        <li><strong>쉬운 말 사전</strong><span>팀이 정한 표현 · 검색 · 재난 유형별 보기</span></li>
         <li><strong>행동 요령</strong><span>문자 유형별 그림과 요령</span></li>
         <li><strong>대피 안내</strong><span>재난 유형 · 주변 시설</span></li>
         <li><strong>지도</strong><span>끌어 이동 · 길게 눌러 검색</span></li>
@@ -295,8 +299,31 @@
         <div class="section-head"><div><h2>문자 순화</h2></div></div>
         <div class="alert-grid">
           <div class="panel"><label class="panel-label" for="message">재난문자 <span class="field-hint">개인정보 제외</span></label><textarea class="textarea" id="message" placeholder="재난문자 붙여넣기"></textarea><div class="message-image-tools"><button class="message-image-button" id="messageImageButton" type="button">이미지에서 문자 읽기</button><input id="messageImageInput" type="file" accept="image/*" capture="environment" hidden><img class="message-image-preview" id="messageImagePreview" alt="선택한 재난문자 이미지" hidden><span class="message-image-status" id="imageOcrStatus" role="status" aria-live="polite">사진·스크린샷 · 이 기기에서 처리</span></div><div class="panel-label" style="margin:13px 0 7px">언어</div><div class="language-row" role="group" aria-label="안내 언어"><button class="lang-chip active" lang="ko" data-lang="ko" data-name="한국어">한국어</button><button class="lang-chip" lang="en" data-lang="en" data-name="English">English</button><button class="lang-chip" lang="zh-CN" data-lang="zh-CN" data-name="中文">中文</button><button class="lang-chip" lang="vi" data-lang="vi" data-name="Tiếng Việt">Tiếng Việt</button><button class="lang-chip" lang="ne" data-lang="ne" data-name="नेपाली">नेपाली</button><button class="lang-chip" lang="tl" data-lang="tl" data-name="Filipino">Filipino</button><button class="lang-chip" lang="th" data-lang="th" data-name="ไทย">ไทย</button></div><div class="controls"><button class="btn btn-lime" id="translateBtn">재난문자 순화 <span aria-hidden="true">→</span></button></div><div class="status-line" id="translateStatus" role="status" aria-live="polite">문자 입력 대기</div></div>
-          <article class="result-panel" aria-live="polite"><div class="result-kicker">안내 / <span id="resultLang">한국어</span><span class="result-region" id="resultRegion" hidden></span></div><h3 id="easyTitle">입력 대기</h3><span class="result-original-label">원문</span><div class="result-original" id="easyText">—</div><span class="result-original-label">쉬운 말</span><div class="result-translation" id="translatedText">—</div><div class="result-steps" hidden><strong id="actionTitle">지금 할 일</strong><ol id="actionSteps"></ol></div><button class="recommend-shelter-button" id="recommendShelterBtn" type="button" hidden>주변 대피 안내</button></article>
+          <article class="result-panel" aria-live="polite"><div class="result-kicker">안내 / <span id="resultLang">한국어</span><span class="result-region" id="resultRegion" hidden></span></div><h3 id="easyTitle">입력 대기</h3><span class="result-original-label">원문</span><div class="result-original" id="easyText">—</div><span class="result-original-label">쉬운 말</span><p class="dictionary-legend">📖 팀이 정한 사전 규칙</p><div class="result-translation" id="translatedText">—</div><div class="result-steps" hidden><strong id="actionTitle">지금 할 일</strong><ol id="actionSteps"></ol></div><button class="recommend-shelter-button" id="recommendShelterBtn" type="button" hidden>주변 대피 안내</button></article>
         </div>
+      </div>
+    </section>
+
+    <section class="section dictionary-section" id="dictionary">
+      <div class="wrap">
+        <div class="section-head"><div><h2>쉬운 말 사전</h2></div></div>
+        <p class="dictionary-intro">재난문자의 어려운 말을 우리 팀이 직접 쉬운 표현으로 정리했어요. 이 사전은 <code>dictionary.json</code>에서 관리합니다.</p>
+        <div class="dictionary-toolbar"><label class="sr-only" for="dictionarySearch">쉬운 말 사전 검색</label><input class="dictionary-search" id="dictionarySearch" type="search" placeholder="어려운 말이나 쉬운 말 검색" aria-label="쉬운 말 사전 검색"><p class="dictionary-count" id="dictionaryCount" role="status" aria-live="polite"></p></div>
+        <div class="dictionary-filters" id="dictionaryFilters" role="group" aria-label="재난 유형 필터"></div>
+        <div class="dictionary-entries" id="dictionaryEntries" aria-live="polite"></div>
+        <section class="dictionary-form-panel" id="dictionaryAddFormPanel" aria-labelledby="dictionaryAddTitle">
+          <h3 id="dictionaryAddTitle">사전에 새 말 제안하기</h3>
+          <p class="dictionary-form-note">추가한 표현은 이 기기에 임시 저장돼요. 공개 사전에 넣으려면 아래 JSON 파일을 내려받아 프로젝트의 <code>dictionary.json</code>에 반영해 주세요.</p>
+          <form class="dictionary-form" id="dictionaryAddForm">
+            <div class="dictionary-field"><label for="dictionaryHard">어려운 말</label><input id="dictionaryHard" name="hard" required maxlength="60" autocomplete="off"></div>
+            <div class="dictionary-field"><label for="dictionaryEasy">쉬운 말</label><input id="dictionaryEasy" name="easy" required maxlength="100" autocomplete="off"></div>
+            <div class="dictionary-field dictionary-field-wide"><label for="dictionaryReason">왜 바꿨는지 한 줄</label><textarea id="dictionaryReason" name="reason" required maxlength="180" rows="2"></textarea></div>
+            <fieldset class="dictionary-field dictionary-field-wide" style="border:0;padding:0;margin:0"><legend class="dictionary-field label">재난 유형 태그</legend><div class="dictionary-tag-options" id="dictionaryTagOptions"></div></fieldset>
+            <div class="dictionary-form-actions"><button class="dictionary-form-button" type="submit">제안 저장</button><button class="dictionary-export-button" id="dictionaryExport" type="button">dictionary.json 내려받기</button></div>
+            <p class="dictionary-draft-status" id="dictionaryDraftStatus" role="status" aria-live="polite"></p>
+            <pre class="dictionary-draft-json" id="dictionaryDraftJson" hidden></pre>
+          </form>
+        </section>
       </div>
     </section>
 
@@ -359,6 +386,7 @@
   <nav class="bottom-tabs" id="bottomTabs" aria-label="화면 바로가기">
     <button class="bottom-tab active" type="button" data-slide-target="home" aria-current="page"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m3 10 9-7 9 7v10a1 1 0 0 1-1 1h-5v-7H9v7H4a1 1 0 0 1-1-1V10Z"/></svg><span>홈</span></button>
     <button class="bottom-tab" type="button" data-slide-target="translate"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 5h10M9 3v2m1 0c0 5-3 8-6 10m2-6c1 2 3 4 5 5m2 7 4-10 4 10m-6-3h5"/></svg><span>문자 순화</span></button>
+    <button class="bottom-tab" type="button" data-slide-target="dictionary"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 4.5A2.5 2.5 0 0 1 7.5 2H20v18H7.5A2.5 2.5 0 0 0 5 22V4.5Z"/><path d="M5 18.5A2.5 2.5 0 0 1 7.5 16H20M9 6h7m-7 4h7"/></svg><span>쉬운 말 사전</span></button>
     <button class="bottom-tab" type="button" data-slide-target="action-guide"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3 4.5 6v5c0 5 3.2 8 7.5 10 4.3-2 7.5-5 7.5-10V6L12 3Z"/><path d="m9 12 2 2 4-4"/></svg><span>행동 안내</span></button>
     <button class="bottom-tab" type="button" data-slide-target="map-section"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m3 6 6-3 6 3 6-3v15l-6 3-6-3-6 3V6Z"/><path d="M9 3v15m6-12v15"/></svg><span>대피소</span></button>
     <button class="bottom-tab" type="button" data-slide-target="library"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 4h14v16H5zM8 8h8m-8 4h8m-8 4h5"/></svg><span>재난문자</span></button>
@@ -381,8 +409,74 @@
       generic: ['주변의 위험한 곳에서 멀어지세요.', '가까운 안전한 장소로 이동하세요.', '공식 안내 방송을 계속 확인하세요.']
     };
     const supportedLanguages=['ko','en','zh-CN','vi','ne','tl','th'];
+    const dictionaryCategories=['호우','산불','지진','폭염','한파','민방위','공통'];
+    const dictionaryDraftKey='ansimgil-dictionary-drafts-v1';
+    let easyDictionary=[];
+    let dictionaryDrafts=[];
+    let activeDictionaryCategory='전체';
+    const dictionaryLoadPromise=fetch('/dictionary.json').then(response=>{if(!response.ok)throw new Error('사전 파일을 불러오지 못했어요.');return response.json();}).then(entries=>{
+      if(!Array.isArray(entries))throw new Error('사전 파일 형식이 올바르지 않아요.');
+      easyDictionary=entries.filter(entry=>entry&&typeof entry.hard==='string'&&typeof entry.easy==='string'&&typeof entry.reason==='string'&&Array.isArray(entry.tags));
+      try{const saved=JSON.parse(localStorage.getItem(dictionaryDraftKey)||'[]');if(Array.isArray(saved))dictionaryDrafts=saved.filter(entry=>entry&&typeof entry.hard==='string'&&typeof entry.easy==='string'&&Array.isArray(entry.tags));}catch(error){}
+      renderDictionaryFilters();renderDictionary();renderDictionaryTagOptions();
+      return easyDictionary;
+    }).catch(error=>{document.getElementById('dictionaryCount').textContent=error.message;return [];});
+    const dictionaryEntriesElement=document.getElementById('dictionaryEntries');
+    function escapeRegExp(value){return value.replace(/[.*+?^${}()|[\]\\]/g,'\\$&');}
+    function renderDictionaryFilters(){
+      const filters=document.getElementById('dictionaryFilters');
+      const options=['전체',...dictionaryCategories];
+      filters.replaceChildren(...options.map(category=>{const button=document.createElement('button');button.type='button';button.className='dictionary-filter';button.textContent=category;button.setAttribute('aria-pressed',String(category===activeDictionaryCategory));button.addEventListener('click',()=>{activeDictionaryCategory=category;renderDictionaryFilters();renderDictionary();});return button;}));
+    }
+    function getAllDictionaryEntries(){
+      const entries=[...easyDictionary];
+      dictionaryDrafts.forEach(draft=>{const index=entries.findIndex(entry=>entry.hard===draft.hard);if(index<0)entries.push(draft);else entries[index]=draft;});
+      return entries;
+    }
+    function renderDictionary(){
+      if(!dictionaryEntriesElement)return;
+      const query=document.getElementById('dictionarySearch').value.trim().toLocaleLowerCase();
+      const entries=getAllDictionaryEntries().filter(entry=>(activeDictionaryCategory==='전체'||entry.tags.includes(activeDictionaryCategory))&&(!query||`${entry.hard} ${entry.easy} ${entry.reason} ${entry.tags.join(' ')}`.toLocaleLowerCase().includes(query)));
+      document.getElementById('dictionaryCount').textContent=`${entries.length}개 표현${dictionaryDrafts.length?' · 이 기기의 제안 포함':''}`;
+      if(!entries.length){const empty=document.createElement('p');empty.className='dictionary-empty';empty.textContent='조건에 맞는 표현이 없어요. 검색어나 유형을 바꿔 보세요.';dictionaryEntriesElement.replaceChildren(empty);return;}
+      dictionaryEntriesElement.replaceChildren(...entries.map(entry=>{
+        const card=document.createElement('article');card.className='dictionary-entry dictionary-content';
+        const head=document.createElement('div');head.className='dictionary-entry-head';
+        const hard=document.createElement('strong');hard.className='dictionary-hard';hard.textContent=entry.hard;
+        const arrow=document.createElement('span');arrow.className='dictionary-arrow';arrow.setAttribute('aria-hidden','true');arrow.textContent='→';
+        const easy=document.createElement('span');easy.className='dictionary-easy';easy.textContent=entry.easy;head.append(hard,arrow,easy);
+        const reason=document.createElement('p');reason.className='dictionary-reason';reason.textContent=entry.reason;
+        const tags=document.createElement('div');tags.className='dictionary-tags';entry.tags.forEach(tag=>{const chip=document.createElement('span');chip.className='dictionary-tag';chip.textContent=tag;tags.append(chip);});
+        card.append(head,reason,tags);return card;
+      }));
+    }
+    function renderDictionaryTagOptions(selected=[]){
+      const container=document.getElementById('dictionaryTagOptions');
+      container.replaceChildren(...dictionaryCategories.map(tag=>{const label=document.createElement('label');label.className='dictionary-tag-option';const checkbox=document.createElement('input');checkbox.type='checkbox';checkbox.name='tags';checkbox.value=tag;checkbox.checked=selected.includes(tag);const text=document.createElement('span');text.textContent=tag;label.append(checkbox,text);return label;}));
+    }
+    document.getElementById('dictionarySearch').addEventListener('input',renderDictionary);
+    document.getElementById('dictionaryAddForm').addEventListener('submit',event=>{
+      event.preventDefault();
+      const form=event.currentTarget;const hard=form.elements.hard.value.trim();const easy=form.elements.easy.value.trim();const reason=form.elements.reason.value.trim();const tags=[...form.querySelectorAll('input[name="tags"]:checked')].map(input=>input.value);
+      if(!tags.length){document.getElementById('dictionaryDraftStatus').textContent='재난 유형을 하나 이상 선택해 주세요.';return;}
+      const entry={hard,easy,reason,tags};const existing=dictionaryDrafts.findIndex(draft=>draft.hard===hard);if(existing>=0)dictionaryDrafts[existing]=entry;else dictionaryDrafts.push(entry);
+      try{localStorage.setItem(dictionaryDraftKey,JSON.stringify(dictionaryDrafts));}catch(error){}
+      document.getElementById('dictionaryDraftJson').textContent=JSON.stringify(entry,null,2);document.getElementById('dictionaryDraftJson').hidden=false;
+      document.getElementById('dictionaryDraftStatus').textContent='제안을 이 기기에 저장했어요. 공개하려면 JSON 파일을 내려받아 dictionary.json에 반영해 주세요.';
+      form.reset();renderDictionaryTagOptions();renderDictionary();
+    });
+    document.getElementById('dictionaryExport').addEventListener('click',()=>{
+      const content=JSON.stringify(getAllDictionaryEntries(),null,2);const url=URL.createObjectURL(new Blob([`${content}\n`],{type:'application/json'}));const link=document.createElement('a');link.href=url;link.download='dictionary.json';link.click();URL.revokeObjectURL(url);
+      document.getElementById('dictionaryDraftStatus').textContent='완성한 dictionary.json 파일을 내려받았어요. 프로젝트의 기존 파일과 바꿔 주세요.';
+    });
+    document.getElementById('translatedText').addEventListener('click',event=>{
+      const button=event.target.closest('[data-dictionary-suggest]');if(!button)return;
+      const hardInput=document.getElementById('dictionaryHard');hardInput.value=button.dataset.dictionarySuggest;
+      const type=button.dataset.disasterType;const suggestedTag=({heavyRain:'호우',flood:'호우',inundation:'호우',wildfire:'산불',earthquake:'지진',tsunami:'지진',heatwave:'폭염',heatstroke:'폭염',coldwave:'한파',snow:'한파',ice:'한파'})[type]||'공통';
+      renderDictionaryTagOptions([suggestedTag]);goToSlide('dictionary');setTimeout(()=>{document.getElementById('dictionaryAddFormPanel').scrollIntoView({behavior:'smooth',block:'start'});hardInput.focus();},350);
+    });
     const appSlides=document.getElementById('appSlides');
-    ['home','translate','action-guide','map-section','library'].forEach(id=>{const slide=document.getElementById(id);if(slide)appSlides.append(slide);});
+    ['home','translate','dictionary','action-guide','map-section','library'].forEach(id=>{const slide=document.getElementById(id);if(slide)appSlides.append(slide);});
     const appSlideSections=[...appSlides.children].filter(element=>element.tagName==='SECTION');
     const bottomTabs=document.getElementById('bottomTabs');
     let activeSlideId='home';
@@ -697,7 +791,7 @@
       while(siteTranslationCache.size>1200)siteTranslationCache.delete(siteTranslationCache.keys().next().value);
       try{localStorage.setItem(siteTranslationStorageKey,JSON.stringify([...siteTranslationCache]));}catch(error){}
     }
-    const siteSkipSelector='script,style,noscript,svg,.brand,.lang-chip,.library-lang,.side-language-option,#languageStartSelect,.geochang-audience-language,.geochang-easy-output,[data-no-site-translate],#libraryOriginal,#resultLang,#libraryActionTitle,#libraryTitle,#libraryTime,.library-original';
+    const siteSkipSelector='script,style,noscript,svg,.brand,.lang-chip,.library-lang,.side-language-option,#languageStartSelect,.geochang-audience-language,.geochang-easy-output,.dictionary-content,#translatedText,[data-no-site-translate],#libraryOriginal,#resultLang,#libraryActionTitle,#libraryTitle,#libraryTime,.library-original';
     let siteTranslationVersion=0;
     function sourceLanguage(text){
       if(/[가-힣]/.test(text))return 'ko';
@@ -835,12 +929,12 @@
       if(button){const resultLanguage=document.getElementById('resultLang');resultLanguage.textContent=button.dataset.name.toUpperCase();resultLanguage.lang=selectedLang;document.getElementById('translatedText').lang=selectedLang;}
     }
     const globalCopy={
-      en:{hero:['In dangerous moments,','simple words','come first.'],nav:['Message interpretation','Shelters','Action guide','Disaster messages'],railTitle:'Language and text size'},
-      'zh-CN':{hero:['危险时刻，','简单表达','更重要。'],nav:['灾情解读','避难设施','行动指南','灾害短信'],railTitle:'语言与字号'},
-      vi:{hero:['Khi có nguy hiểm,','hãy dùng lời dễ hiểu','trước tiên.'],nav:['Giải nghĩa tin nhắn','Nơi trú ẩn','Hướng dẫn hành động','Tin nhắn thiên tai'],railTitle:'Ngôn ngữ và cỡ chữ'},
-      ne:{hero:['खतराको समयमा,','सरल शब्द','पहिले।'],nav:['सन्देशको अर्थ','आश्रयस्थल','के गर्ने भन्ने जानकारी','विपद् सन्देश'],railTitle:'भाषा र अक्षरको आकार'},
-      tl:{hero:['Kapag may panganib,','gumamit ng simpleng salita','muna.'],nav:['Pagpapaliwanag ng alerto','Mga silungan','Gabay sa gagawin','Mga alerto sa sakuna'],railTitle:'Wika at laki ng teksto'},
-      th:{hero:['เมื่อเกิดอันตราย','ให้ใช้คำง่ายๆ','ก่อน'],nav:['แปลความหมายข้อความ','สถานที่หลบภัย','วิธีปฏิบัติ','ข้อความภัยพิบัติ'],railTitle:'ภาษาและขนาดตัวอักษร'}
+      en:{hero:['In dangerous moments,','simple words','come first.'],nav:['Message interpretation','Easy-word dictionary','Shelters','Action guide','Disaster messages'],railTitle:'Language and text size'},
+      'zh-CN':{hero:['危险时刻，','简单表达','更重要。'],nav:['灾情解读','易懂词典','避难设施','行动指南','灾害短信'],railTitle:'语言与字号'},
+      vi:{hero:['Khi có nguy hiểm,','hãy dùng lời dễ hiểu','trước tiên.'],nav:['Giải nghĩa tin nhắn','Từ điển từ dễ hiểu','Nơi trú ẩn','Hướng dẫn hành động','Tin nhắn thiên tai'],railTitle:'Ngôn ngữ và cỡ chữ'},
+      ne:{hero:['खतराको समयमा,','सरल शब्द','पहिले।'],nav:['सन्देशको अर्थ','सरल शब्दकोश','आश्रयस्थल','के गर्ने भन्ने जानकारी','विपद् सन्देश'],railTitle:'भाषा र अक्षरको आकार'},
+      tl:{hero:['Kapag may panganib,','gumamit ng simpleng salita','muna.'],nav:['Pagpapaliwanag ng alerto','Diksyunaryo ng madaling salita','Mga silungan','Gabay sa gagawin','Mga alerto sa sakuna'],railTitle:'Wika at laki ng teksto'},
+      th:{hero:['เมื่อเกิดอันตราย','ให้ใช้คำง่ายๆ','ก่อน'],nav:['แปลความหมายข้อความ','พจนานุกรมคำง่าย','สถานที่หลบภัย','วิธีปฏิบัติ','ข้อความภัยพิบัติ'],railTitle:'ภาษาและขนาดตัวอักษร'}
     };
     const globalOverrideElements=new Set();
     function setGlobalOverride(element,text){
@@ -854,7 +948,7 @@
       const accentSpan=document.createElement('span');accentSpan.className='accent';accentSpan.textContent=accent;
       hero.replaceChildren(document.createTextNode(lead),document.createElement('br'),accentSpan,document.createElement('br'),document.createTextNode(end));
       hero.classList.add('site-translated-title');hero.dataset.noSiteTranslate='true';globalOverrideElements.add(hero);
-      const links=document.querySelectorAll('.nav-links a');
+       const links=document.querySelectorAll('.nav-links a');
       links.forEach((link,index)=>{if(copy.nav[index])setGlobalOverride(link,copy.nav[index]);});
       setGlobalOverride(document.getElementById('railTitle'),copy.railTitle);
     }
@@ -907,10 +1001,107 @@
       },80);
     }).observe(document.body,{childList:true,subtree:true});
     let lastTranslationSource='';
-    function renderEasyLines(element,text){
+    const uncoveredHardWords=['행정조치','위험지역','출입 금지','대피 권고','대피권고','발효 중','급격히','취약시간대','통제구간','통행 제한','동파','보행자','인명피해','시설물','강우','권고','준수','금지','발령','통제','취약','기온','야외활동'];
+    function applyEasyDictionary(text,sourceText=''){
+      let output=String(text);const applied=[];
+      const entries=[...easyDictionary].sort((a,b)=>b.hard.length-a.hard.length);
+      entries.forEach(entry=>{
+        const replace=(pattern,easy)=>{const globalPattern=new RegExp(pattern.source,pattern.flags.includes('g')?pattern.flags:`${pattern.flags}g`);output=output.replace(globalPattern,()=>{applied.push({hard:entry.hard,easy:entry.easy,display:easy});return easy;});};
+        if(entry.hard==='대피'){
+          replace(/대피하시기 바랍니다/g,'안전한 곳으로 이동하세요');
+          replace(/대피 바랍니다/g,'안전한 곳으로 이동하세요');
+          replace(/대피하시고/g,'안전한 곳으로 가시고');
+          replace(/대피하세요/g,'안전한 곳으로 가세요');
+          replace(/대피하고/g,'안전한 곳으로 가고');
+          replace(/대피해 주세요/g,'안전한 곳으로 이동해 주세요');
+          replace(/대피합니다/g,'안전한 곳으로 이동합니다');
+          replace(/대피하십시오/g,'안전한 곳으로 이동하세요');
+        }else if(entry.hard==='저지대'){
+          replace(/저지대와/g,'낮은 땅과');
+          replace(/저지대 주민/g,'낮은 곳에 사는 주민');
+          replace(/저지대에/g,'낮은 곳에');
+          replace(/저지대의/g,'낮은 곳의');
+          replace(/낮은 곳와/g,'낮은 땅과');
+          replace(/낮은 곳과/g,'낮은 땅과');
+        }else if(entry.hard==='하천'){
+          replace(/하천변/g,'강가');
+          replace(/하천 주변/g,'강가 주변');
+          replace(/하천과/g,'냇가와 강가');
+          replace(/하천에서/g,'강가에서');
+          replace(/냇가·강가/g,'강가');
+        }else if(entry.hard==='우회'){
+          replace(/우회하세요/g,'다른 길로 가세요');
+          replace(/우회 바랍니다/g,'다른 길로 가세요');
+          replace(/우회하여/g,'다른 길로 돌아가');
+        }else if(entry.hard==='외출 자제'){
+          replace(/외출 자제하시기 바랍니다/g,'밖에 나가지 마세요');
+          replace(/외출 자제 바랍니다/g,'밖에 나가지 마세요');
+          replace(/외출 자제하세요/g,'밖에 나가지 마세요');
+          replace(/밖에 나가지 마세요 바랍니다/g,'밖에 나가지 마세요');
+          replace(/밖에 나가지 마세요 하세요/g,'밖에 나가지 마세요');
+        }else if(entry.hard==='유의'){
+          replace(/유의하시기 바랍니다/g,'조심하세요');
+          replace(/유의하시고/g,'조심하시고');
+          replace(/유의바랍니다/g,'조심하세요');
+        }
+        const pattern=new RegExp(escapeRegExp(entry.hard),'g');
+        output=output.replace(pattern,()=>{applied.push({hard:entry.hard,easy:entry.easy,display:entry.easy});return entry.easy;});
+      });
+      const applyContextualRule=(hard,pattern,replacement)=>{
+        if(!sourceText.includes(hard))return;
+        const entry=easyDictionary.find(item=>item.hard===hard);if(!entry)return;
+        const globalPattern=new RegExp(pattern.source,pattern.flags.includes('g')?pattern.flags:`${pattern.flags}g`);
+        output=output.replace(globalPattern,()=>{applied.push({hard:entry.hard,easy:entry.easy,display:replacement});return replacement;});
+      };
+      applyContextualRule('저지대',/낮은 곳와/,'낮은 땅과');
+      applyContextualRule('저지대',/낮은 곳(?=에|의| 주민)/,'낮은 땅');
+      applyContextualRule('하천',/냇가·강가|강가/,'강가');
+      applyContextualRule('침수',/물이 찰 수 있음/,'물이 차서 잠길 수 있음');
+      applyContextualRule('낙뢰',/벼락/,'번개');
+      applyContextualRule('산사태',/산이 무너짐/,'산의 흙이 무너짐');
+      applyContextualRule('외출 자제',/밖에 나가는 일을 줄이세요/,'밖에 나가지 마세요');
+      if(sourceText.includes('대피')&&!applied.some(item=>item.hard==='대피')){
+        const entry=easyDictionary.find(item=>item.hard==='대피');
+        const match=output.match(/안전한 곳으로 (?:이동|가)(?:하|하세요|합니다|고|시고)/);
+        if(entry&&match)applied.push({hard:entry.hard,easy:entry.easy,display:match[0]});
+      }
+      return {text:output,applied};
+    }
+    function renderEasyLines(element,text,dictionaryMarks=[],disasterType=''){
       const normalized=String(text).replace(/([.!?])\s+(?=[^\d\s])/g,'$1\n');
       const lines=normalized.split(/\n+/).map(line=>line.replace(/^[\s•\-]+/,'').trim()).filter(Boolean);
-      element.replaceChildren(...lines.map(line=>{const row=document.createElement('div');row.className='easy-line';const marker=document.createElement('span');marker.className='easy-line-marker';marker.setAttribute('aria-hidden','true');marker.textContent='•';const content=document.createElement('span');content.className='easy-line-text';content.textContent=line;row.append(marker,content);return row;}));
+      element.replaceChildren(...lines.map(line=>{
+        const row=document.createElement('div');row.className='easy-line';const marker=document.createElement('span');marker.className='easy-line-marker';marker.setAttribute('aria-hidden','true');marker.textContent='•';const content=document.createElement('span');content.className='easy-line-text';
+        if(selectedLang!=='ko'){
+          content.textContent=line;
+          if(dictionaryMarks.length){const book=document.createElement('span');book.className='dictionary-book';book.setAttribute('role','img');book.setAttribute('aria-label','팀 사전 규칙 적용');book.title=`팀 사전 적용: ${dictionaryMarks.map(item=>`${item.hard} → ${item.easy}`).join(' · ')}`;book.textContent='📖';content.append(book);}
+        }else{
+          const matches=[];
+          dictionaryMarks.forEach(item=>{if(!item.display)return;let index=0;while((index=line.indexOf(item.display,index))!==-1){matches.push({start:index,end:index+item.display.length,kind:'dictionary',item});index+=item.display.length;}});
+          const knownWords=new Set(easyDictionary.map(entry=>entry.hard));
+          uncoveredHardWords.filter(word=>!knownWords.has(word)).forEach(word=>{
+            const particles='(?:에서|으로|부터|까지|은|는|이|가|을|를|에|로|의|와|과|도|만|중|됨|된|할|한|할까요)?';
+            const pattern=new RegExp(`(^|[^가-힣])(${escapeRegExp(word)})(?=${particles}(?:$|[^가-힣]))`,'g');let match;
+            while((match=pattern.exec(line))){const start=match.index+match[1].length;matches.push({start,end:start+word.length,kind:'suggestion',word});}
+          });
+          matches.sort((a,b)=>a.start-b.start||(b.end-b.start)-(a.end-a.start)||(a.kind==='dictionary'?-1:1));
+          let cursor=0;
+          matches.forEach(match=>{
+            if(match.start<cursor)return;
+            content.append(document.createTextNode(line.slice(cursor,match.start)));
+            if(match.kind==='dictionary'){
+              const changed=document.createElement('span');changed.className='dictionary-applied';changed.textContent=line.slice(match.start,match.end);changed.title=`팀 사전 규칙: ${match.item.hard} → ${match.item.easy}`;
+              const book=document.createElement('span');book.className='dictionary-book';book.setAttribute('role','img');book.setAttribute('aria-label','사람이 정한 규칙으로 바뀜');book.title=changed.title;book.textContent='📖';content.append(changed,book);
+            }else{
+              const remaining=document.createElement('span');remaining.textContent=match.word;content.append(remaining);
+              content.append(document.createTextNode(' '));const suggest=document.createElement('button');suggest.type='button';suggest.className='dictionary-add-suggestion';suggest.dataset.dictionarySuggest=match.word;suggest.dataset.disasterType=disasterType;suggest.textContent='사전에 추가할까요?';content.append(suggest,document.createTextNode(' '));
+            }
+            cursor=match.end;
+          });
+          content.append(document.createTextNode(line.slice(cursor)));
+        }
+        row.append(marker,content);return row;
+      }));
     }
     function clearTranslationResult(statusText){
       setDynamicSiteHeading(document.getElementById('easyTitle'),'입력 대기');
@@ -930,7 +1121,8 @@
       if(!text){translationRequestId+=1;lastTranslationSource='';clearTranslationResult('문자 입력 필요');return;}
       const requestId=++translationRequestId;
       lastTranslationSource=text;
-      const summary=easySummary(text);updateShelterRecommendationButton(text);updateActionGuideView();document.getElementById('easyText').dataset.noSiteTranslate='true';document.getElementById('easyText').textContent=text;
+      status.textContent='팀 사전 규칙을 확인 중…';await dictionaryLoadPromise;if(requestId!==translationRequestId)return;
+      const summary=easySummary(text);const dictionaryResult=applyEasyDictionary(summary.easy,text);summary.easy=dictionaryResult.text;summary.dictionary=dictionaryResult.applied;summary.changed=summary.easy!==text.trim().replace(/\s*\[[^\]]+\]\s*$/,'');updateShelterRecommendationButton(text);updateActionGuideView();document.getElementById('easyText').dataset.noSiteTranslate='true';document.getElementById('easyText').textContent=text;
       const labels=resultLabels[selectedLang];
       document.getElementById('resultLang').lang=selectedLang;document.getElementById('translatedText').lang=selectedLang;
       setDynamicSiteHeading(document.getElementById('easyTitle'),labels.title);
@@ -939,10 +1131,10 @@
       const sourceSteps=getActionSteps(text,summary.type);
       document.querySelector('.result-steps').hidden=sourceSteps.length===0;
       if(selectedLang==='ko'){
-        renderEasyLines(document.getElementById('translatedText'),summary.easy);
+        renderEasyLines(document.getElementById('translatedText'),summary.easy,summary.dictionary,summary.type);
         const actionList=document.getElementById('actionSteps');
         actionList.replaceChildren(...sourceSteps.map(step=>{const item=document.createElement('li');item.textContent=step;return item;}));
-        status.textContent=!summary.changed&&!sourceSteps.length?'원문 유지 · 바꿀 표현 없음 · 공식 안내 확인':summary.changed?'쉬운 말로 정리 · 원문·공식 안내 확인':'원문 유지 · 공식 안내 확인';
+        status.textContent=summary.dictionary.length?`팀 사전 ${summary.dictionary.length}개 규칙 적용 · 원문·공식 안내 확인`:summary.changed?'쉬운 말로 정리 · 원문·공식 안내 확인':!sourceSteps.length?'원문 유지 · 바꿀 표현 없음 · 공식 안내 확인':'원문 유지 · 공식 안내 확인';
         return;
       }
       const translated=document.getElementById('translatedText');translated.textContent=labels.loading;
@@ -955,7 +1147,7 @@
           ...sourceSteps.map(step=>translateText(step,selectedLang))
         ]);
         if(requestId!==translationRequestId)return;
-        renderEasyLines(translated,summaryResult);
+        renderEasyLines(translated,summaryResult,summary.dictionary,summary.type);
         actionList.replaceChildren(...translatedSteps.map(step=>{const item=document.createElement('li');item.textContent=step;return item;}));
         status.textContent='번역 완료 · 중요한 내용은 원문·공식 안내 확인';
       }catch(error){
