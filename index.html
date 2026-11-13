@@ -107,7 +107,7 @@
     @media(max-width:760px){.notice-test-controls{grid-template-columns:1fr}.recommend-shelter-button{width:100%}}
   </style>
   <style>
-    body.app-mode{overflow:hidden;padding-bottom:0}.app-mode .topbar{position:fixed;top:0;left:0;right:0}.app-main{position:fixed;z-index:1;top:74px;right:0;bottom:calc(68px + env(safe-area-inset-bottom));left:0;overflow:hidden}.app-slides{position:relative;display:flex;width:100%;height:100%;overflow-x:auto;overflow-y:hidden;scroll-snap-type:x mandatory;scrollbar-width:none;overscroll-behavior-x:contain;touch-action:pan-x pan-y}.app-slides::-webkit-scrollbar{display:none}.app-slides>section{flex:0 0 100%;width:100%;height:100%;min-height:0;overflow-x:hidden;overflow-y:auto;overscroll-behavior:contain;scroll-snap-align:start;scroll-snap-stop:always}.bottom-tabs{position:fixed;z-index:1300;right:0;bottom:0;left:0;display:grid;grid-template-columns:repeat(6,minmax(0,1fr));height:calc(68px + env(safe-area-inset-bottom));padding:4px max(8px,calc((100vw - 780px)/2)) env(safe-area-inset-bottom);border-top:1px solid var(--line);background:#fffffffa;backdrop-filter:blur(12px)}.bottom-tab{display:flex;min-width:0;min-height:58px;flex-direction:column;align-items:center;justify-content:center;gap:2px;border:0;border-top:2px solid transparent;background:transparent;color:#67756c;font-size:11px;font-weight:700;white-space:nowrap}.bottom-tab svg{width:20px;height:20px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}.bottom-tab.active{border-top-color:#177f84;background:#eaf3ef;color:#12696e}
+    body.app-mode{overflow:hidden;padding-bottom:0}.app-mode .topbar{position:fixed;top:0;left:0;right:0}.app-main{position:fixed;z-index:1;top:74px;right:0;bottom:calc(68px + env(safe-area-inset-bottom));left:0;overflow:hidden}.app-slides{position:relative;display:flex;width:100%;height:100%;overflow-x:auto;overflow-y:hidden;scroll-snap-type:x mandatory;scrollbar-width:none;overscroll-behavior-x:contain;touch-action:pan-x pan-y}.app-slides::-webkit-scrollbar{display:none}.app-slides>section{flex:0 0 100%;width:100%;height:100%;min-height:0;overflow-x:hidden;overflow-y:auto;overscroll-behavior:contain;scroll-snap-align:start;scroll-snap-stop:always}.bottom-tabs{position:fixed;z-index:1300;right:0;bottom:0;left:0;display:grid;grid-template-columns:repeat(7,minmax(0,1fr));height:calc(68px + env(safe-area-inset-bottom));padding:4px max(8px,calc((100vw - 780px)/2)) env(safe-area-inset-bottom);border-top:1px solid var(--line);background:#fffffffa;backdrop-filter:blur(12px)}.bottom-tab{display:flex;min-width:0;min-height:58px;flex-direction:column;align-items:center;justify-content:center;gap:2px;border:0;border-top:2px solid transparent;background:transparent;color:#67756c;font-size:11px;font-weight:700;white-space:nowrap}.bottom-tab svg{width:20px;height:20px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}.bottom-tab.active{border-top-color:#177f84;background:#eaf3ef;color:#12696e}
     @media(max-width:760px){.app-main{top:64px;bottom:calc(164px + env(safe-area-inset-bottom))}.bottom-tabs{height:calc(64px + env(safe-area-inset-bottom));padding-right:4px;padding-left:4px}.bottom-tab{gap:1px;padding:0 2px;font-size:9px;line-height:1.15;text-align:center;white-space:normal}.bottom-tab span{max-width:100%;overflow-wrap:anywhere}.bottom-tab svg{width:18px;height:18px;flex:none}.accessibility-rail{bottom:calc(64px + env(safe-area-inset-bottom))}}
     @media(prefers-reduced-motion:reduce){.app-slides{scroll-behavior:auto}}
   </style>
@@ -237,9 +237,12 @@
     @media(max-width:390px){.message-image-tools{gap:6px;padding:5px}.message-image-button{padding:0 8px;font-size:11px}.message-image-status{font-size:10px}}
     :root{--coral:#c43d32;--accent:#c43d32}:root[data-theme="dark"]{--coral:#ff8275;--accent:#ff8275}
     .accent,.guide-tag,.result-region,.easy-line-marker,.action-guide-group{color:var(--accent)!important}.action-guide-group{border-color:#e5c9bf}.message-easy{color:#a83329}.action-pictogram-grid .action-pictogram-number{background:var(--accent)}.bottom-tab.active{background:#f4e8e2;color:#ae3329;border-top-color:var(--accent)}.nav-links a.active{color:var(--accent)}.result-region{border-color:#d7a49a}.result-steps strong{color:#ffe3ad}
-    .dictionary-section{background:#f2eee5}.dictionary-intro{max-width:720px;margin:0 0 24px;color:var(--muted);font-size:18px;line-height:1.7}.dictionary-toolbar{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:14px;align-items:center;margin-bottom:18px}.dictionary-search{width:100%;min-height:52px;padding:0 16px;border:1px solid var(--line);background:#fffdf8;color:var(--ink);font-size:18px}.dictionary-filters{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:18px}.dictionary-filter{min-height:46px;padding:0 15px;border:1px solid var(--line);background:#fffdf8;color:var(--ink);font-size:16px;font-weight:700}.dictionary-filter[aria-pressed="true"]{background:#303934;color:white;border-color:#303934}.dictionary-count{margin:0;color:var(--muted);font-size:16px}.dictionary-entries{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}.dictionary-entry{min-width:0;padding:20px;background:#fffdf8;border:1px solid var(--line)}.dictionary-entry-head{display:flex;align-items:center;gap:12px;flex-wrap:wrap}.dictionary-hard,.dictionary-easy{font-size:20px;line-height:1.5;font-weight:800;overflow-wrap:anywhere}.dictionary-hard{color:#58645c}.dictionary-arrow{font-size:20px;color:#818b83}.dictionary-easy{color:#173d4d}.dictionary-reason{margin:9px 0 13px;color:#526057;font-size:17px;line-height:1.65}.dictionary-tags{display:flex;flex-wrap:wrap;gap:6px}.dictionary-tag{display:inline-flex;min-height:32px;align-items:center;padding:3px 10px;border:1px solid #d7e2db;background:#eef3ef;color:#405148;font-size:14px;font-weight:700}.dictionary-empty{grid-column:1/-1;padding:28px;background:#fffdf8;border:1px solid var(--line);color:var(--muted);font-size:18px;text-align:center}.dictionary-form-panel{margin-top:30px;padding:24px;background:#e5e8e3;border:1px solid var(--line)}.dictionary-form-panel h3{margin:0 0 7px;font-size:24px}.dictionary-form-note{margin:0 0 18px;color:#526057;font-size:16px;line-height:1.6}.dictionary-form{display:grid;grid-template-columns:1fr 1fr;gap:14px}.dictionary-field{display:grid;gap:6px;min-width:0}.dictionary-field label,.dictionary-field legend{font-size:16px;font-weight:800}.dictionary-field input,.dictionary-field textarea,.dictionary-field select{width:100%;min-height:50px;padding:10px 12px;border:1px solid #bdc9bf;background:#fffdf8;color:var(--ink);font-size:18px}.dictionary-field textarea{min-height:90px;resize:vertical}.dictionary-field-wide{grid-column:1/-1}.dictionary-tag-options{display:flex;flex-wrap:wrap;gap:8px}.dictionary-tag-option{display:inline-flex;min-height:44px;align-items:center;gap:8px;padding:5px 10px;background:#fffdf8;border:1px solid #bdc9bf;font-size:16px}.dictionary-tag-option input{width:19px;height:19px;accent-color:#177f84}.dictionary-form-actions{display:flex;flex-wrap:wrap;gap:10px;grid-column:1/-1}.dictionary-form-button,.dictionary-export-button{min-height:50px;padding:0 18px;border:0;background:#303934;color:#fff;font-size:17px;font-weight:800}.dictionary-export-button{border:1px solid #657169;background:transparent;color:#303934}.dictionary-draft-status{grid-column:1/-1;min-height:24px;margin:0;color:#405148;font-size:15px}.dictionary-draft-json{grid-column:1/-1;margin:0;padding:16px;overflow:auto;background:#17231f;color:#eef2ee;font:14px/1.6 ui-monospace,monospace;white-space:pre-wrap;overflow-wrap:anywhere}.dictionary-applied{display:inline;color:inherit;text-decoration:underline;text-decoration-color:#43806c;text-decoration-thickness:2px;text-underline-offset:3px}.dictionary-book{margin-left:3px;font-size:.72em;vertical-align:super;line-height:1}.dictionary-add-suggestion{display:inline-flex;min-height:36px;align-items:center;margin:2px 4px;padding:2px 9px;border:1px solid #b8c4bb;background:#fffdf8;color:#30473a;font-size:13px;font-weight:800;vertical-align:middle}.dictionary-legend{margin:4px 0 0;color:#465249;font-size:14px}.dictionary-content{overflow-wrap:anywhere}
+    .dictionary-section{background:#f2eee5}.dictionary-intro{max-width:720px;margin:0 0 24px;color:var(--muted);font-size:18px;line-height:1.7}.dictionary-toolbar{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:14px;align-items:center;margin-bottom:18px}.dictionary-search{width:100%;min-height:52px;padding:0 16px;border:1px solid var(--line);background:#fffdf8;color:var(--ink);font-size:18px}.dictionary-filters{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:18px}.dictionary-filter{min-height:46px;padding:0 15px;border:1px solid var(--line);background:#fffdf8;color:var(--ink);font-size:16px;font-weight:700}.dictionary-filter[aria-pressed="true"]{background:#303934;color:white;border-color:#303934}.dictionary-count{margin:0;color:var(--muted);font-size:16px}.dictionary-entries{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}.dictionary-entry{min-width:0;padding:20px;background:#fffdf8;border:1px solid var(--line)}.dictionary-entry-head{display:flex;align-items:center;gap:12px;flex-wrap:wrap}.dictionary-hard,.dictionary-easy{font-size:20px;line-height:1.5;font-weight:800;overflow-wrap:anywhere}.dictionary-hard{color:#58645c}.dictionary-arrow{font-size:20px;color:#818b83}.dictionary-easy{color:#173d4d}.dictionary-reason{margin:9px 0 13px;color:#526057;font-size:17px;line-height:1.65}.dictionary-tags{display:flex;flex-wrap:wrap;gap:6px}.dictionary-tag{display:inline-flex;min-height:32px;align-items:center;padding:3px 10px;border:1px solid #d7e2db;background:#eef3ef;color:#405148;font-size:14px;font-weight:700}.dictionary-empty{grid-column:1/-1;padding:28px;background:#fffdf8;border:1px solid var(--line);color:var(--muted);font-size:18px;text-align:center}.dictionary-form-panel{margin-top:30px;padding:24px;background:#e5e8e3;border:1px solid var(--line)}.dictionary-form-panel h3{margin:0 0 7px;font-size:24px}.dictionary-form-note{margin:0 0 18px;color:#526057;font-size:16px;line-height:1.6}.dictionary-form{display:grid;grid-template-columns:1fr 1fr;gap:14px}.dictionary-field{display:grid;gap:6px;min-width:0}.dictionary-field label,.dictionary-field legend{font-size:16px;font-weight:800}.dictionary-field input,.dictionary-field textarea,.dictionary-field select{width:100%;min-height:50px;padding:10px 12px;border:1px solid #bdc9bf;background:#fffdf8;color:var(--ink);font-size:18px}.dictionary-field textarea{min-height:90px;resize:vertical}.dictionary-field-wide{grid-column:1/-1}.dictionary-tag-options{display:flex;flex-wrap:wrap;gap:8px}.dictionary-tag-option{display:inline-flex;min-height:44px;align-items:center;gap:8px;padding:5px 10px;background:#fffdf8;border:1px solid #bdc9bf;font-size:16px}.dictionary-tag-option input{width:19px;height:19px;accent-color:#177f84}.dictionary-form-actions{display:flex;flex-wrap:wrap;gap:10px;grid-column:1/-1}.dictionary-form-button,.dictionary-export-button{min-height:50px;padding:0 18px;border:0;background:#303934;color:#fff;font-size:17px;font-weight:800}.dictionary-export-button{border:1px solid #657169;background:transparent;color:#303934}.dictionary-draft-status{grid-column:1/-1;min-height:24px;margin:0;color:#405148;font-size:15px}.dictionary-draft-json{grid-column:1/-1;margin:0;padding:16px;overflow:auto;background:#17231f;color:#eef2ee;font:14px/1.6 ui-monospace,monospace;white-space:pre-wrap;overflow-wrap:anywhere}.dictionary-applied{display:inline;color:inherit;text-decoration:underline;text-decoration-color:#43806c;text-decoration-thickness:2px;text-underline-offset:3px}.dictionary-book{margin-left:3px;font-size:.72em;vertical-align:super;line-height:1}.dictionary-add-suggestion{display:inline-flex;min-height:36px;align-items:center;margin:2px 4px;padding:2px 9px;border:1px solid #b8c4bb;background:#fffdf8;color:#30473a;font-size:13px;font-weight:800;vertical-align:middle}.dictionary-legend{margin:4px 0 0;color:#465249;font-size:14px}.dictionary-content,.statistics-content{overflow-wrap:anywhere}
     :root[data-theme="dark"] .dictionary-section{background:#151916}:root[data-theme="dark"] .dictionary-entry,:root[data-theme="dark"] .dictionary-empty,:root[data-theme="dark"] .dictionary-search,:root[data-theme="dark"] .dictionary-filter,:root[data-theme="dark"] .dictionary-field input,:root[data-theme="dark"] .dictionary-field textarea,:root[data-theme="dark"] .dictionary-field select,:root[data-theme="dark"] .dictionary-tag-option,:root[data-theme="dark"] .dictionary-add-suggestion{background:#1a261f;color:var(--ink);border-color:var(--line)}:root[data-theme="dark"] .dictionary-form-panel{background:#1a211c;border-color:var(--line)}:root[data-theme="dark"] .dictionary-hard,:root[data-theme="dark"] .dictionary-reason,:root[data-theme="dark"] .dictionary-intro,:root[data-theme="dark"] .dictionary-count,:root[data-theme="dark"] .dictionary-form-note,:root[data-theme="dark"] .dictionary-draft-status{color:#bac5bd}:root[data-theme="dark"] .dictionary-tag{background:#222d26;color:#d9e3dc;border-color:#46554a}:root[data-theme="dark"] .dictionary-filter[aria-pressed="true"]{background:#d1f188;color:#142016;border-color:#d1f188}:root[data-theme="dark"] .dictionary-export-button{color:var(--ink);border-color:var(--line)}
-    @media(max-width:760px){.dictionary-toolbar{grid-template-columns:1fr}.dictionary-entries{grid-template-columns:1fr}.dictionary-entry{padding:18px}.dictionary-hard,.dictionary-easy{font-size:19px}.dictionary-reason,.dictionary-intro{font-size:17px}.dictionary-form-panel{padding:18px}.dictionary-form{grid-template-columns:1fr}.dictionary-field-wide,.dictionary-form-actions,.dictionary-draft-status,.dictionary-draft-json{grid-column:1}.dictionary-filter{font-size:15px}.dictionary-form-button,.dictionary-export-button{flex:1}.bottom-tabs{grid-template-columns:repeat(6,minmax(0,1fr))}}
+    .statistics-section{background:#f2eee5}.statistics-intro{max-width:760px;margin:0 0 22px;color:var(--muted);font-size:17px;line-height:1.7}.statistics-summary{display:grid;grid-template-columns:auto minmax(0,1fr);align-items:center;gap:22px;margin-bottom:16px;padding:24px 28px;background:#303934;color:#fff}.statistics-rate{font-size:clamp(54px,8vw,92px);font-weight:900;line-height:.95;letter-spacing:-.07em;font-variant-numeric:tabular-nums}.statistics-summary-copy strong{display:block;font-size:clamp(20px,2.4vw,30px);line-height:1.25}.statistics-summary-copy p{margin:8px 0 0;color:#d0d7d1;font-size:16px;line-height:1.6}.statistics-status{min-height:26px;margin:0 0 22px;color:#4f5d53;font-size:15px;line-height:1.6}.statistics-progress{display:block;width:100%;height:9px;margin:7px 0 0;accent-color:#536c54}.statistics-progress[hidden]{display:none}.statistics-metric-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px;margin:0 0 24px}.statistics-metric{min-width:0;padding:17px 18px;background:#fffdf8;border:1px solid var(--line)}.statistics-metric-label{display:block;color:#657168;font-size:14px;font-weight:700;line-height:1.5}.statistics-metric-value{display:block;margin-top:6px;color:#26342c;font-size:clamp(24px,3vw,36px);font-weight:850;line-height:1.15;font-variant-numeric:tabular-nums}.statistics-metric-note{display:block;margin-top:5px;color:#66736a;font-size:13px;line-height:1.45}.statistics-chart-panel{padding:22px;background:#fffdf8;border:1px solid var(--line)}.statistics-chart-head{display:flex;align-items:flex-end;justify-content:space-between;gap:16px;margin-bottom:15px}.statistics-chart-head h3,.statistics-compare h3{margin:0;font-size:22px;line-height:1.3}.statistics-chart-head p{margin:5px 0 0;color:var(--muted);font-size:14px;line-height:1.5}.statistics-category-filters{display:flex;flex-wrap:wrap;gap:7px;margin:0 0 17px}.statistics-category-button{min-height:42px;padding:0 13px;border:1px solid var(--line);background:#f6f3ec;color:#354239;font-size:15px;font-weight:750}.statistics-category-button[aria-pressed="true"]{background:#3d5144;color:#fff;border-color:#3d5144}.statistics-chart{display:grid;gap:8px}.statistics-bar-row{display:grid;grid-template-columns:minmax(120px,190px) minmax(80px,1fr) 70px;align-items:center;gap:12px;min-height:48px;padding:6px 9px;border-bottom:1px solid #e9e5dc}.statistics-word{min-width:0;font-size:16px;font-weight:800;overflow-wrap:anywhere}.statistics-word small{display:block;margin-top:2px;color:#6a766e;font-size:13px;font-weight:500}.statistics-bar-track{height:18px;overflow:hidden;background:#eeece5}.statistics-bar{height:100%;min-width:3px;background:#758a73}.statistics-count{color:#46544a;font-size:14px;text-align:right;font-variant-numeric:tabular-nums}.statistics-empty{padding:24px 10px;color:var(--muted);font-size:16px;text-align:center}.statistics-compare{margin-top:24px}.statistics-compare h3{margin-bottom:12px}.statistics-comparison-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}.statistics-comparison-card{padding:20px;background:#fffdf8;border:1px solid var(--line)}.statistics-comparison-card h4{margin:0 0 15px;font-size:18px}.statistics-comparison-values{display:grid;grid-template-columns:1fr auto 1fr;align-items:center;gap:10px}.statistics-comparison-value{min-width:0}.statistics-comparison-value span{display:block;color:#69756c;font-size:14px;font-weight:700}.statistics-comparison-value strong{display:block;margin-top:5px;color:#28372d;font-size:clamp(22px,3vw,34px);font-weight:850;font-variant-numeric:tabular-nums}.statistics-comparison-arrow{color:#758078;font-size:20px}.statistics-method{margin:16px 0 0;color:#69756c;font-size:13px;line-height:1.65}.statistics-source{display:flex;flex-wrap:wrap;gap:7px 18px;margin-top:20px;padding:12px 14px;border:1px solid var(--line);background:#f7f3ea;color:#59645a;font-size:13px;line-height:1.5}.statistics-content{overflow-wrap:anywhere}
+    :root[data-theme="dark"] .statistics-section{background:#151916}:root[data-theme="dark"] .statistics-metric,:root[data-theme="dark"] .statistics-chart-panel,:root[data-theme="dark"] .statistics-comparison-card{background:#1e2520;border-color:var(--line)}:root[data-theme="dark"] .statistics-metric-value,:root[data-theme="dark"] .statistics-comparison-value strong,:root[data-theme="dark"] .statistics-word,:root[data-theme="dark"] .statistics-chart-head h3,:root[data-theme="dark"] .statistics-compare h3,:root[data-theme="dark"] .statistics-comparison-card h4{color:var(--ink)}:root[data-theme="dark"] .statistics-metric-label,:root[data-theme="dark"] .statistics-metric-note,:root[data-theme="dark"] .statistics-comparison-value span,:root[data-theme="dark"] .statistics-word small,:root[data-theme="dark"] .statistics-count,:root[data-theme="dark"] .statistics-method,:root[data-theme="dark"] .statistics-status{color:#bbc5bd}:root[data-theme="dark"] .statistics-category-button{background:#242b26;color:var(--ink);border-color:var(--line)}:root[data-theme="dark"] .statistics-category-button[aria-pressed="true"]{background:#cbd4cd;color:#202722}:root[data-theme="dark"] .statistics-bar-track{background:#313a33}:root[data-theme="dark"] .statistics-bar{background:#a8b99e}:root[data-theme="dark"] .statistics-source{background:#202722;color:#c5cec7;border-color:var(--line)}:root[data-theme="dark"] .statistics-summary{background:#242b26;color:var(--ink)}:root[data-theme="dark"] .statistics-summary-copy p{color:#c5cec7}
+    @media(max-width:760px){.statistics-summary{grid-template-columns:1fr;gap:10px;padding:19px}.statistics-rate{font-size:64px}.statistics-summary-copy strong{font-size:21px}.statistics-summary-copy p,.statistics-intro{font-size:16px}.statistics-metric-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}.statistics-metric{padding:14px}.statistics-metric-label{font-size:13px}.statistics-chart-panel{padding:16px}.statistics-chart-head{display:block}.statistics-category-filters{gap:6px}.statistics-category-button{min-height:42px;padding:0 10px;font-size:14px}.statistics-bar-row{grid-template-columns:minmax(98px,34%) minmax(60px,1fr) 54px;gap:8px;padding:6px 2px}.statistics-word{font-size:15px}.statistics-word small{font-size:12px}.statistics-comparison-grid{grid-template-columns:1fr}.statistics-comparison-card{padding:17px}.statistics-source{font-size:12px}.bottom-tabs{grid-template-columns:repeat(7,minmax(0,1fr))}}
+    @media(max-width:760px){.dictionary-toolbar{grid-template-columns:1fr}.dictionary-entries{grid-template-columns:1fr}.dictionary-entry{padding:18px}.dictionary-hard,.dictionary-easy{font-size:19px}.dictionary-reason,.dictionary-intro{font-size:17px}.dictionary-form-panel{padding:18px}.dictionary-form{grid-template-columns:1fr}.dictionary-field-wide,.dictionary-form-actions,.dictionary-draft-status,.dictionary-draft-json{grid-column:1}.dictionary-filter{font-size:15px}.dictionary-form-button,.dictionary-export-button{flex:1}.bottom-tabs{grid-template-columns:repeat(7,minmax(0,1fr))}}
     :root[data-theme="dark"] .bottom-tab.active{background:#342321;color:#ff9a8e;border-top-color:#ff8275}:root[data-theme="dark"] .action-guide-group{border-color:#58403b}:root[data-theme="dark"] .result-steps strong{color:#ffca91}
     button,input,select,textarea,dialog,.brand-mark,.btn,.btn-lime,.message-card,.message-image-tools,.message-image-button,.panel,.result-panel,.guide-card,.guide-visual,.action-guide-detail,.action-pictogram-grid li,.library-browser,.geochang-panel,.library-item,.library-filter,.library-lang,.notice-card,.notice-button,.notice-button-secondary,.nav-tool-button,.side-language-option,.side-font-button,.side-font-reset,.map-side,.map-pill,.geochang-reload,.geochang-controls select,.disaster-search input,.disaster-search button,.settings-dialog,.help-dialog,.language-start-dialog,.language-start-dialog select,.font-option,.accessibility-rail,.geochang-source,.message-hazard-visual{border-radius:2px!important}
   </style>
@@ -248,7 +251,7 @@
   <header class="topbar">
     <nav class="wrap nav" aria-label="주요 메뉴">
       <a class="brand" href="#home" aria-label="재난 문자 순화 홈"><span class="brand-mark"><svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M12 3.5v10m0 4v.2" stroke="currentColor" stroke-width="3" stroke-linecap="round"/><path d="M12 2 21 19H3L12 2Z" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></svg></span><span>재난 문자 순화 <em>●</em></span></a>
-        <div class="nav-links"><a href="#translate">문자 순화</a><a href="#dictionary">쉬운 말 사전</a><a href="#map-section">대피소</a><a href="#action-guide">행동 요령</a><a href="#library">재난문자</a></div>
+        <div class="nav-links"><a href="#translate">문자 순화</a><a href="#dictionary">쉬운 말 사전</a><a href="#statistics">어려운 말 통계</a><a href="#map-section">대피소</a><a href="#action-guide">행동 요령</a><a href="#library">재난문자</a></div>
       <div class="nav-tools">
          <button class="nav-tool-button" id="helpOpen" type="button" aria-label="사용법 열기" aria-haspopup="dialog" aria-controls="helpDialog"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M9.5 9a2.6 2.6 0 1 1 4.4 1.9c-1.2 1-1.9 1.4-1.9 3m0 3v.1"/></svg><span>더보기</span></button>
         <button class="nav-tool-button theme-toggle" id="themeToggle" type="button" aria-pressed="false"><svg class="theme-moon" viewBox="0 0 24 24" aria-hidden="true"><path d="M20.5 15.5A8.5 8.5 0 0 1 8.5 3.5 8.5 8.5 0 1 0 20.5 15.5Z"/></svg><svg class="theme-sun" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="4"/><path d="M12 2v2m0 16v2M4.93 4.93l1.42 1.42m11.3 11.3 1.42 1.42M2 12h2m16 0h2M4.93 19.07l1.42-1.42m11.3-11.3 1.42-1.42"/></svg><span id="themeToggleLabel">다크 모드</span></button>
@@ -262,6 +265,7 @@
         <li><strong>이동</strong><span>좌우 밀기 · 아래 탭</span></li>
         <li><strong>문자 순화</strong><span>문자 입력 · 언어 선택 · 원문 보존</span></li>
         <li><strong>쉬운 말 사전</strong><span>팀이 정한 표현 · 검색 · 재난 유형별 보기</span></li>
+        <li><strong>어려운 말 통계</strong><span>실제 재난문자에서 자주 나오는 표현 분석</span></li>
         <li><strong>행동 요령</strong><span>문자 유형별 그림과 요령</span></li>
         <li><strong>대피 안내</strong><span>재난 유형 · 주변 시설</span></li>
         <li><strong>지도</strong><span>끌어 이동 · 길게 눌러 검색</span></li>
@@ -327,6 +331,36 @@
       </div>
     </section>
 
+    <section class="section statistics-section" id="statistics">
+      <div class="wrap">
+        <div class="section-head"><div><h2>어려운 말 통계</h2></div></div>
+        <p class="statistics-intro">지역별 재난문자에 실제로 쓰인 표현을 분석했어요. 어려운 말이 얼마나 자주 나오는지 확인하고, 우리 팀의 쉬운 말과 비교해 보세요.</p>
+        <div class="statistics-summary statistics-content"><div class="statistics-rate" id="statisticsRate">—</div><div class="statistics-summary-copy"><strong>재난문자에 어려운 말이 들어 있어요</strong><p id="statisticsSummaryText">최근 1년 자료를 불러오면 전체 문자 중 어려운 말이 한 개 이상 포함된 비율을 보여드려요.</p></div></div>
+        <p class="statistics-status" id="statisticsStatus" role="status" aria-live="polite">통계 자료를 불러올 준비가 되었어요.</p>
+        <progress class="statistics-progress" id="statisticsProgress" max="100" value="0" aria-label="연간 재난문자 불러오기 진행률" hidden></progress>
+        <div class="statistics-metric-grid statistics-content">
+          <article class="statistics-metric"><span class="statistics-metric-label">분석한 재난문자</span><strong class="statistics-metric-value" id="statisticsTotalMessages">—</strong><span class="statistics-metric-note">최근 1년 · 원문 기준</span></article>
+          <article class="statistics-metric"><span class="statistics-metric-label">어려운 말이 나온 문자</span><strong class="statistics-metric-value" id="statisticsDifficultMessages">—</strong><span class="statistics-metric-note">한 건에 한 번 이상 포함</span></article>
+          <article class="statistics-metric"><span class="statistics-metric-label">순화 전 평균 길이</span><strong class="statistics-metric-value" id="statisticsAverageBefore">—</strong><span class="statistics-metric-note">문자 한 건당 글자 수</span></article>
+          <article class="statistics-metric"><span class="statistics-metric-label">순화 후 평균 길이</span><strong class="statistics-metric-value" id="statisticsAverageAfter">—</strong><span class="statistics-metric-note">사전 표현으로 바꾼 뒤</span></article>
+        </div>
+        <section class="statistics-chart-panel" aria-labelledby="statisticsChartTitle">
+          <div class="statistics-chart-head"><div><h3 id="statisticsChartTitle">재난 유형별 어려운 말</h3><p>막대는 해당 유형 문자 중 그 말을 포함한 문자 수예요. 자주 나온 말 10개를 보여드려요.</p></div><button class="statistics-category-button" id="statisticsReload" type="button">다시 분석</button></div>
+          <div class="statistics-category-filters" id="statisticsCategoryFilters" role="group" aria-label="통계 재난 유형"></div>
+          <div class="statistics-chart statistics-content" id="statisticsChart" aria-live="polite"><p class="statistics-empty">통계를 불러오면 유형별 표현이 여기에 표시돼요.</p></div>
+        </section>
+        <section class="statistics-compare" aria-labelledby="statisticsCompareTitle">
+          <h3 id="statisticsCompareTitle">사전 적용 전과 후</h3>
+          <div class="statistics-comparison-grid statistics-content">
+            <article class="statistics-comparison-card"><h4>평균 문장 길이</h4><div class="statistics-comparison-values"><div class="statistics-comparison-value"><span>순화 전</span><strong id="statisticsLengthBefore">—</strong></div><span class="statistics-comparison-arrow" aria-hidden="true">→</span><div class="statistics-comparison-value"><span>사전 적용 후</span><strong id="statisticsLengthAfter">—</strong></div></div></article>
+            <article class="statistics-comparison-card"><h4>문자 한 건당 어려운 말 수</h4><div class="statistics-comparison-values"><div class="statistics-comparison-value"><span>순화 전</span><strong id="statisticsWordCountBefore">—</strong></div><span class="statistics-comparison-arrow" aria-hidden="true">→</span><div class="statistics-comparison-value"><span>사전 적용 후</span><strong id="statisticsWordCountAfter">—</strong></div></div></article>
+          </div>
+          <p class="statistics-method">어려운 말 목록은 <code>difficult-words.json</code>에서 관리해요. 한 문자 안에서 같은 표현이 여러 번 나와도, 평균 어려운 말 수에는 한 번만 셉니다. 순화 후 수치는 이 목록의 표현을 쉬운 말로 바꿔 계산한 참고값이에요. 쉬운 말로 풀어 쓰면 글자 수가 늘 수도 있으므로, 길이는 읽기 쉬움 자체가 아니라 참고용으로 봐 주세요.</p>
+        </section>
+        <div class="statistics-source statistics-content"><span id="statisticsCoverage">자료 범위: 최근 1년 재난문자</span><span>분석 항목: 팀이 직접 관리하는 어려운 말 목록</span><span>원문은 변경하거나 저장하지 않아요.</span></div>
+      </div>
+    </section>
+
     <section class="section map-section" id="map-section">
       <div class="wrap"><div class="section-head"><div><h2>대피소 찾기</h2></div></div>
         <div class="map-layout">
@@ -387,6 +421,7 @@
     <button class="bottom-tab active" type="button" data-slide-target="home" aria-current="page"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m3 10 9-7 9 7v10a1 1 0 0 1-1 1h-5v-7H9v7H4a1 1 0 0 1-1-1V10Z"/></svg><span>홈</span></button>
     <button class="bottom-tab" type="button" data-slide-target="translate"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 5h10M9 3v2m1 0c0 5-3 8-6 10m2-6c1 2 3 4 5 5m2 7 4-10 4 10m-6-3h5"/></svg><span>문자 순화</span></button>
     <button class="bottom-tab" type="button" data-slide-target="dictionary"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 4.5A2.5 2.5 0 0 1 7.5 2H20v18H7.5A2.5 2.5 0 0 0 5 22V4.5Z"/><path d="M5 18.5A2.5 2.5 0 0 1 7.5 16H20M9 6h7m-7 4h7"/></svg><span>쉬운 말 사전</span></button>
+    <button class="bottom-tab" type="button" data-slide-target="statistics"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 20V11m5 9V5m5 15v-7m5 7V8M2 20h20"/></svg><span>어려운 말 통계</span></button>
     <button class="bottom-tab" type="button" data-slide-target="action-guide"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3 4.5 6v5c0 5 3.2 8 7.5 10 4.3-2 7.5-5 7.5-10V6L12 3Z"/><path d="m9 12 2 2 4-4"/></svg><span>행동 안내</span></button>
     <button class="bottom-tab" type="button" data-slide-target="map-section"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m3 6 6-3 6 3 6-3v15l-6 3-6-3-6 3V6Z"/><path d="M9 3v15m6-12v15"/></svg><span>대피소</span></button>
     <button class="bottom-tab" type="button" data-slide-target="library"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 4h14v16H5zM8 8h8m-8 4h8m-8 4h5"/></svg><span>재난문자</span></button>
@@ -414,6 +449,19 @@
     let easyDictionary=[];
     let dictionaryDrafts=[];
     let activeDictionaryCategory='전체';
+    const statisticsCategories=['호우','산불','지진','폭염','한파','태풍·강풍','민방위','공통'];
+    let difficultWords=[];
+    let activeStatisticsCategory='전체';
+    let statisticsLoaded=false;
+    let statisticsLoading=false;
+    let statisticsResult=null;
+    let difficultWordMatchers=[];
+    const difficultWordsPromise=fetch('/difficult-words.json').then(response=>{if(!response.ok)throw new Error('어려운 말 목록을 불러오지 못했어요.');return response.json();}).then(entries=>{
+      if(!Array.isArray(entries))throw new Error('어려운 말 목록 형식이 올바르지 않아요.');
+      difficultWords=entries.filter(entry=>entry&&typeof entry.hard==='string'&&typeof entry.easy==='string'&&Array.isArray(entry.tags));
+      difficultWordMatchers=[...difficultWords].sort((a,b)=>b.hard.length-a.hard.length).map(entry=>({entry,test:new RegExp(escapeRegExp(entry.hard)),replace:new RegExp(escapeRegExp(entry.hard),'g')}));
+      return difficultWords;
+    });
     const dictionaryLoadPromise=fetch('/dictionary.json').then(response=>{if(!response.ok)throw new Error('사전 파일을 불러오지 못했어요.');return response.json();}).then(entries=>{
       if(!Array.isArray(entries))throw new Error('사전 파일 형식이 올바르지 않아요.');
       easyDictionary=entries.filter(entry=>entry&&typeof entry.hard==='string'&&typeof entry.easy==='string'&&typeof entry.reason==='string'&&Array.isArray(entry.tags));
@@ -476,7 +524,7 @@
       renderDictionaryTagOptions([suggestedTag]);goToSlide('dictionary');setTimeout(()=>{document.getElementById('dictionaryAddFormPanel').scrollIntoView({behavior:'smooth',block:'start'});hardInput.focus();},350);
     });
     const appSlides=document.getElementById('appSlides');
-    ['home','translate','dictionary','action-guide','map-section','library'].forEach(id=>{const slide=document.getElementById(id);if(slide)appSlides.append(slide);});
+    ['home','translate','dictionary','statistics','action-guide','map-section','library'].forEach(id=>{const slide=document.getElementById(id);if(slide)appSlides.append(slide);});
     const appSlideSections=[...appSlides.children].filter(element=>element.tagName==='SECTION');
     const bottomTabs=document.getElementById('bottomTabs');
     let activeSlideId='home';
@@ -791,7 +839,7 @@
       while(siteTranslationCache.size>1200)siteTranslationCache.delete(siteTranslationCache.keys().next().value);
       try{localStorage.setItem(siteTranslationStorageKey,JSON.stringify([...siteTranslationCache]));}catch(error){}
     }
-    const siteSkipSelector='script,style,noscript,svg,.brand,.lang-chip,.library-lang,.side-language-option,#languageStartSelect,.geochang-audience-language,.geochang-easy-output,.dictionary-content,#translatedText,[data-no-site-translate],#libraryOriginal,#resultLang,#libraryActionTitle,#libraryTitle,#libraryTime,.library-original';
+    const siteSkipSelector='script,style,noscript,svg,.brand,.lang-chip,.library-lang,.side-language-option,#languageStartSelect,.geochang-audience-language,.geochang-easy-output,.dictionary-content,.statistics-word,#translatedText,[data-no-site-translate],#libraryOriginal,#resultLang,#libraryActionTitle,#libraryTitle,#libraryTime,.library-original';
     let siteTranslationVersion=0;
     function sourceLanguage(text){
       if(/[가-힣]/.test(text))return 'ko';
@@ -929,12 +977,12 @@
       if(button){const resultLanguage=document.getElementById('resultLang');resultLanguage.textContent=button.dataset.name.toUpperCase();resultLanguage.lang=selectedLang;document.getElementById('translatedText').lang=selectedLang;}
     }
     const globalCopy={
-      en:{hero:['In dangerous moments,','simple words','come first.'],nav:['Message interpretation','Easy-word dictionary','Shelters','Action guide','Disaster messages'],railTitle:'Language and text size'},
-      'zh-CN':{hero:['危险时刻，','简单表达','更重要。'],nav:['灾情解读','易懂词典','避难设施','行动指南','灾害短信'],railTitle:'语言与字号'},
-      vi:{hero:['Khi có nguy hiểm,','hãy dùng lời dễ hiểu','trước tiên.'],nav:['Giải nghĩa tin nhắn','Từ điển từ dễ hiểu','Nơi trú ẩn','Hướng dẫn hành động','Tin nhắn thiên tai'],railTitle:'Ngôn ngữ và cỡ chữ'},
-      ne:{hero:['खतराको समयमा,','सरल शब्द','पहिले।'],nav:['सन्देशको अर्थ','सरल शब्दकोश','आश्रयस्थल','के गर्ने भन्ने जानकारी','विपद् सन्देश'],railTitle:'भाषा र अक्षरको आकार'},
-      tl:{hero:['Kapag may panganib,','gumamit ng simpleng salita','muna.'],nav:['Pagpapaliwanag ng alerto','Diksyunaryo ng madaling salita','Mga silungan','Gabay sa gagawin','Mga alerto sa sakuna'],railTitle:'Wika at laki ng teksto'},
-      th:{hero:['เมื่อเกิดอันตราย','ให้ใช้คำง่ายๆ','ก่อน'],nav:['แปลความหมายข้อความ','พจนานุกรมคำง่าย','สถานที่หลบภัย','วิธีปฏิบัติ','ข้อความภัยพิบัติ'],railTitle:'ภาษาและขนาดตัวอักษร'}
+      en:{hero:['In dangerous moments,','simple words','come first.'],nav:['Message interpretation','Easy-word dictionary','Word statistics','Shelters','Action guide','Disaster messages'],railTitle:'Language and text size'},
+      'zh-CN':{hero:['危险时刻，','简单表达','更重要。'],nav:['灾情解读','易懂词典','难词统计','避难设施','行动指南','灾害短信'],railTitle:'语言与字号'},
+      vi:{hero:['Khi có nguy hiểm,','hãy dùng lời dễ hiểu','trước tiên.'],nav:['Giải nghĩa tin nhắn','Từ điển từ dễ hiểu','Thống kê từ khó','Nơi trú ẩn','Hướng dẫn hành động','Tin nhắn thiên tai'],railTitle:'Ngôn ngữ và cỡ chữ'},
+      ne:{hero:['खतराको समयमा,','सरल शब्द','पहिले।'],nav:['सन्देशको अर्थ','सरल शब्दकोश','कठिन शब्दको तथ्याङ्क','आश्रयस्थल','के गर्ने भन्ने जानकारी','विपद् सन्देश'],railTitle:'भाषा र अक्षरको आकार'},
+      tl:{hero:['Kapag may panganib,','gumamit ng simpleng salita','muna.'],nav:['Pagpapaliwanag ng alerto','Diksyunaryo ng madaling salita','Istatistika ng mahihirap na salita','Mga silungan','Gabay sa gagawin','Mga alerto sa sakuna'],railTitle:'Wika at laki ng teksto'},
+      th:{hero:['เมื่อเกิดอันตราย','ให้ใช้คำง่ายๆ','ก่อน'],nav:['แปลความหมายข้อความ','พจนานุกรมคำง่าย','สถิติคำยาก','สถานที่หลบภัย','วิธีปฏิบัติ','ข้อความภัยพิบัติ'],railTitle:'ภาษาและขนาดตัวอักษร'}
     };
     const globalOverrideElements=new Set();
     function setGlobalOverride(element,text){
@@ -1267,6 +1315,130 @@
       const libraryObserver=new IntersectionObserver(entries=>{if(entries.some(entry=>entry.isIntersecting)&&!disasterArchiveLoaded){libraryObserver.disconnect();loadDisasterMessages();}},{root:appSlides,threshold:.15});
       libraryObserver.observe(document.getElementById('library'));
     }else loadDisasterMessages();
+
+    function renderStatisticsFilters(){
+      const container=document.getElementById('statisticsCategoryFilters');
+      container.replaceChildren(...['전체',...statisticsCategories].map(category=>{
+        const button=document.createElement('button');button.type='button';button.className='statistics-category-button';button.textContent=category;button.setAttribute('aria-pressed',String(category===activeStatisticsCategory));
+        button.addEventListener('click',()=>{activeStatisticsCategory=category;renderStatisticsFilters();if(statisticsResult)renderStatisticsChart(category);});return button;
+      }));
+    }
+    function classifyStatisticsMessage(text){
+      const categories=[];
+      if(/호우|폭우|집중호우|침수|범람|홍수|하천|계곡|산사태|낙뢰|저지대|급경사지|지하차도|강우/.test(text))categories.push('호우');
+      if(/산불|산림|입산|영농|소각|화기/.test(text))categories.push('산불');
+      if(/지진|흔들림|지진해일|해일/.test(text))categories.push('지진');
+      if(/폭염|온열|열사병|더위|무더위/.test(text))categories.push('폭염');
+      if(/한파|대설|폭설|결빙|빙판|강추위|동파|눈길|적설/.test(text))categories.push('한파');
+      if(/태풍|강풍|풍랑|돌풍|강한 바람/.test(text))categories.push('태풍·강풍');
+      if(/민방위/.test(text))categories.push('민방위');
+      return categories.length?categories:['공통'];
+    }
+    function matchDifficultWords(text){return difficultWordMatchers.filter(item=>item.test.test(text)).map(item=>item.entry);}
+    function applyStatisticsWordList(text){
+      let output=text;
+      difficultWordMatchers.forEach(({entry,replace})=>{output=output.replace(replace,entry.easy);});
+      return output;
+    }
+    function renderStatisticsChart(category=activeStatisticsCategory){
+      if(!statisticsResult)return;
+      const container=document.getElementById('statisticsChart');
+      const counts=category==='전체'?statisticsResult.allTerms:statisticsResult.categories.get(category)?.terms||new Map();
+      const messageCount=category==='전체'?statisticsResult.total:statisticsResult.categories.get(category)?.messages||0;
+      const chartNote=document.querySelector('.statistics-chart-head p');
+      chartNote.textContent=`${category} · ${messageCount.toLocaleString()}건 중 표현별 포함 문자 수 · 상위 10개`;
+      const rows=[...counts.entries()].filter(([,count])=>count>0).sort((a,b)=>b[1]-a[1]||a[0].hard.localeCompare(b[0].hard,'ko')).slice(0,10);
+      if(!rows.length){const empty=document.createElement('p');empty.className='statistics-empty';empty.textContent=`${category} 문자에서 등록된 어려운 말을 찾지 못했어요.`;container.replaceChildren(empty);return;}
+      const maxCount=rows[0][1];
+      container.replaceChildren(...rows.map(([entry,count],index)=>{
+        const row=document.createElement('div');row.className='statistics-bar-row';
+        const word=document.createElement('div');word.className='statistics-word statistics-content';word.textContent=`${index+1}. ${entry.hard} → ${entry.easy}`;
+        const kind=document.createElement('small');kind.textContent=entry.kind||'어려운 말';word.append(kind);
+        const track=document.createElement('div');track.className='statistics-bar-track';track.setAttribute('role','img');track.setAttribute('aria-label',`${entry.hard}, ${count.toLocaleString()}건`);
+        const bar=document.createElement('div');bar.className='statistics-bar';bar.style.width=`${Math.max(2,count/maxCount*100)}%`;track.append(bar);
+        const value=document.createElement('span');value.className='statistics-count';value.textContent=`${count.toLocaleString()}건`;
+        row.append(word,track,value);return row;
+      }));
+    }
+    function writeStatisticsResult(messages,meta){
+      const allTerms=new Map();const categories=new Map(statisticsCategories.map(category=>[category,{messages:0,terms:new Map()}]));
+      let hardMessages=0,totalLengthBefore=0,totalLengthAfter=0,totalWordsBefore=0,totalWordsAfter=0,total=0;
+      messages.forEach(message=>{
+        const text=String(message||'').replace(/\s*\[[^\]]+\]\s*$/,'').trim();if(!text)return;
+        total+=1;totalLengthBefore+=[...text].length;
+        const matches=matchDifficultWords(text);if(matches.length)hardMessages+=1;totalWordsBefore+=matches.length;
+        const types=classifyStatisticsMessage(text);const groups=new Set([...types,'공통']);
+        groups.forEach(category=>{const group=categories.get(category);if(group)group.messages+=1;});
+        matches.forEach(entry=>{
+          allTerms.set(entry,(allTerms.get(entry)||0)+1);
+          groups.forEach(category=>{
+            const group=categories.get(category);if(!group||!(entry.tags.includes(category)||entry.tags.includes('공통')))return;
+            group.terms.set(entry,(group.terms.get(entry)||0)+1);
+          });
+        });
+        const simplified=applyStatisticsWordList(text);totalLengthAfter+=[...simplified].length;totalWordsAfter+=matchDifficultWords(simplified).length;
+      });
+      statisticsResult={allTerms,categories,total,hardMessages,totalLengthBefore,totalLengthAfter,totalWordsBefore,totalWordsAfter,meta};
+      const rate=total?hardMessages/total*100:0;
+      document.getElementById('statisticsRate').textContent=`${rate.toFixed(1)}%`;
+      document.getElementById('statisticsSummaryText').textContent=`${total.toLocaleString()}건 가운데 ${hardMessages.toLocaleString()}건에 목록의 어려운 말이 한 개 이상 있었어요.`;
+      document.getElementById('statisticsTotalMessages').textContent=total.toLocaleString();
+      document.getElementById('statisticsDifficultMessages').textContent=hardMessages.toLocaleString();
+      const averageBefore=total?totalLengthBefore/total:0;const averageAfter=total?totalLengthAfter/total:0;
+      const wordsBefore=total?totalWordsBefore/total:0;const wordsAfter=total?totalWordsAfter/total:0;
+      document.getElementById('statisticsAverageBefore').textContent=`${averageBefore.toFixed(1)}자`;
+      document.getElementById('statisticsAverageAfter').textContent=`${averageAfter.toFixed(1)}자`;
+      document.getElementById('statisticsLengthBefore').textContent=`${averageBefore.toFixed(1)}자`;
+      document.getElementById('statisticsLengthAfter').textContent=`${averageAfter.toFixed(1)}자`;
+      document.getElementById('statisticsWordCountBefore').textContent=`${wordsBefore.toFixed(2)}개`;
+      document.getElementById('statisticsWordCountAfter').textContent=`${wordsAfter.toFixed(2)}개`;
+      document.getElementById('statisticsCoverage').textContent=`자료 범위: ${meta.startDate||'최근 1년'} ~ ${meta.endDate||'현재'} · ${total.toLocaleString()}건${meta.complete?' · 전체 수집':' · 일부 누락'}`;
+      renderStatisticsChart();
+    }
+    async function requestStatisticsPage(page){
+      let lastError;
+      for(let attempt=0;attempt<3;attempt++){
+        try{
+          const params=new URLSearchParams({days:'365',keyword:'',region:'',page:String(page),pageSize:'100'});
+          const response=await fetch(apiUrl(`/api/disaster-messages?${params}`),{signal:AbortSignal.timeout(20000)});
+          const data=await response.json();if(!response.ok)throw new Error(data.error||'재난문자 페이지를 불러오지 못했어요.');
+          return data;
+        }catch(error){lastError=error;if(attempt<2)await new Promise(resolve=>setTimeout(resolve,350*(attempt+1)));}
+      }
+      throw lastError;
+    }
+    async function loadDifficultyStatistics(force=false){
+      if(statisticsLoading||statisticsLoaded&&!force)return;
+      statisticsLoading=true;statisticsLoaded=false;
+      const status=document.getElementById('statisticsStatus');const progress=document.getElementById('statisticsProgress');const reload=document.getElementById('statisticsReload');
+      reload.disabled=true;progress.hidden=false;progress.value=0;status.textContent='어려운 말 목록과 최근 1년 재난문자를 불러오고 있어요.';
+      try{
+        await difficultWordsPromise;if(!difficultWords.length)throw new Error('difficult-words.json에 분석할 표현이 없어요.');
+        const first=await requestStatisticsPage(1);const pageCount=Math.max(1,Number(first.pageCount)||1);const totalCount=Number(first.totalCount)||first.items?.length||0;
+        const pages=new Map([[1,first.items||[]]]);const failed=[];let finished=1;progress.max=pageCount;progress.value=finished;
+        const pageNumbers=Array.from({length:Math.max(0,pageCount-1)},(_,index)=>index+2);let cursor=0;
+        async function worker(){
+          while(cursor<pageNumbers.length){const page=pageNumbers[cursor++];try{const data=await requestStatisticsPage(page);pages.set(page,data.items||[]);}catch(error){failed.push(page);}
+            finished+=1;progress.value=finished;
+            if(finished===pageCount||finished%8===0)status.textContent=`최근 1년 자료 불러오는 중 · ${finished.toLocaleString()}/${pageCount.toLocaleString()} 묶음 · ${totalCount.toLocaleString()}건 예상`;
+          }
+        }
+        await Promise.all(Array.from({length:Math.min(8,pageNumbers.length)},worker));
+        const seen=new Set();const messages=[];
+        [...pages.keys()].sort((a,b)=>a-b).forEach(page=>pages.get(page).forEach(item=>{const id=item.id||`${page}:${messages.length}`;if(seen.has(id))return;seen.add(id);messages.push(item.message||'');}));
+        const complete=failed.length===0&&pages.size===pageCount&&messages.length>=totalCount&&first.complete!==false;
+        writeStatisticsResult(messages,{startDate:first.startDate,endDate:first.endDate,complete,expected:totalCount,failed});
+        statisticsLoaded=true;
+        status.textContent=complete?`분석 완료 · 최근 1년 ${messages.length.toLocaleString()}건 전체 확인`:`일부 자료로 분석했어요 · ${messages.length.toLocaleString()}/${totalCount.toLocaleString()}건 · 빠진 묶음 ${failed.length}개 · 다시 분석할 수 있어요`;
+      }catch(error){status.textContent=`통계를 불러오지 못했어요 · ${error.message||'잠시 후 다시 시도해 주세요.'}`;document.getElementById('statisticsChart').replaceChildren(Object.assign(document.createElement('p'),{className:'statistics-empty',textContent:'자료를 불러오지 못했어요. 다시 분석을 눌러 주세요.'}));}
+      finally{statisticsLoading=false;reload.disabled=false;progress.hidden=true;}
+    }
+    renderStatisticsFilters();
+    document.getElementById('statisticsReload').addEventListener('click',()=>loadDifficultyStatistics(true));
+    if('IntersectionObserver'in window){
+      const statisticsObserver=new IntersectionObserver(entries=>{if(entries.some(entry=>entry.isIntersecting)){statisticsObserver.disconnect();loadDifficultyStatistics();}},{root:appSlides,threshold:.15});
+      statisticsObserver.observe(document.getElementById('statistics'));
+    }else loadDifficultyStatistics();
 
     const disasterEasyCache=new Map();
     function simplifyDisasterMessage(message,audience){
