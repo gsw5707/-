@@ -1,0 +1,8 @@
+[      85ms] [INFO] [preview-bridge] v1.1.0 @ https://9frk13yeqtv8pdsw.jitda.io/__preview-bridge.js:1
+[   40927ms] ReferenceError: newPosition is not defined
+    at eval (eval at predicate (eval at evaluate (:302:30)), <anonymous>:1:127)
+    at predicate (eval at evaluate (:302:30), <anonymous>:7:23)
+    at next (eval at evaluate (:302:30), <anonymous>:29:29)
+    at eval (eval at evaluate (:302:30), <anonymous>:42:9)
+    at UtilityScript.evaluate (<anonymous>:304:16)
+    at UtilityScript.<anonymous> (<anonymous>:1:44)

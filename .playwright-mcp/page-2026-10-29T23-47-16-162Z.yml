@@ -1,0 +1,479 @@
+- generic [active] [ref=e1]:
+  - banner [ref=e2]:
+    - navigation "주요 메뉴" [ref=e3]:
+      - link "안심길 홈" [ref=e4] [cursor=pointer]:
+        - /url: "#home"
+        - img [ref=e6]
+        - generic [ref=e8]:
+          - text: 안심길
+          - emphasis [ref=e9]: ●
+      - generic [ref=e10]:
+        - link "문자 해석" [ref=e11] [cursor=pointer]:
+          - /url: "#translate"
+        - link "대피시설" [ref=e12] [cursor=pointer]:
+          - /url: "#map-section"
+        - link "행동 안내" [ref=e13] [cursor=pointer]:
+          - /url: "#action-guide"
+        - link "재난문자" [ref=e14] [cursor=pointer]:
+          - /url: "#library"
+  - complementary "빠른 설정" [ref=e15]:
+    - generic [ref=e16]: 언어 선택
+    - group "사이트 언어" [ref=e17]:
+      - button "한국어" [pressed] [ref=e18] [cursor=pointer]
+      - button "English" [ref=e19] [cursor=pointer]
+      - button "中文" [ref=e20] [cursor=pointer]
+      - button "Tiếng Việt" [ref=e21] [cursor=pointer]
+      - button "नेपाली" [ref=e22] [cursor=pointer]
+      - button "Filipino" [ref=e23] [cursor=pointer]
+      - button "ไทย" [ref=e24] [cursor=pointer]
+    - generic [ref=e25]:
+      - generic [ref=e26]: 글자 크기
+      - group "글자 크기" [ref=e27]:
+        - button "글자 줄이기" [ref=e28] [cursor=pointer]: A−
+        - status [ref=e29]: 100%
+        - button "글자 키우기" [ref=e30] [cursor=pointer]: A+
+      - button "기본" [ref=e31] [cursor=pointer]
+      - paragraph [ref=e32]: 누를 때마다 5%씩 바뀌어요. 80%~160% 사이에서 조절할 수 있어요.
+  - main [ref=e33]:
+    - generic [ref=e35]:
+      - generic [ref=e36]:
+        - generic [ref=e37]: DISASTER MESSAGE, MADE CLEAR
+        - heading "위험한 순간, 쉬운 말로 먼저." [level=1] [ref=e38]:
+          - text: 위험한 순간,
+          - text: 쉬운 말로
+          - text: 먼저.
+        - paragraph [ref=e39]: 어려운 재난문자를 쉬운 말로 바꾸고, 내 주변 대피소까지 한눈에. 언어가 달라도 안전한 다음 행동을 놓치지 않도록 도와드려요.
+        - generic [ref=e40]:
+          - link "재난문자 쉽게 보기" [ref=e41] [cursor=pointer]:
+            - /url: "#translate"
+            - text: 재난문자 쉽게 보기
+            - img [ref=e42]
+          - link "대피소 먼저 찾기" [ref=e44] [cursor=pointer]:
+            - /url: "#map-section"
+      - generic "재난문자가 쉬운 행동 안내로 바뀌는 모습" [ref=e45]:
+        - article [ref=e47]:
+          - generic [ref=e48]:
+            - generic [ref=e49]: 긴급 재난문자
+            - generic [ref=e50]: 방금 전
+          - paragraph [ref=e51]: 호우로 인한 하천 범람 우려가 있으니 저지대 주민은 신속히 대피하시기 바랍니다.
+          - generic [ref=e52]:
+            - text: 비가 많이 와서 강물이 넘칠 수 있어요.
+            - text: 높은 곳이나 안전한 곳으로 이동해요.
+    - generic [ref=e55]:
+      - generic [ref=e56]:
+        - generic [ref=e57]:
+          - generic [ref=e58]: MY MESSAGE / MAKE IT CLEAR
+          - heading "받은 문자를 쉽게 바꿔보기" [level=2] [ref=e59]:
+            - text: 받은 문자를
+            - text: 쉽게 바꿔보기
+        - paragraph [ref=e60]: 문자를 붙여넣거나 예시를 골라보세요. 쉬운 설명과 선택한 언어 번역을 함께 보여드려요.
+      - generic [ref=e61]:
+        - generic [ref=e62]:
+          - generic [ref=e63]:
+            - text: 재난문자 원문
+            - generic [ref=e64]: 개인정보는 입력하지 마세요
+          - textbox "재난문자 원문 개인정보는 입력하지 마세요" [ref=e65]:
+            - /placeholder: 재난문자 내용을 여기에 붙여넣어 주세요.
+          - generic [ref=e66]: 사이트 언어
+          - group "안내 언어" [ref=e67]:
+            - button "한국어" [ref=e68] [cursor=pointer]
+            - button "English" [ref=e69] [cursor=pointer]
+            - button "中文" [ref=e70] [cursor=pointer]
+            - button "Tiếng Việt" [ref=e71] [cursor=pointer]
+            - button "नेपाली" [ref=e72] [cursor=pointer]
+            - button "Filipino" [ref=e73] [cursor=pointer]
+            - button "ไทย" [ref=e74] [cursor=pointer]
+          - generic [ref=e75]:
+            - button "쉬운 설명과 번역 보기" [ref=e76] [cursor=pointer]:
+              - text: 쉬운 설명과 번역 보기
+              - generic [ref=e77]: →
+            - button "예시 문구" [ref=e78] [cursor=pointer]
+          - status [ref=e79]: 재난문자 내용을 입력해 주세요.
+        - article [ref=e80]:
+          - generic [ref=e81]: EASY RESULT / 한국어
+          - heading "문자를 입력하면 쉬운 안내가 보여요" [level=3] [ref=e82]
+          - generic [ref=e83]: 재난문자 원문이 여기에 표시됩니다.
+          - paragraph [ref=e84]: 문자를 입력하고 ‘쉬운 설명과 번역 보기’를 눌러주세요.
+      - group [ref=e85]:
+        - generic "API 연결 방법과 사용법 보기" [ref=e86] [cursor=pointer]
+    - generic [ref=e88]:
+      - generic [ref=e89]:
+        - generic [ref=e90]:
+          - generic [ref=e91]: OPEN MAP / NEARBY SAFE PLACES
+          - heading "내 주변 대피소 찾기" [level=2] [ref=e92]:
+            - text: 내 주변
+            - text: 대피소 찾기
+        - paragraph [ref=e93]: 지도에서 위치를 확인하고 주변 장소를 검색해 보세요. 위치 권한은 직접 눌렀을 때만 요청해요.
+      - generic [ref=e94]:
+        - generic [ref=e95]:
+          - application "OpenStreetMap 지도" [ref=e96]:
+            - generic:
+              - generic:
+                - button "Marker" [ref=e97] [cursor=pointer]
+                - button "1" [ref=e98] [cursor=pointer]:
+                  - generic [ref=e99]: "1"
+                - button "2" [ref=e100] [cursor=pointer]:
+                  - generic [ref=e101]: "2"
+                - button "3" [ref=e102] [cursor=pointer]:
+                  - generic [ref=e103]: "3"
+                - button "4" [ref=e104] [cursor=pointer]:
+                  - generic [ref=e105]: "4"
+                - button "5" [ref=e106] [cursor=pointer]:
+                  - generic [ref=e107]: "5"
+                - button "6" [ref=e108] [cursor=pointer]:
+                  - generic [ref=e109]: "6"
+                - button "7" [ref=e110] [cursor=pointer]:
+                  - generic [ref=e111]: "7"
+                - button "8" [ref=e112] [cursor=pointer]:
+                  - generic [ref=e113]: "8"
+                - button "9" [ref=e114] [cursor=pointer]:
+                  - generic [ref=e115]: "9"
+                - button "10" [ref=e116] [cursor=pointer]:
+                  - generic [ref=e117]: "10"
+                - button "11" [ref=e118] [cursor=pointer]:
+                  - generic [ref=e119]: "11"
+                - button "12" [ref=e120] [cursor=pointer]:
+                  - generic [ref=e121]: "12"
+                - button "13" [ref=e122] [cursor=pointer]:
+                  - generic [ref=e123]: "13"
+                - button "14" [ref=e124] [cursor=pointer]:
+                  - generic [ref=e125]: "14"
+                - button "15" [ref=e126] [cursor=pointer]:
+                  - generic [ref=e127]: "15"
+                - button "16" [ref=e128] [cursor=pointer]:
+                  - generic [ref=e129]: "16"
+                - button "17" [ref=e130] [cursor=pointer]:
+                  - generic [ref=e131]: "17"
+                - button "18" [ref=e132] [cursor=pointer]:
+                  - generic [ref=e133]: "18"
+                - button "19" [ref=e134] [cursor=pointer]:
+                  - generic [ref=e135]: "19"
+                - button "20" [ref=e136] [cursor=pointer]:
+                  - generic [ref=e137]: "20"
+                - button "21" [ref=e138] [cursor=pointer]:
+                  - generic [ref=e139]: "21"
+                - button "22" [ref=e140] [cursor=pointer]:
+                  - generic [ref=e141]: "22"
+            - generic:
+              - generic [ref=e142]:
+                - button "Zoom in" [ref=e143] [cursor=pointer]: +
+                - button "Zoom out" [ref=e144] [cursor=pointer]: −
+              - generic [ref=e145]:
+                - link "Leaflet" [ref=e146] [cursor=pointer]:
+                  - /url: https://leafletjs.com
+                  - img [ref=e147]
+                  - text: Leaflet
+                - text: "| © OpenStreetMap"
+          - generic [ref=e151]: 지도 © OpenStreetMap 기여자
+        - complementary [ref=e152]:
+          - generic [ref=e153]:
+            - heading "민방위 대피시설" [level=3] [ref=e154]
+            - generic [ref=e155]: 행안부 전국 자료
+          - generic [ref=e156]:
+            - generic [ref=e157]: 찾을 대피시설 종류
+            - combobox "찾을 대피시설 종류" [ref=e158]:
+              - option "민방위 대피시설 · 전국 공개자료" [selected]
+              - option "지진 옥외대피장소 · 공식 샘플 100건"
+              - option "지진해일 긴급대피장소 · 공식 샘플 100건"
+          - paragraph [ref=e159]:
+            - text: 행정안전부 전국 민방위 대피시설 공개자료예요.
+            - link "공식 자료" [ref=e160] [cursor=pointer]:
+              - /url: https://www.data.go.kr/data/15044951/fileData.do
+          - generic [ref=e161]:
+            - searchbox "지역이나 장소 검색" [ref=e162]
+            - button "검색" [ref=e163] [cursor=pointer]: ⌕
+          - generic [ref=e164]:
+            - button "현재 위치 사용" [ref=e165] [cursor=pointer]
+            - button "주변 대피소 찾기" [ref=e166] [cursor=pointer]
+          - generic [ref=e167]:
+            - generic [ref=e168]: 길 안내 방식
+            - combobox "길 안내 방식" [ref=e169]:
+              - option "도보" [selected]
+              - option "차량"
+            - button "위치 추적 끄기" [pressed] [ref=e170] [cursor=pointer]
+          - paragraph [ref=e171]: 실시간 위치를 따라가고 있어요. 이동하면 주변 시설과 선택한 경로도 갱신돼요.
+          - generic [ref=e172]:
+            - generic [ref=e173]:
+              - button "1 신흥2차APT 지하주차장 1층 대피소 1.1 km · 경상남도 거창군 거창읍 동동3길 15 (신흥2차아파트) 민방위 대피시설 · 지하 · 수용인원 2,557명 · 운영 중" [ref=e174] [cursor=pointer]:
+                - generic [ref=e175]: "1"
+                - generic [ref=e176]:
+                  - strong [ref=e177]: 신흥2차APT 지하주차장 1층 대피소
+                  - generic [ref=e178]: 1.1 km · 경상남도 거창군 거창읍 동동3길 15 (신흥2차아파트)
+                  - generic [ref=e179]: 민방위 대피시설 · 지하 · 수용인원 2,557명 · 운영 중
+              - button "신흥2차APT 지하주차장 1층 대피소 길 안내" [ref=e180] [cursor=pointer]: 길 안내
+            - generic [ref=e181]:
+              - button "2 화목APT 지하주차장 1층 대피소 1.1 km · 경상남도 거창군 거창읍 거열로2길 34-9 (화목아파트) 민방위 대피시설 · 지하 · 수용인원 1,650명 · 운영 중" [ref=e182] [cursor=pointer]:
+                - generic [ref=e183]: "2"
+                - generic [ref=e184]:
+                  - strong [ref=e185]: 화목APT 지하주차장 1층 대피소
+                  - generic [ref=e186]: 1.1 km · 경상남도 거창군 거창읍 거열로2길 34-9 (화목아파트)
+                  - generic [ref=e187]: 민방위 대피시설 · 지하 · 수용인원 1,650명 · 운영 중
+              - button "화목APT 지하주차장 1층 대피소 길 안내" [ref=e188] [cursor=pointer]: 길 안내
+            - generic [ref=e189]:
+              - button "3 신흥3차APT 지하주차장 1층 대피소 1.2 km · 경상남도 거창군 거창읍 강양4길 11 (신흥3차아파트) 민방위 대피시설 · 지하 · 수용인원 914명 · 운영 중" [ref=e190] [cursor=pointer]:
+                - generic [ref=e191]: "3"
+                - generic [ref=e192]:
+                  - strong [ref=e193]: 신흥3차APT 지하주차장 1층 대피소
+                  - generic [ref=e194]: 1.2 km · 경상남도 거창군 거창읍 강양4길 11 (신흥3차아파트)
+                  - generic [ref=e195]: 민방위 대피시설 · 지하 · 수용인원 914명 · 운영 중
+              - button "신흥3차APT 지하주차장 1층 대피소 길 안내" [ref=e196] [cursor=pointer]: 길 안내
+            - generic [ref=e197]:
+              - button "4 신세계APT 지하주차장 1층 대피소 1.2 km · 경상남도 거창군 거창읍 거열로1길 78-23 (신세계타운) 민방위 대피시설 · 지하 · 수용인원 2,640명 · 운영 중" [ref=e198] [cursor=pointer]:
+                - generic [ref=e199]: "4"
+                - generic [ref=e200]:
+                  - strong [ref=e201]: 신세계APT 지하주차장 1층 대피소
+                  - generic [ref=e202]: 1.2 km · 경상남도 거창군 거창읍 거열로1길 78-23 (신세계타운)
+                  - generic [ref=e203]: 민방위 대피시설 · 지하 · 수용인원 2,640명 · 운영 중
+              - button "신세계APT 지하주차장 1층 대피소 길 안내" [ref=e204] [cursor=pointer]: 길 안내
+            - generic [ref=e205]:
+              - button "5 코아루에듀시티 지하주차장 1층 대피소 1.2 km · 경상남도 거창군 거창읍 강남로 266-0 (거창코아루에듀시티) 민방위 대피시설 · 지하 · 수용인원 13,496명 · 운영 중" [ref=e206] [cursor=pointer]:
+                - generic [ref=e207]: "5"
+                - generic [ref=e208]:
+                  - strong [ref=e209]: 코아루에듀시티 지하주차장 1층 대피소
+                  - generic [ref=e210]: 1.2 km · 경상남도 거창군 거창읍 강남로 266-0 (거창코아루에듀시티)
+                  - generic [ref=e211]: 민방위 대피시설 · 지하 · 수용인원 13,496명 · 운영 중
+              - button "코아루에듀시티 지하주차장 1층 대피소 길 안내" [ref=e212] [cursor=pointer]: 길 안내
+            - generic [ref=e213]:
+              - button "6 코아루2차아파트 지하주차장 1층 대피소 1.3 km · 경상남도 거창군 거창읍 새동네2길 40 (코아루2차아파트) 민방위 대피시설 · 지하 · 수용인원 11,395명 · 운영 중" [ref=e214] [cursor=pointer]:
+                - generic [ref=e215]: "6"
+                - generic [ref=e216]:
+                  - strong [ref=e217]: 코아루2차아파트 지하주차장 1층 대피소
+                  - generic [ref=e218]: 1.3 km · 경상남도 거창군 거창읍 새동네2길 40 (코아루2차아파트)
+                  - generic [ref=e219]: 민방위 대피시설 · 지하 · 수용인원 11,395명 · 운영 중
+              - button "코아루2차아파트 지하주차장 1층 대피소 길 안내" [ref=e220] [cursor=pointer]: 길 안내
+            - generic [ref=e221]:
+              - button "7 무지개APT 지하주차장 1층 대피소 1.3 km · 경상남도 거창군 거창읍 죽전7길 13 (무지개아파트) 민방위 대피시설 · 지하 · 수용인원 214명 · 운영 중" [ref=e222] [cursor=pointer]:
+                - generic [ref=e223]: "7"
+                - generic [ref=e224]:
+                  - strong [ref=e225]: 무지개APT 지하주차장 1층 대피소
+                  - generic [ref=e226]: 1.3 km · 경상남도 거창군 거창읍 죽전7길 13 (무지개아파트)
+                  - generic [ref=e227]: 민방위 대피시설 · 지하 · 수용인원 214명 · 운영 중
+              - button "무지개APT 지하주차장 1층 대피소 길 안내" [ref=e228] [cursor=pointer]: 길 안내
+            - generic [ref=e229]:
+              - button "8 한흥빌딩 지하주차장 1층 대피소 1.3 km · 경상남도 거창군 거창읍 창동로 119 (한흥스포렉스,한흥아파트) 민방위 대피시설 · 지하 · 수용인원 660명 · 운영 중" [ref=e230] [cursor=pointer]:
+                - generic [ref=e231]: "8"
+                - generic [ref=e232]:
+                  - strong [ref=e233]: 한흥빌딩 지하주차장 1층 대피소
+                  - generic [ref=e234]: 1.3 km · 경상남도 거창군 거창읍 창동로 119 (한흥스포렉스,한흥아파트)
+                  - generic [ref=e235]: 민방위 대피시설 · 지하 · 수용인원 660명 · 운영 중
+              - button "한흥빌딩 지하주차장 1층 대피소 길 안내" [ref=e236] [cursor=pointer]: 길 안내
+            - generic [ref=e237]:
+              - button "9 신흥1차APT 지하주차장 1층 대피소 1.3 km · 경상남도 거창군 거창읍 강변로9길 41 (신흥아파트) 민방위 대피시설 · 지하 · 수용인원 940명 · 운영 중" [ref=e238] [cursor=pointer]:
+                - generic [ref=e239]: "9"
+                - generic [ref=e240]:
+                  - strong [ref=e241]: 신흥1차APT 지하주차장 1층 대피소
+                  - generic [ref=e242]: 1.3 km · 경상남도 거창군 거창읍 강변로9길 41 (신흥아파트)
+                  - generic [ref=e243]: 민방위 대피시설 · 지하 · 수용인원 940명 · 운영 중
+              - button "신흥1차APT 지하주차장 1층 대피소 길 안내" [ref=e244] [cursor=pointer]: 길 안내
+            - generic [ref=e245]:
+              - button "10 대우APT 지하주차장 1층 대피소 1.6 km · 경상남도 거창군 거창읍 거열로4길 144-20 (대우아파트) 민방위 대피시설 · 지하 · 수용인원 3,738명 · 운영 중" [ref=e246] [cursor=pointer]:
+                - generic [ref=e247]: "10"
+                - generic [ref=e248]:
+                  - strong [ref=e249]: 대우APT 지하주차장 1층 대피소
+                  - generic [ref=e250]: 1.6 km · 경상남도 거창군 거창읍 거열로4길 144-20 (대우아파트)
+                  - generic [ref=e251]: 민방위 대피시설 · 지하 · 수용인원 3,738명 · 운영 중
+              - button "대우APT 지하주차장 1층 대피소 길 안내" [ref=e252] [cursor=pointer]: 길 안내
+            - generic [ref=e253]:
+              - button "11 거창군 종합사회복지관 지하 1층 대피소 1.8 km · 경상남도 거창군 거창읍 아림로 66 (거창군종합사회복지관) 민방위 대피시설 · 지하 · 수용인원 132명 · 운영 중" [ref=e254] [cursor=pointer]:
+                - generic [ref=e255]: "11"
+                - generic [ref=e256]:
+                  - strong [ref=e257]: 거창군 종합사회복지관 지하 1층 대피소
+                  - generic [ref=e258]: 1.8 km · 경상남도 거창군 거창읍 아림로 66 (거창군종합사회복지관)
+                  - generic [ref=e259]: 민방위 대피시설 · 지하 · 수용인원 132명 · 운영 중
+              - button "거창군 종합사회복지관 지하 1층 대피소 길 안내" [ref=e260] [cursor=pointer]: 길 안내
+            - generic [ref=e261]:
+              - button "12 거창군청 지하1층 대피소 2.0 km · 경상남도 거창군 거창읍 중앙로 103 (거창군청) 민방위 대피시설 · 지하 · 수용인원 320명 · 운영 중" [ref=e262] [cursor=pointer]:
+                - generic [ref=e263]: "12"
+                - generic [ref=e264]:
+                  - strong [ref=e265]: 거창군청 지하1층 대피소
+                  - generic [ref=e266]: 2.0 km · 경상남도 거창군 거창읍 중앙로 103 (거창군청)
+                  - generic [ref=e267]: 민방위 대피시설 · 지하 · 수용인원 320명 · 운영 중
+              - button "거창군청 지하1층 대피소 길 안내" [ref=e268] [cursor=pointer]: 길 안내
+            - generic [ref=e269]:
+              - button "13 거창성당 지하 1층 대피소 2.0 km · 경상남도 거창군 거창읍 창남1길 58, 거창천주교회 민방위 대피시설 · 지하 · 수용인원 1,633명 · 운영 중" [ref=e270] [cursor=pointer]:
+                - generic [ref=e271]: "13"
+                - generic [ref=e272]:
+                  - strong [ref=e273]: 거창성당 지하 1층 대피소
+                  - generic [ref=e274]: 2.0 km · 경상남도 거창군 거창읍 창남1길 58, 거창천주교회
+                  - generic [ref=e275]: 민방위 대피시설 · 지하 · 수용인원 1,633명 · 운영 중
+              - button "거창성당 지하 1층 대피소 길 안내" [ref=e276] [cursor=pointer]: 길 안내
+            - generic [ref=e277]:
+              - button "14 적십자병원 지하1층 대피소 2.0 km · 경상남도 거창군 거창읍 중앙로 91 (거창적십자병원) 민방위 대피시설 · 지하 · 수용인원 650명 · 운영 중" [ref=e278] [cursor=pointer]:
+                - generic [ref=e279]: "14"
+                - generic [ref=e280]:
+                  - strong [ref=e281]: 적십자병원 지하1층 대피소
+                  - generic [ref=e282]: 2.0 km · 경상남도 거창군 거창읍 중앙로 91 (거창적십자병원)
+                  - generic [ref=e283]: 민방위 대피시설 · 지하 · 수용인원 650명 · 운영 중
+              - button "적십자병원 지하1층 대피소 길 안내" [ref=e284] [cursor=pointer]: 길 안내
+            - generic [ref=e285]:
+              - button "15 대경넥스빌APT 지하주차장 1층 대피소 2.3 km · 경상남도 거창군 거창읍 거열로7길 29 (대경넥스빌) 민방위 대피시설 · 지하 · 수용인원 1,844명 · 운영 중" [ref=e286] [cursor=pointer]:
+                - generic [ref=e287]: "15"
+                - generic [ref=e288]:
+                  - strong [ref=e289]: 대경넥스빌APT 지하주차장 1층 대피소
+                  - generic [ref=e290]: 2.3 km · 경상남도 거창군 거창읍 거열로7길 29 (대경넥스빌)
+                  - generic [ref=e291]: 민방위 대피시설 · 지하 · 수용인원 1,844명 · 운영 중
+              - button "대경넥스빌APT 지하주차장 1층 대피소 길 안내" [ref=e292] [cursor=pointer]: 길 안내
+            - generic [ref=e293]:
+              - button "16 더샵거창포르시엘 지하1~2층 주차장 2.4 km · 경상남도 거창군 거창읍 거열로8길 76 (더샵거창포르시엘) 민방위 대피시설 · 지하 · 수용인원 18,111명 · 운영 중" [ref=e294] [cursor=pointer]:
+                - generic [ref=e295]: "16"
+                - generic [ref=e296]:
+                  - strong [ref=e297]: 더샵거창포르시엘 지하1~2층 주차장
+                  - generic [ref=e298]: 2.4 km · 경상남도 거창군 거창읍 거열로8길 76 (더샵거창포르시엘)
+                  - generic [ref=e299]: 민방위 대피시설 · 지하 · 수용인원 18,111명 · 운영 중
+              - button "더샵거창포르시엘 지하1~2층 주차장 길 안내" [ref=e300] [cursor=pointer]: 길 안내
+            - generic [ref=e301]:
+              - button "17 현대아파트APT 지하주차장 1층 대피소 2.5 km · 경상남도 거창군 거창읍 거열로8길 33 (현대아파트) 민방위 대피시설 · 지하 · 수용인원 693명 · 운영 중" [ref=e302] [cursor=pointer]:
+                - generic [ref=e303]: "17"
+                - generic [ref=e304]:
+                  - strong [ref=e305]: 현대아파트APT 지하주차장 1층 대피소
+                  - generic [ref=e306]: 2.5 km · 경상남도 거창군 거창읍 거열로8길 33 (현대아파트)
+                  - generic [ref=e307]: 민방위 대피시설 · 지하 · 수용인원 693명 · 운영 중
+              - button "현대아파트APT 지하주차장 1층 대피소 길 안내" [ref=e308] [cursor=pointer]: 길 안내
+            - generic [ref=e309]:
+              - button "18 삼아APT 지하주차장 1층 대피소 2.7 km · 경상남도 거창군 거창읍 김천1길 14 ((주)삼아그린타운) 민방위 대피시설 · 지하 · 수용인원 1,468명 · 운영 중" [ref=e310] [cursor=pointer]:
+                - generic [ref=e311]: "18"
+                - generic [ref=e312]:
+                  - strong [ref=e313]: 삼아APT 지하주차장 1층 대피소
+                  - generic [ref=e314]: 2.7 km · 경상남도 거창군 거창읍 김천1길 14 ((주)삼아그린타운)
+                  - generic [ref=e315]: 민방위 대피시설 · 지하 · 수용인원 1,468명 · 운영 중
+              - button "삼아APT 지하주차장 1층 대피소 길 안내" [ref=e316] [cursor=pointer]: 길 안내
+            - generic [ref=e317]:
+              - button "19 세륭APT 지하주차장 1층 대피소 2.7 km · 경상남도 거창군 거창읍 김천1길 20 (세륭아파트) 민방위 대피시설 · 지하 · 수용인원 660명 · 운영 중" [ref=e318] [cursor=pointer]:
+                - generic [ref=e319]: "19"
+                - generic [ref=e320]:
+                  - strong [ref=e321]: 세륭APT 지하주차장 1층 대피소
+                  - generic [ref=e322]: 2.7 km · 경상남도 거창군 거창읍 김천1길 20 (세륭아파트)
+                  - generic [ref=e323]: 민방위 대피시설 · 지하 · 수용인원 660명 · 운영 중
+              - button "세륭APT 지하주차장 1층 대피소 길 안내" [ref=e324] [cursor=pointer]: 길 안내
+            - generic [ref=e325]:
+              - button "20 명성빌딩 지하주차장 1층 대피소 2.8 km · 경상남도 거창군 거창읍 중앙로 8 민방위 대피시설 · 지하 · 수용인원 279명 · 운영 중" [ref=e326] [cursor=pointer]:
+                - generic [ref=e327]: "20"
+                - generic [ref=e328]:
+                  - strong [ref=e329]: 명성빌딩 지하주차장 1층 대피소
+                  - generic [ref=e330]: 2.8 km · 경상남도 거창군 거창읍 중앙로 8
+                  - generic [ref=e331]: 민방위 대피시설 · 지하 · 수용인원 279명 · 운영 중
+              - button "명성빌딩 지하주차장 1층 대피소 길 안내" [ref=e332] [cursor=pointer]: 길 안내
+            - generic [ref=e333]:
+              - button "21 푸르지오 아파트 지하주차장 1층 대피소 2.9 km · 경상남도 거창군 거창읍 송정2길 33 (푸르지오아파트) 민방위 대피시설 · 지하 · 수용인원 23,004명 · 운영 중" [ref=e334] [cursor=pointer]:
+                - generic [ref=e335]: "21"
+                - generic [ref=e336]:
+                  - strong [ref=e337]: 푸르지오 아파트 지하주차장 1층 대피소
+                  - generic [ref=e338]: 2.9 km · 경상남도 거창군 거창읍 송정2길 33 (푸르지오아파트)
+                  - generic [ref=e339]: 민방위 대피시설 · 지하 · 수용인원 23,004명 · 운영 중
+              - button "푸르지오 아파트 지하주차장 1층 대피소 길 안내" [ref=e340] [cursor=pointer]: 길 안내
+            - generic [ref=e341]:
+              - button "22 SG서경병원 지하 1층 대피소 3.1 km · 경상남도 거창군 거창읍 송정1길 24-13, 한국병원 민방위 대피시설 · 지하 · 수용인원 1,115명 · 운영 중" [ref=e342] [cursor=pointer]:
+                - generic [ref=e343]: "22"
+                - generic [ref=e344]:
+                  - strong [ref=e345]: SG서경병원 지하 1층 대피소
+                  - generic [ref=e346]: 3.1 km · 경상남도 거창군 거창읍 송정1길 24-13, 한국병원
+                  - generic [ref=e347]: 민방위 대피시설 · 지하 · 수용인원 1,115명 · 운영 중
+              - button "SG서경병원 지하 1층 대피소 길 안내" [ref=e348] [cursor=pointer]: 길 안내
+          - paragraph [ref=e349]:
+            - strong [ref=e350]: 안전 안내.
+            - text: 지진·지진해일 샘플은 전국 전체 목록이 아니에요. 결과가 없더라도 대피시설이 없다는 뜻은 아닙니다. 실제 대피 전에는 재난문자와 지자체 안내를 우선 확인해 주세요.
+    - generic [ref=e352]:
+      - generic [ref=e353]:
+        - generic [ref=e354]: ALERTS / STAY INFORMED
+        - heading "앱을 보고 있지 않아도 안전 안내를 놓치지 않게." [level=2] [ref=e355]:
+          - text: 앱을 보고 있지 않아도
+          - text: 안전 안내를 놓치지 않게.
+        - generic [ref=e356]:
+          - img [ref=e358]
+          - heading "이 기기에서 알림 테스트" [level=3] [ref=e360]
+          - paragraph [ref=e361]: 브라우저 알림을 허용하고 테스트 메시지를 보내볼 수 있어요. 실제 재난문자 연동이 아닌 미리보기 기능입니다.
+          - button "알림 허용하고 테스트하기" [ref=e362] [cursor=pointer]
+          - status [ref=e363]: 현재는 이 페이지를 열어 둔 상태에서만 테스트할 수 있어요.
+      - generic [ref=e364]:
+        - generic [ref=e365]:
+          - generic [ref=e366]: "01"
+          - generic [ref=e367]:
+            - strong [ref=e368]: 현재 웹 미리보기에서 가능한 것
+            - paragraph [ref=e369]: 문자 쉬운 설명, 공개 지도 확인, 이 기기에서 브라우저 알림 테스트를 할 수 있어요.
+        - generic [ref=e370]:
+          - generic [ref=e371]: "02"
+          - generic [ref=e372]:
+            - strong [ref=e373]: 앱을 닫았을 때의 실제 재난 알림
+            - paragraph [ref=e374]: 공식 재난문자 수신 연동과 서버 푸시 또는 Android 앱 개발이 별도로 필요해요. 브라우저만으로 한국 긴급문자를 직접 읽어오는 기능은 제공되지 않아요.
+        - generic [ref=e375]:
+          - generic [ref=e376]: "03"
+          - generic [ref=e377]:
+            - strong [ref=e378]: 안전 안내는 공식 정보를 우선해요
+            - paragraph [ref=e379]: 번역은 이해를 돕기 위한 참고예요. 대피 판단과 행동은 지자체·소방 당국의 최신 안내를 따라주세요.
+    - generic [ref=e381]:
+      - generic [ref=e382]:
+        - generic [ref=e383]:
+          - generic [ref=e384]: QUICK GUIDE / STAY SAFE
+          - heading "그림으로 보는 지금 해야 할 일" [level=2] [ref=e385]:
+            - text: 그림으로 보는
+            - text: 지금 해야 할 일
+        - paragraph [ref=e386]: 재난 유형별 기본 행동을 빠르게 확인하세요. 실제 상황에서는 재난문자와 현장 안내를 먼저 따라주세요.
+      - generic [ref=e387]:
+        - article [ref=e388]:
+          - img [ref=e390]
+          - text: 산불
+          - heading "불 반대 방향으로 이동" [level=3] [ref=e393]
+          - paragraph [ref=e394]: 연기가 보이면 낮은 자세로 안전한 곳으로 이동해요.
+        - article [ref=e395]:
+          - img [ref=e397]
+          - text: 호우
+          - heading "높은 곳으로 이동" [level=3] [ref=e400]
+          - paragraph [ref=e401]: 하천과 지하차도에 가지 말고 물이 빠질 때까지 기다려요.
+        - article [ref=e402]:
+          - img [ref=e404]
+          - text: 폭염
+          - heading "물을 자주 마시기" [level=3] [ref=e407]
+          - paragraph [ref=e408]: 그늘이나 시원한 곳에서 쉬고 무리하지 마세요.
+        - article [ref=e409]:
+          - img [ref=e411]
+          - text: 지진
+          - heading "머리를 보호하기" [level=3] [ref=e415]
+          - paragraph [ref=e416]: 흔들림이 멈춘 뒤 계단으로 이동하고 넓은 곳으로 가요.
+        - article [ref=e417]:
+          - img [ref=e419]
+          - text: 한파
+          - heading "따뜻하게 입기" [level=3] [ref=e421]
+          - paragraph [ref=e422]: 추운 곳에 오래 있지 말고 실내에서 쉬세요.
+        - article [ref=e423]:
+          - img [ref=e425]
+          - text: 대설
+          - heading "천천히 걷기" [level=3] [ref=e428]
+          - paragraph [ref=e429]: 눈길·빙판길 외출을 줄이고 미끄럼을 조심해요.
+    - generic [ref=e431]:
+      - generic [ref=e432]:
+        - generic [ref=e433]:
+          - generic [ref=e434]: OFFICIAL DISASTER MESSAGES
+          - heading "전국 재난문자 목록" [level=2] [ref=e435]:
+            - text: 전국 재난문자
+            - text: 목록
+        - paragraph [ref=e436]: 공식 공개 기록에서 전국 재난문자를 검색하고, 쉬운 표현도 함께 확인하세요.
+      - generic [ref=e437]:
+        - generic [ref=e438]:
+          - generic [ref=e439]:
+            - generic [ref=e440]: OFFICIAL ARCHIVE / NATIONWIDE
+            - heading "전국 재난문자 목록" [level=3] [ref=e441]
+            - paragraph [ref=e442]: 전국 최근 1년 공식 기록을 불러오고 있어요.
+          - generic [ref=e443]:
+            - generic [ref=e444]: 조회 기간
+            - combobox "조회 기간" [ref=e445]:
+              - option "최근 30일"
+              - option "최근 90일"
+              - option "최근 1년" [selected]
+            - button "목록 다시 불러오기" [disabled] [ref=e446]
+        - generic [ref=e447]:
+          - generic [ref=e448]: 지역 또는 문자 검색
+          - searchbox "지역 또는 문자 검색" [ref=e449]
+          - button "검색" [disabled] [ref=e450] [cursor=pointer]
+        - status [ref=e451]: 전국 최근 365일 재난문자를 모두 모으고 있어요. 첫 수집은 잠시 걸릴 수 있어요…
+        - paragraph [ref=e452]: 선택한 기간의 전국 공개 기록을 모두 모아 페이지별로 보여줘요. 반복 발령 문자도 각각의 기록으로 포함됩니다. 쉬운 표현은 원문 뜻을 유지하는 규칙으로 바꾸며, 변환할 근거가 없는 부분은 원문을 그대로 둬요.
+  - contentinfo [ref=e453]:
+    - generic [ref=e454]:
+      - link "안심길 ●" [ref=e455] [cursor=pointer]:
+        - /url: "#home"
+        - img [ref=e457]
+        - generic [ref=e459]:
+          - text: 안심길
+          - emphasis [ref=e460]: ●
+      - generic [ref=e461]: 더 쉬운 안내가, 더 빠른 대피로 이어지도록.
+      - generic [ref=e462]: 공개 데이터 제공 범위는 지역별로 다를 수 있습니다.
+  - status

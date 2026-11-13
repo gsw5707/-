@@ -1,0 +1,283 @@
+- generic [active] [ref=e1]:
+  - banner [ref=e2]:
+    - navigation "주요 메뉴" [ref=e3]:
+      - link "안심길 홈" [ref=e4] [cursor=pointer]:
+        - /url: "#home"
+        - img [ref=e6]
+        - generic [ref=e8]:
+          - text: 안심길
+          - emphasis [ref=e9]: ●
+      - generic [ref=e10]:
+        - link "문자 쉽게 보기" [ref=e11] [cursor=pointer]:
+          - /url: "#translate"
+        - link "대피소 지도" [ref=e12] [cursor=pointer]:
+          - /url: "#map-section"
+        - link "알림 설정" [ref=e13] [cursor=pointer]:
+          - /url: "#alerts"
+        - button "글자 크기 설정 열기" [ref=e14] [cursor=pointer]:
+          - img [ref=e15]
+          - generic [ref=e18]: 설정
+        - link "안내 시작하기" [ref=e19] [cursor=pointer]:
+          - /url: "#translate"
+  - main [ref=e20]:
+    - generic [ref=e22]:
+      - generic [ref=e23]:
+        - generic [ref=e24]: DISASTER MESSAGE, MADE CLEAR
+        - heading "위험한 순간, 쉬운 말로 먼저." [level=1] [ref=e25]:
+          - text: 위험한 순간,
+          - text: 쉬운 말로
+          - text: 먼저.
+        - paragraph [ref=e26]: 어려운 재난문자를 쉬운 말로 바꾸고, 내 주변 대피소까지 한눈에. 언어가 달라도 안전한 다음 행동을 놓치지 않도록 도와드려요.
+        - generic [ref=e27]:
+          - link "재난문자 쉽게 보기" [ref=e28] [cursor=pointer]:
+            - /url: "#translate"
+            - text: 재난문자 쉽게 보기
+            - img [ref=e29]
+          - link "대피소 먼저 찾기" [ref=e31] [cursor=pointer]:
+            - /url: "#map-section"
+      - generic "재난문자가 쉬운 행동 안내로 바뀌는 모습" [ref=e32]:
+        - article [ref=e34]:
+          - generic [ref=e35]:
+            - generic [ref=e36]: 긴급 재난문자
+            - generic [ref=e37]: 방금 전
+          - paragraph [ref=e38]: 호우로 인한 하천 범람 우려가 있으니 저지대 주민은 신속히 대피하시기 바랍니다.
+          - generic [ref=e39]:
+            - text: 비가 많이 와서 강물이 넘칠 수 있어요.
+            - text: 높은 곳이나 안전한 곳으로 이동해요.
+        - generic [ref=e41]: 긴급 문자 → 쉬운 말
+    - generic [ref=e43]:
+      - generic [ref=e44]:
+        - generic [ref=e45]:
+          - generic [ref=e46]: MY MESSAGE / MAKE IT CLEAR
+          - heading "받은 문자를 쉽게 바꿔보기" [level=2] [ref=e47]:
+            - text: 받은 문자를
+            - text: 쉽게 바꿔보기
+        - paragraph [ref=e48]: 문자를 붙여넣거나 예시를 골라보세요. 쉬운 설명과 선택한 언어 번역을 함께 보여드려요.
+      - generic [ref=e49]:
+        - generic [ref=e50]:
+          - generic [ref=e51]:
+            - text: 재난문자 원문
+            - generic [ref=e52]: 개인정보는 입력하지 마세요
+          - textbox "재난문자 원문 개인정보는 입력하지 마세요" [ref=e53]:
+            - /placeholder: 재난문자 내용을 여기에 붙여넣어 주세요.
+            - text: 호우로 인한 하천 범람 우려가 있으니 저지대 주민은 신속히 안전한 곳으로 대피하시기 바랍니다.
+          - generic [ref=e54]: 안내 언어
+          - group "안내 언어" [ref=e55]:
+            - button "한국어" [ref=e56] [cursor=pointer]
+            - button "English" [ref=e57] [cursor=pointer]
+            - button "中文" [ref=e58] [cursor=pointer]
+            - button "Tiếng Việt" [ref=e59] [cursor=pointer]
+            - button "नेपाली" [ref=e60] [cursor=pointer]
+            - button "Filipino" [ref=e61] [cursor=pointer]
+          - generic [ref=e62]:
+            - button "쉬운 설명과 번역 보기" [ref=e63] [cursor=pointer]:
+              - text: 쉬운 설명과 번역 보기
+              - generic [ref=e64]: →
+            - button "예시 문구" [ref=e65] [cursor=pointer]
+          - status [ref=e66]: 한국어 쉬운 안내가 준비되어 있어요.
+        - article [ref=e67]:
+          - generic [ref=e68]: EASY RESULT / 한국어
+          - heading "원문을 쉬운 한국어로" [level=3] [ref=e69]
+          - generic [ref=e70]: 호우로 인한 하천 범람 우려가 있으니 저지대 주민은 신속히 안전한 곳으로 대피하시기 바랍니다.
+          - paragraph [ref=e71]: 비가 많이 와서 강물이 넘칠 수 있어요. 낮은 곳에 있다면 안전한 곳으로 이동하세요.
+          - generic [ref=e72]:
+            - strong [ref=e73]: 지금 할 일
+            - list [ref=e74]:
+              - listitem [ref=e75]: 하천과 낮은 곳에서 멀어지세요.
+              - listitem [ref=e76]: 가까운 높은 곳이나 대피소로 이동하세요.
+              - listitem [ref=e77]: 안내 방송과 주변 상황을 확인하세요.
+      - group [ref=e78]:
+        - generic "API 연결 방법과 사용법 보기" [ref=e79] [cursor=pointer]
+    - generic [ref=e81]:
+      - generic [ref=e82]:
+        - generic [ref=e83]:
+          - generic [ref=e84]: OPEN MAP / NEARBY SAFE PLACES
+          - heading "내 주변 대피소 찾기" [level=2] [ref=e85]:
+            - text: 내 주변
+            - text: 대피소 찾기
+        - paragraph [ref=e86]: 지도에서 위치를 확인하고 주변 장소를 검색해 보세요. 위치 권한은 직접 눌렀을 때만 요청해요.
+      - generic [ref=e87]:
+        - generic [ref=e88]:
+          - application "OpenStreetMap 지도" [ref=e89]:
+            - generic:
+              - generic [ref=e90]:
+                - button "Zoom in" [ref=e91] [cursor=pointer]: +
+                - button "Zoom out" [ref=e92] [cursor=pointer]: −
+              - generic [ref=e93]:
+                - link "Leaflet" [ref=e94] [cursor=pointer]:
+                  - /url: https://leafletjs.com
+                  - img [ref=e95]
+                  - text: Leaflet
+                - text: "| © OpenStreetMap"
+          - generic [ref=e99]:
+            - button "현재 위치 사용" [ref=e100] [cursor=pointer]
+            - button "주변 대피소 찾기" [ref=e101] [cursor=pointer]
+          - generic [ref=e102]: 지도 © OpenStreetMap 기여자
+        - complementary [ref=e103]:
+          - generic [ref=e104]:
+            - heading "공식 민방위 대피시설" [level=3] [ref=e105]
+            - generic [ref=e106]: 행안부 자료
+          - generic [ref=e107]:
+            - searchbox "지역이나 장소 검색" [ref=e108]
+            - button "검색" [ref=e109] [cursor=pointer]: ⌕
+          - generic [ref=e111]:
+            - text: 현재 위치를 선택하거나 지역을 검색한 뒤
+            - text: 주변 대피시설 찾기를 눌러보세요.
+          - paragraph [ref=e112]:
+            - strong [ref=e113]: 자료 안내.
+            - text: 행정안전부 전국 민방위대피시설 공개자료예요. 민방위 시설이 호우·산불 등 모든 재난의 대피소로 지정된 것은 아니니, 실제 대피 전에는 재난문자와 지자체 안내를 확인해 주세요.
+            - link "자료 출처 보기" [ref=e114] [cursor=pointer]:
+              - /url: https://www.data.go.kr/data/15044951/fileData.do
+    - generic [ref=e116]:
+      - generic [ref=e117]:
+        - generic [ref=e118]: ALERTS / STAY INFORMED
+        - heading "앱을 보고 있지 않아도 안전 안내를 놓치지 않게." [level=2] [ref=e119]:
+          - text: 앱을 보고 있지 않아도
+          - text: 안전 안내를 놓치지 않게.
+        - generic [ref=e120]:
+          - img [ref=e122]
+          - heading "이 기기에서 알림 테스트" [level=3] [ref=e124]
+          - paragraph [ref=e125]: 브라우저 알림을 허용하고 테스트 메시지를 보내볼 수 있어요. 실제 재난문자 연동이 아닌 미리보기 기능입니다.
+          - button "알림 허용하고 테스트하기" [ref=e126] [cursor=pointer]
+          - status [ref=e127]: 현재는 이 페이지를 열어 둔 상태에서만 테스트할 수 있어요.
+      - generic [ref=e128]:
+        - generic [ref=e129]:
+          - generic [ref=e130]: "01"
+          - generic [ref=e131]:
+            - strong [ref=e132]: 현재 웹 미리보기에서 가능한 것
+            - paragraph [ref=e133]: 문자 쉬운 설명, 공개 지도 확인, 이 기기에서 브라우저 알림 테스트를 할 수 있어요.
+        - generic [ref=e134]:
+          - generic [ref=e135]: "02"
+          - generic [ref=e136]:
+            - strong [ref=e137]: 앱을 닫았을 때의 실제 재난 알림
+            - paragraph [ref=e138]: 공식 재난문자 수신 연동과 서버 푸시 또는 Android 앱 개발이 별도로 필요해요. 브라우저만으로 한국 긴급문자를 직접 읽어오는 기능은 제공되지 않아요.
+        - generic [ref=e139]:
+          - generic [ref=e140]: "03"
+          - generic [ref=e141]:
+            - strong [ref=e142]: 안전 안내는 공식 정보를 우선해요
+            - paragraph [ref=e143]: 번역은 이해를 돕기 위한 참고예요. 대피 판단과 행동은 지자체·소방 당국의 최신 안내를 따라주세요.
+    - generic [ref=e145]:
+      - generic [ref=e146]:
+        - generic [ref=e147]:
+          - generic [ref=e148]: QUICK GUIDE / STAY SAFE
+          - heading "그림으로 보는 지금 해야 할 일" [level=2] [ref=e149]:
+            - text: 그림으로 보는
+            - text: 지금 해야 할 일
+        - paragraph [ref=e150]: 재난 유형별 기본 행동을 빠르게 확인하세요. 실제 상황에서는 재난문자와 현장 안내를 먼저 따라주세요.
+      - generic [ref=e151]:
+        - article [ref=e152]:
+          - img [ref=e154]
+          - text: 산불
+          - heading "불 반대 방향으로 이동" [level=3] [ref=e157]
+          - paragraph [ref=e158]: 연기가 보이면 낮은 자세로 안전한 곳으로 이동해요.
+        - article [ref=e159]:
+          - img [ref=e161]
+          - text: 호우
+          - heading "높은 곳으로 이동" [level=3] [ref=e164]
+          - paragraph [ref=e165]: 하천과 지하차도에 가지 말고 물이 빠질 때까지 기다려요.
+        - article [ref=e166]:
+          - img [ref=e168]
+          - text: 폭염
+          - heading "물을 자주 마시기" [level=3] [ref=e171]
+          - paragraph [ref=e172]: 그늘이나 시원한 곳에서 쉬고 무리하지 마세요.
+        - article [ref=e173]:
+          - img [ref=e175]
+          - text: 지진
+          - heading "머리를 보호하기" [level=3] [ref=e179]
+          - paragraph [ref=e180]: 흔들림이 멈춘 뒤 계단으로 이동하고 넓은 곳으로 가요.
+        - article [ref=e181]:
+          - img [ref=e183]
+          - text: 한파
+          - heading "따뜻하게 입기" [level=3] [ref=e185]
+          - paragraph [ref=e186]: 추운 곳에 오래 있지 말고 실내에서 쉬세요.
+        - article [ref=e187]:
+          - img [ref=e189]
+          - text: 대설
+          - heading "천천히 걷기" [level=3] [ref=e192]
+          - paragraph [ref=e193]: 눈길·빙판길 외출을 줄이고 미끄럼을 조심해요.
+    - generic [ref=e195]:
+      - generic [ref=e196]:
+        - generic [ref=e197]:
+          - generic [ref=e198]: MESSAGE LIBRARY / EXAMPLE ALERTS
+          - heading "재난문자 찾아보기" [level=2] [ref=e199]:
+            - text: 재난문자
+            - text: 찾아보기
+        - paragraph [ref=e200]: 예시 문자를 골라 원문과 쉬운 안내를 함께 볼 수 있어요.
+      - generic [ref=e201]:
+        - generic [ref=e202]:
+          - group "재난 종류 필터" [ref=e203]:
+            - button "전체" [pressed] [ref=e204] [cursor=pointer]
+            - button "호우" [ref=e205] [cursor=pointer]
+            - button "폭염" [ref=e206] [cursor=pointer]
+            - button "대설·한파" [ref=e207] [cursor=pointer]
+            - button "지진" [ref=e208] [cursor=pointer]
+            - button "산불" [ref=e209] [cursor=pointer]
+          - generic "재난문자 예시 목록" [ref=e210]:
+            - button "호우 하천 범람 우려 안내 비가 많이 와서 강물이 넘칠 수 있어요. 낮은 곳에 있다면 안전한 곳으로 이동하세요. 07.18 10:42" [ref=e211] [cursor=pointer]:
+              - generic [ref=e212]: 호우
+              - generic [ref=e213]:
+                - strong [ref=e214]: 하천 범람 우려 안내
+                - generic [ref=e215]: 비가 많이 와서 강물이 넘칠 수 있어요. 낮은 곳에 있다면 안전한 곳으로 이동하세요.
+              - generic [ref=e216]: 07.18 10:42
+            - button "폭염 폭염 주의보 발령 날씨가 매우 더워요. 햇볕을 피하고 시원한 실내에서 쉬면서 물을 자주 마셔요. 07.17 14:10" [ref=e217] [cursor=pointer]:
+              - generic [ref=e218]: 폭염
+              - generic [ref=e219]:
+                - strong [ref=e220]: 폭염 주의보 발령
+                - generic [ref=e221]: 날씨가 매우 더워요. 햇볕을 피하고 시원한 실내에서 쉬면서 물을 자주 마셔요.
+              - generic [ref=e222]: 07.17 14:10
+            - button "대설·한파 많은 눈 예상 안내 위험할 수 있으니 주변을 살펴보고 안전한 곳으로 이동하세요. 공식 안내를 확인해요. 01.22 08:35" [ref=e223] [cursor=pointer]:
+              - generic [ref=e224]: 대설·한파
+              - generic [ref=e225]:
+                - strong [ref=e226]: 많은 눈 예상 안내
+                - generic [ref=e227]: 위험할 수 있으니 주변을 살펴보고 안전한 곳으로 이동하세요. 공식 안내를 확인해요.
+              - generic [ref=e228]: 01.22 08:35
+            - button "지진 지진 발생 안내 땅이 흔들릴 수 있어요. 머리를 보호하고 흔들림이 멈추면 계단으로 이동해요. 01.08 19:03" [ref=e229] [cursor=pointer]:
+              - generic [ref=e230]: 지진
+              - generic [ref=e231]:
+                - strong [ref=e232]: 지진 발생 안내
+                - generic [ref=e233]: 땅이 흔들릴 수 있어요. 머리를 보호하고 흔들림이 멈추면 계단으로 이동해요.
+              - generic [ref=e234]: 01.08 19:03
+            - button "산불 산불 주변 접근 금지 불이나 연기가 있어요. 연기와 불에서 멀리 떨어진 안전한 곳으로 이동해요. 03.04 16:20" [ref=e235] [cursor=pointer]:
+              - generic [ref=e236]: 산불
+              - generic [ref=e237]:
+                - strong [ref=e238]: 산불 주변 접근 금지
+                - generic [ref=e239]: 불이나 연기가 있어요. 연기와 불에서 멀리 떨어진 안전한 곳으로 이동해요.
+              - generic [ref=e240]: 03.04 16:20
+            - button "한파 급격한 기온 하락 눈이나 추위로 길이 위험할 수 있어요. 외출을 줄이고 따뜻하고 미끄럽지 않게 준비해요. 02.01 07:15" [ref=e241] [cursor=pointer]:
+              - generic [ref=e242]: 한파
+              - generic [ref=e243]:
+                - strong [ref=e244]: 급격한 기온 하락
+                - generic [ref=e245]: 눈이나 추위로 길이 위험할 수 있어요. 외출을 줄이고 따뜻하고 미끄럽지 않게 준비해요.
+              - generic [ref=e246]: 02.01 07:15
+        - article [ref=e247]:
+          - generic [ref=e248]:
+            - generic [ref=e249]: 호우 / EASY VIEW
+            - generic [ref=e250]: 07.18 10:42
+          - heading "하천 범람 우려 안내" [level=3] [ref=e251]
+          - generic [ref=e252]: 호우로 인한 하천 범람 우려가 있으니 저지대 주민은 신속히 안전한 곳으로 대피하시기 바랍니다.
+          - group "예시 안내 언어" [ref=e253]:
+            - button "한국어" [ref=e254] [cursor=pointer]
+            - button "English" [ref=e255] [cursor=pointer]
+            - button "中文" [ref=e256] [cursor=pointer]
+            - button "Tiếng Việt" [ref=e257] [cursor=pointer]
+            - button "नेपाली" [ref=e258] [cursor=pointer]
+            - button "Filipino" [ref=e259] [cursor=pointer]
+          - paragraph [ref=e260]: 비가 많이 와서 강물이 넘칠 수 있어요. 낮은 곳에 있다면 안전한 곳으로 이동하세요.
+          - generic [ref=e261]:
+            - strong [ref=e262]: 지금 할 일
+            - list [ref=e263]:
+              - listitem [ref=e264]: 하천과 낮은 곳에서 멀어지세요.
+              - listitem [ref=e265]: 가까운 높은 곳이나 대피소로 이동하세요.
+              - listitem [ref=e266]: 안내 방송과 주변 상황을 확인하세요.
+          - status [ref=e267]: 한국어 쉬운 안내예요. 공식 안내도 함께 확인해 주세요.
+  - contentinfo [ref=e268]:
+    - generic [ref=e269]:
+      - link "안심길 ●" [ref=e270] [cursor=pointer]:
+        - /url: "#home"
+        - img [ref=e272]
+        - generic [ref=e274]:
+          - text: 안심길
+          - emphasis [ref=e275]: ●
+      - generic [ref=e276]: 더 쉬운 안내가, 더 빠른 대피로 이어지도록.
+      - generic [ref=e277]: 공개 데이터 제공 범위는 지역별로 다를 수 있습니다.
+  - status

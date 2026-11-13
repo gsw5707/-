@@ -1,0 +1,1004 @@
+- generic [active] [ref=e1]:
+  - banner [ref=e2]:
+    - navigation "주요 메뉴" [ref=e3]:
+      - link "안심길 홈" [ref=e4] [cursor=pointer]:
+        - /url: "#home"
+        - img [ref=e6]
+        - generic [ref=e8]:
+          - text: 안심길
+          - emphasis [ref=e9]: ●
+      - generic [ref=e10]:
+        - link "문자 쉽게 보기" [ref=e11] [cursor=pointer]:
+          - /url: "#translate"
+        - link "대피소 지도" [ref=e12] [cursor=pointer]:
+          - /url: "#map-section"
+        - link "알림 설정" [ref=e13] [cursor=pointer]:
+          - /url: "#alerts"
+        - link "안내 시작하기" [ref=e14] [cursor=pointer]:
+          - /url: "#translate"
+  - complementary "빠른 설정" [ref=e15]:
+    - generic [ref=e16]: 언어 선택
+    - group "사이트 언어" [ref=e17]:
+      - button "한국어" [pressed] [ref=e18] [cursor=pointer]
+      - button "English" [ref=e19] [cursor=pointer]
+      - button "中文" [ref=e20] [cursor=pointer]
+      - button "Tiếng Việt" [ref=e21] [cursor=pointer]
+      - button "नेपाली" [ref=e22] [cursor=pointer]
+      - button "Filipino" [ref=e23] [cursor=pointer]
+      - button "ไทย" [ref=e24] [cursor=pointer]
+    - generic [ref=e25]:
+      - generic [ref=e26]: 글자 크기
+      - group "글자 크기" [ref=e27]:
+        - button "글자 줄이기" [ref=e28] [cursor=pointer]: A−
+        - status [ref=e29]: 100%
+        - button "글자 키우기" [ref=e30] [cursor=pointer]: A+
+      - button "기본" [ref=e31] [cursor=pointer]
+      - paragraph [ref=e32]: 누를 때마다 5%씩 바뀌어요. 80%~160% 사이에서 조절할 수 있어요.
+  - main [ref=e33]:
+    - generic [ref=e35]:
+      - generic [ref=e36]:
+        - generic [ref=e37]: DISASTER MESSAGE, MADE CLEAR
+        - heading "위험한 순간, 쉬운 말로 먼저." [level=1] [ref=e38]:
+          - text: 위험한 순간,
+          - text: 쉬운 말로
+          - text: 먼저.
+        - paragraph [ref=e39]: 어려운 재난문자를 쉬운 말로 바꾸고, 내 주변 대피소까지 한눈에. 언어가 달라도 안전한 다음 행동을 놓치지 않도록 도와드려요.
+        - generic [ref=e40]:
+          - link "재난문자 쉽게 보기" [ref=e41] [cursor=pointer]:
+            - /url: "#translate"
+            - text: 재난문자 쉽게 보기
+            - img [ref=e42]
+          - link "대피소 먼저 찾기" [ref=e44] [cursor=pointer]:
+            - /url: "#map-section"
+      - generic "재난문자가 쉬운 행동 안내로 바뀌는 모습" [ref=e45]:
+        - article [ref=e47]:
+          - generic [ref=e48]:
+            - generic [ref=e49]: 긴급 재난문자
+            - generic [ref=e50]: 방금 전
+          - paragraph [ref=e51]: 호우로 인한 하천 범람 우려가 있으니 저지대 주민은 신속히 대피하시기 바랍니다.
+          - generic [ref=e52]:
+            - text: 비가 많이 와서 강물이 넘칠 수 있어요.
+            - text: 높은 곳이나 안전한 곳으로 이동해요.
+    - generic [ref=e55]:
+      - generic [ref=e56]:
+        - generic [ref=e57]:
+          - generic [ref=e58]: MY MESSAGE / MAKE IT CLEAR
+          - heading "받은 문자를 쉽게 바꿔보기" [level=2] [ref=e59]:
+            - text: 받은 문자를
+            - text: 쉽게 바꿔보기
+        - paragraph [ref=e60]: 문자를 붙여넣거나 예시를 골라보세요. 쉬운 설명과 선택한 언어 번역을 함께 보여드려요.
+      - generic [ref=e61]:
+        - generic [ref=e62]:
+          - generic [ref=e63]:
+            - text: 재난문자 원문
+            - generic [ref=e64]: 개인정보는 입력하지 마세요
+          - textbox "재난문자 원문 개인정보는 입력하지 마세요" [ref=e65]:
+            - /placeholder: 재난문자 내용을 여기에 붙여넣어 주세요.
+          - generic [ref=e66]: 사이트 언어
+          - group "안내 언어" [ref=e67]:
+            - button "한국어" [ref=e68] [cursor=pointer]
+            - button "English" [ref=e69] [cursor=pointer]
+            - button "中文" [ref=e70] [cursor=pointer]
+            - button "Tiếng Việt" [ref=e71] [cursor=pointer]
+            - button "नेपाली" [ref=e72] [cursor=pointer]
+            - button "Filipino" [ref=e73] [cursor=pointer]
+            - button "ไทย" [ref=e74] [cursor=pointer]
+          - generic [ref=e75]:
+            - button "쉬운 설명과 번역 보기" [ref=e76] [cursor=pointer]:
+              - text: 쉬운 설명과 번역 보기
+              - generic [ref=e77]: →
+            - button "예시 문구" [ref=e78] [cursor=pointer]
+          - status [ref=e79]: 재난문자 내용을 입력해 주세요.
+        - article [ref=e80]:
+          - generic [ref=e81]: EASY RESULT / 한국어
+          - heading "문자를 입력하면 쉬운 안내가 보여요" [level=3] [ref=e82]
+          - generic [ref=e83]: 재난문자 원문이 여기에 표시됩니다.
+          - paragraph [ref=e84]: 문자를 입력하고 ‘쉬운 설명과 번역 보기’를 눌러주세요.
+      - group [ref=e85]:
+        - generic "API 연결 방법과 사용법 보기" [ref=e86] [cursor=pointer]
+    - generic [ref=e88]:
+      - generic [ref=e89]:
+        - generic [ref=e90]:
+          - generic [ref=e91]: OPEN MAP / NEARBY SAFE PLACES
+          - heading "내 주변 대피소 찾기" [level=2] [ref=e92]:
+            - text: 내 주변
+            - text: 대피소 찾기
+        - paragraph [ref=e93]: 지도에서 위치를 확인하고 주변 장소를 검색해 보세요. 위치 권한은 직접 눌렀을 때만 요청해요.
+      - generic [ref=e94]:
+        - generic [ref=e95]:
+          - application "OpenStreetMap 지도" [ref=e96]:
+            - button "Marker" [ref=e97] [cursor=pointer]
+            - generic:
+              - generic [ref=e98]:
+                - button "Zoom in" [ref=e99] [cursor=pointer]: +
+                - button "Zoom out" [ref=e100] [cursor=pointer]: −
+              - generic [ref=e101]:
+                - link "Leaflet" [ref=e102] [cursor=pointer]:
+                  - /url: https://leafletjs.com
+                  - img [ref=e103]
+                  - text: Leaflet
+                - text: "| © OpenStreetMap"
+          - generic [ref=e107]:
+            - button "현재 위치 사용" [ref=e108] [cursor=pointer]
+            - button "주변 대피소 찾기" [ref=e109] [cursor=pointer]
+          - generic [ref=e110]: 지도 © OpenStreetMap 기여자
+        - complementary [ref=e111]:
+          - generic [ref=e112]:
+            - heading "공식 민방위 대피시설" [level=3] [ref=e113]
+            - generic [ref=e114]: 행안부 자료
+          - generic [ref=e115]:
+            - searchbox "지역이나 장소 검색" [ref=e116]
+            - button "검색" [ref=e117] [cursor=pointer]: ⌕
+          - generic [ref=e118]:
+            - generic [ref=e119]: 길 안내 방식
+            - combobox "길 안내 방식" [ref=e120]:
+              - option "도보" [selected]
+              - option "차량"
+            - button "위치 추적 끄기" [pressed] [ref=e121] [cursor=pointer]
+          - paragraph [ref=e122]: 실시간 위치를 따라가고 있어요. 이동하면 주변 시설과 선택한 경로도 갱신돼요.
+          - generic [ref=e124]: 행정안전부 전국 자료에서 가까운 운영 시설을 찾고 있어요…
+          - paragraph [ref=e125]:
+            - strong [ref=e126]: 자료 안내.
+            - text: 행정안전부 전국 민방위대피시설 공개자료예요. 민방위 시설이 호우·산불 등 모든 재난의 대피소로 지정된 것은 아니니, 실제 대피 전에는 재난문자와 지자체 안내를 확인해 주세요.
+            - link "자료 출처 보기" [ref=e127] [cursor=pointer]:
+              - /url: https://www.data.go.kr/data/15044951/fileData.do
+    - generic [ref=e129]:
+      - generic [ref=e130]:
+        - generic [ref=e131]: ALERTS / STAY INFORMED
+        - heading "앱을 보고 있지 않아도 안전 안내를 놓치지 않게." [level=2] [ref=e132]:
+          - text: 앱을 보고 있지 않아도
+          - text: 안전 안내를 놓치지 않게.
+        - generic [ref=e133]:
+          - img [ref=e135]
+          - heading "이 기기에서 알림 테스트" [level=3] [ref=e137]
+          - paragraph [ref=e138]: 브라우저 알림을 허용하고 테스트 메시지를 보내볼 수 있어요. 실제 재난문자 연동이 아닌 미리보기 기능입니다.
+          - button "알림 허용하고 테스트하기" [ref=e139] [cursor=pointer]
+          - status [ref=e140]: 현재는 이 페이지를 열어 둔 상태에서만 테스트할 수 있어요.
+      - generic [ref=e141]:
+        - generic [ref=e142]:
+          - generic [ref=e143]: "01"
+          - generic [ref=e144]:
+            - strong [ref=e145]: 현재 웹 미리보기에서 가능한 것
+            - paragraph [ref=e146]: 문자 쉬운 설명, 공개 지도 확인, 이 기기에서 브라우저 알림 테스트를 할 수 있어요.
+        - generic [ref=e147]:
+          - generic [ref=e148]: "02"
+          - generic [ref=e149]:
+            - strong [ref=e150]: 앱을 닫았을 때의 실제 재난 알림
+            - paragraph [ref=e151]: 공식 재난문자 수신 연동과 서버 푸시 또는 Android 앱 개발이 별도로 필요해요. 브라우저만으로 한국 긴급문자를 직접 읽어오는 기능은 제공되지 않아요.
+        - generic [ref=e152]:
+          - generic [ref=e153]: "03"
+          - generic [ref=e154]:
+            - strong [ref=e155]: 안전 안내는 공식 정보를 우선해요
+            - paragraph [ref=e156]: 번역은 이해를 돕기 위한 참고예요. 대피 판단과 행동은 지자체·소방 당국의 최신 안내를 따라주세요.
+    - generic [ref=e158]:
+      - generic [ref=e159]:
+        - generic [ref=e160]:
+          - generic [ref=e161]: QUICK GUIDE / STAY SAFE
+          - heading "그림으로 보는 지금 해야 할 일" [level=2] [ref=e162]:
+            - text: 그림으로 보는
+            - text: 지금 해야 할 일
+        - paragraph [ref=e163]: 재난 유형별 기본 행동을 빠르게 확인하세요. 실제 상황에서는 재난문자와 현장 안내를 먼저 따라주세요.
+      - generic [ref=e164]:
+        - article [ref=e165]:
+          - img [ref=e167]
+          - text: 산불
+          - heading "불 반대 방향으로 이동" [level=3] [ref=e170]
+          - paragraph [ref=e171]: 연기가 보이면 낮은 자세로 안전한 곳으로 이동해요.
+        - article [ref=e172]:
+          - img [ref=e174]
+          - text: 호우
+          - heading "높은 곳으로 이동" [level=3] [ref=e177]
+          - paragraph [ref=e178]: 하천과 지하차도에 가지 말고 물이 빠질 때까지 기다려요.
+        - article [ref=e179]:
+          - img [ref=e181]
+          - text: 폭염
+          - heading "물을 자주 마시기" [level=3] [ref=e184]
+          - paragraph [ref=e185]: 그늘이나 시원한 곳에서 쉬고 무리하지 마세요.
+        - article [ref=e186]:
+          - img [ref=e188]
+          - text: 지진
+          - heading "머리를 보호하기" [level=3] [ref=e192]
+          - paragraph [ref=e193]: 흔들림이 멈춘 뒤 계단으로 이동하고 넓은 곳으로 가요.
+        - article [ref=e194]:
+          - img [ref=e196]
+          - text: 한파
+          - heading "따뜻하게 입기" [level=3] [ref=e198]
+          - paragraph [ref=e199]: 추운 곳에 오래 있지 말고 실내에서 쉬세요.
+        - article [ref=e200]:
+          - img [ref=e202]
+          - text: 대설
+          - heading "천천히 걷기" [level=3] [ref=e205]
+          - paragraph [ref=e206]: 눈길·빙판길 외출을 줄이고 미끄럼을 조심해요.
+    - generic [ref=e208]:
+      - generic [ref=e209]:
+        - generic [ref=e210]:
+          - generic [ref=e211]: OFFICIAL DISASTER MESSAGES
+          - heading "전국 재난문자 목록" [level=2] [ref=e212]:
+            - text: 전국 재난문자
+            - text: 목록
+        - paragraph [ref=e213]: 공식 공개 기록에서 전국 재난문자를 검색하고, 쉬운 표현도 함께 확인하세요.
+      - generic [ref=e214]:
+        - generic [ref=e215]:
+          - generic [ref=e216]:
+            - generic [ref=e217]: OFFICIAL ARCHIVE / NATIONWIDE
+            - heading "전국 재난문자 목록" [level=3] [ref=e218]
+            - paragraph [ref=e219]: 조회 기간 2025-10-30 ~ 2026-10-29
+          - generic [ref=e220]:
+            - generic [ref=e221]: 조회 기간
+            - combobox "조회 기간" [ref=e222]:
+              - option "최근 30일"
+              - option "최근 90일"
+              - option "최근 1년" [selected]
+            - button "목록 다시 불러오기" [ref=e223] [cursor=pointer]
+        - generic [ref=e224]:
+          - generic [ref=e225]: 지역 또는 문자 검색
+          - searchbox "지역 또는 문자 검색" [ref=e226]
+          - button "검색" [ref=e227] [cursor=pointer]
+        - status [ref=e228]: 전국 기록 19,531건을 모두 수집했어요. 선택 기간 19,531건 중 1~50건 표시.
+        - generic [ref=e229]:
+          - article [ref=e230]:
+            - generic [ref=e231]:
+              - generic [ref=e232]: 2026/10/29 21:35:25
+              - generic [ref=e233]: 오산시
+            - generic [ref=e234]:
+              - paragraph [ref=e235]: 10월 30일(금) 첫차부터 버스 파업이 예정되어 있습니다. 대체 교통수단 및 임시 노선안내 등 자세한 사항은 오산시청 홈페이지를 확인해 주시기 바랍니다. [오산시]
+              - generic [ref=e236]:
+                - group [ref=e237]:
+                  - generic "어려운 표현을 쉬운 말로 보기" [ref=e238] [cursor=pointer]
+                  - option "쉬운 한국어" [selected]
+                  - option "어린이"
+                  - option "고령층"
+                  - option "외국인"
+                - link "공식 원문" [ref=e239] [cursor=pointer]:
+                  - /url: https://www.safetydata.go.kr/disaster-data/disasterNotificationDetail?sn=269860
+          - article [ref=e240]:
+            - generic [ref=e241]:
+              - generic [ref=e242]: 2026/10/29 20:30:06
+              - generic [ref=e243]: 경기도청
+            - generic [ref=e244]:
+              - paragraph [ref=e245]: 협상 결렬시, 10월30일 첫차부터 버스파업 예정으로 통근·통학시 불편이 예상 됩니다. 다른 교통 수단 이용을 부탁드리며 정상 운행을 위해 노력하겠습니다. [경기도청]
+              - generic [ref=e246]:
+                - group [ref=e247]:
+                  - generic "어려운 표현을 쉬운 말로 보기" [ref=e248] [cursor=pointer]
+                  - option "쉬운 한국어" [selected]
+                  - option "어린이"
+                  - option "고령층"
+                  - option "외국인"
+                - link "공식 원문" [ref=e249] [cursor=pointer]:
+                  - /url: https://www.safetydata.go.kr/disaster-data/disasterNotificationDetail?sn=269859
+          - article [ref=e250]:
+            - generic [ref=e251]:
+              - generic [ref=e252]: 2026/10/29 18:06:34
+              - generic [ref=e253]: 오산시
+            - generic [ref=e254]:
+              - paragraph [ref=e255]: 10월30일(금) 첫차부터 버스 파업 예정. 대체 수단 및 임시 노선 안내는 오산시청 홈페이지를 참고해 주시기 바랍니다. [오산시]
+              - generic [ref=e256]:
+                - group [ref=e257]:
+                  - generic "어려운 표현을 쉬운 말로 보기" [ref=e258] [cursor=pointer]
+                  - option "쉬운 한국어" [selected]
+                  - option "어린이"
+                  - option "고령층"
+                  - option "외국인"
+                - link "공식 원문" [ref=e259] [cursor=pointer]:
+                  - /url: https://www.safetydata.go.kr/disaster-data/disasterNotificationDetail?sn=269857
+          - article [ref=e260]:
+            - generic [ref=e261]:
+              - generic [ref=e262]: 2026/10/29 17:06:34
+              - generic [ref=e263]: 보은군
+            - generic [ref=e264]:
+              - paragraph [ref=e265]: 강풍과 농업부산물 소각으로 충북지역에 산불신고가 다수 접수되고있습니다. 산불이 발생하지 않도록 산림인접지 소각행위를 자제하여주시기 바랍니다. [보은군]
+              - generic [ref=e266]:
+                - group [ref=e267]:
+                  - generic "어려운 표현을 쉬운 말로 보기" [ref=e268] [cursor=pointer]
+                  - option "쉬운 한국어" [selected]
+                  - option "어린이"
+                  - option "고령층"
+                  - option "외국인"
+                - link "공식 원문" [ref=e269] [cursor=pointer]:
+                  - /url: https://www.safetydata.go.kr/disaster-data/disasterNotificationDetail?sn=269856
+          - article [ref=e270]:
+            - generic [ref=e271]:
+              - generic [ref=e272]: 2026/10/29 16:52:14
+              - generic [ref=e273]: 담양군
+            - generic [ref=e274]:
+              - paragraph [ref=e275]: 겨울철 강추위로 난방기구 사용 급증에 따라 화재예방을 위해 전기장판 접힘, 구김상태 사용금지, 미사용 전열기구 전원차단 등 안전수칙 준수바랍니다.[담양군]
+              - generic [ref=e276]:
+                - group [ref=e277]:
+                  - generic "어려운 표현을 쉬운 말로 보기" [ref=e278] [cursor=pointer]
+                  - option "쉬운 한국어" [selected]
+                  - option "어린이"
+                  - option "고령층"
+                  - option "외국인"
+                - link "공식 원문" [ref=e279] [cursor=pointer]:
+                  - /url: https://www.safetydata.go.kr/disaster-data/disasterNotificationDetail?sn=269855
+          - article [ref=e280]:
+            - generic [ref=e281]:
+              - generic [ref=e282]: 2026/10/29 15:49:17
+              - generic [ref=e283]: 계양구청
+            - generic [ref=e284]:
+              - paragraph [ref=e285]: 현재 계양역 앞 다남로 일부구간(귤현동 451-115) 교통통제가 해제되어 정상 통행 가능함을 알려드립니다. [계양구청]
+              - generic [ref=e286]:
+                - group [ref=e287]:
+                  - generic "어려운 표현을 쉬운 말로 보기" [ref=e288] [cursor=pointer]
+                  - option "쉬운 한국어" [selected]
+                  - option "어린이"
+                  - option "고령층"
+                  - option "외국인"
+                - link "공식 원문" [ref=e289] [cursor=pointer]:
+                  - /url: https://www.safetydata.go.kr/disaster-data/disasterNotificationDetail?sn=269854
+          - article [ref=e290]:
+            - generic [ref=e291]:
+              - generic [ref=e292]: 2026/10/29 14:00:38
+              - generic [ref=e293]: 예천군
+            - generic [ref=e294]:
+              - paragraph [ref=e295]: 오늘 15:00부터 예천읍, 호명읍, 유천면 일원에 활축제 블랙이글스 에어쇼 전투기 비행으로 큰 소음이 발생할 수 있으니 유의하여 주시기 바랍니다.[예천군]
+              - generic [ref=e296]:
+                - group [ref=e297]:
+                  - generic "어려운 표현을 쉬운 말로 보기" [ref=e298] [cursor=pointer]
+                  - option "쉬운 한국어" [selected]
+                  - option "어린이"
+                  - option "고령층"
+                  - option "외국인"
+                - link "공식 원문" [ref=e299] [cursor=pointer]:
+                  - /url: https://www.safetydata.go.kr/disaster-data/disasterNotificationDetail?sn=269853
+          - article [ref=e300]:
+            - generic [ref=e301]:
+              - generic [ref=e302]: 2026/10/29 13:58:39
+              - generic [ref=e303]: 계양구청
+            - generic [ref=e304]:
+              - paragraph [ref=e305]: 현재 계양역 앞 다남로 일부구간(귤현동 451-115)에 안전한국훈련 실시로 인해 교통통제중이오니 차량운행, 버스 및 택시 이용에 참고하시기 바랍니다. [계양구청]
+              - generic [ref=e306]:
+                - group [ref=e307]:
+                  - generic "어려운 표현을 쉬운 말로 보기" [ref=e308] [cursor=pointer]
+                  - option "쉬운 한국어" [selected]
+                  - option "어린이"
+                  - option "고령층"
+                  - option "외국인"
+                - link "공식 원문" [ref=e309] [cursor=pointer]:
+                  - /url: https://www.safetydata.go.kr/disaster-data/disasterNotificationDetail?sn=269852
+          - article [ref=e310]:
+            - generic [ref=e311]:
+              - generic [ref=e312]: 2026/10/29 12:43:45
+              - generic [ref=e313]: 울주군
+            - generic [ref=e314]:
+              - paragraph [ref=e315]: 오늘 12:20경 삼남읍 상천리 875-5 공장 화재발생. 인근 주민은 창문을 닫아주시고, 안전에 유의해주시기 바랍니다.[울주군]
+              - generic [ref=e316]:
+                - group [ref=e317]:
+                  - generic "어려운 표현을 쉬운 말로 보기" [ref=e318] [cursor=pointer]
+                  - option "쉬운 한국어" [selected]
+                  - option "어린이"
+                  - option "고령층"
+                  - option "외국인"
+                - link "공식 원문" [ref=e319] [cursor=pointer]:
+                  - /url: https://www.safetydata.go.kr/disaster-data/disasterNotificationDetail?sn=269851
+          - article [ref=e320]:
+            - generic [ref=e321]:
+              - generic [ref=e322]: 2026/10/29 10:01:19
+              - generic [ref=e323]: 달성군
+            - generic [ref=e324]:
+              - paragraph [ref=e325]: 현재 다사에서 성주 방면 3km 정도 도로 정체가 있으니 통행에 유의해주시기 바랍니다.[달성군]
+              - generic [ref=e326]:
+                - group [ref=e327]:
+                  - generic "어려운 표현을 쉬운 말로 보기" [ref=e328] [cursor=pointer]
+                  - option "쉬운 한국어" [selected]
+                  - option "어린이"
+                  - option "고령층"
+                  - option "외국인"
+                - link "공식 원문" [ref=e329] [cursor=pointer]:
+                  - /url: https://www.safetydata.go.kr/disaster-data/disasterNotificationDetail?sn=269850
+          - article [ref=e330]:
+            - generic [ref=e331]:
+              - generic [ref=e332]: 2026/10/29 10:01:02
+              - generic [ref=e333]: 달성군
+            - generic [ref=e334]:
+              - paragraph [ref=e335]: 현재 다사에서 성주 방면 3km 정도 도로 정체가 있으니 통행에 유의해주시기 바랍니다.[달성군]
+              - generic [ref=e336]:
+                - group [ref=e337]:
+                  - generic "어려운 표현을 쉬운 말로 보기" [ref=e338] [cursor=pointer]
+                  - option "쉬운 한국어" [selected]
+                  - option "어린이"
+                  - option "고령층"
+                  - option "외국인"
+                - link "공식 원문" [ref=e339] [cursor=pointer]:
+                  - /url: https://www.safetydata.go.kr/disaster-data/disasterNotificationDetail?sn=269849
+          - article [ref=e340]:
+            - generic [ref=e341]:
+              - generic [ref=e342]: 2026/10/29 09:30:45
+              - generic [ref=e343]: 금천구
+            - generic [ref=e344]:
+              - paragraph [ref=e345]: 오늘 14:00~15:30 안전한국훈련으로 호암산 호압사(호암로 278) 주변 200m 구간 출입통제, 등산로 이용에 유의하시기 바랍니다. [금천구]
+              - generic [ref=e346]:
+                - group [ref=e347]:
+                  - generic "어려운 표현을 쉬운 말로 보기" [ref=e348] [cursor=pointer]
+                  - option "쉬운 한국어" [selected]
+                  - option "어린이"
+                  - option "고령층"
+                  - option "외국인"
+                - link "공식 원문" [ref=e349] [cursor=pointer]:
+                  - /url: https://www.safetydata.go.kr/disaster-data/disasterNotificationDetail?sn=269848
+          - article [ref=e350]:
+            - generic [ref=e351]:
+              - generic [ref=e352]: 2026/10/29 09:03:41
+              - generic [ref=e353]: 진도군
+            - generic [ref=e354]:
+              - paragraph [ref=e355]: 대조기 기간 해안가 갯벌체험 · 해루질 안전사고 주의▲나홀로 해루질 자제▲휴대전화 휴대▲구명조끼 착용▲간조 시간에 미리 육지로 이동하시기 바랍니다. [진도군]
+              - generic [ref=e356]:
+                - group [ref=e357]:
+                  - generic "어려운 표현을 쉬운 말로 보기" [ref=e358] [cursor=pointer]
+                  - option "쉬운 한국어" [selected]
+                  - option "어린이"
+                  - option "고령층"
+                  - option "외국인"
+                - link "공식 원문" [ref=e359] [cursor=pointer]:
+                  - /url: https://www.safetydata.go.kr/disaster-data/disasterNotificationDetail?sn=269847
+          - article [ref=e360]:
+            - generic [ref=e361]:
+              - generic [ref=e362]: 2026/10/29 04:55:53
+              - generic [ref=e363]: 미추홀구
+            - generic [ref=e364]:
+              - paragraph [ref=e365]: 금일 03:53경 미추홀구 도화동 744-14 공장 화재 발생. 주변 차량은 우회하시고, 인근 주민은 안전사고에 유의하시기 바랍니다.[미추홀구]
+              - generic [ref=e366]:
+                - group [ref=e367]:
+                  - generic "어려운 표현을 쉬운 말로 보기" [ref=e368] [cursor=pointer]
+                  - option "쉬운 한국어" [selected]
+                  - option "어린이"
+                  - option "고령층"
+                  - option "외국인"
+                - link "공식 원문" [ref=e369] [cursor=pointer]:
+                  - /url: https://www.safetydata.go.kr/disaster-data/disasterNotificationDetail?sn=269846
+          - article [ref=e370]:
+            - generic [ref=e371]:
+              - generic [ref=e372]: 2026/10/28 16:03:23
+              - generic [ref=e373]: 계양구청
+            - generic [ref=e374]:
+              - paragraph [ref=e375]: 현재 계양역 앞 다남로 일부구간(귤현동 451-115) 교통 통제가 해제되어 정상 통행 가능함을 알려드립니다. [계양구청]
+              - generic [ref=e376]:
+                - group [ref=e377]:
+                  - generic "어려운 표현을 쉬운 말로 보기" [ref=e378] [cursor=pointer]
+                  - option "쉬운 한국어" [selected]
+                  - option "어린이"
+                  - option "고령층"
+                  - option "외국인"
+                - link "공식 원문" [ref=e379] [cursor=pointer]:
+                  - /url: https://www.safetydata.go.kr/disaster-data/disasterNotificationDetail?sn=269845
+          - article [ref=e380]:
+            - generic [ref=e381]:
+              - generic [ref=e382]: 2026/10/28 14:58:38
+              - generic [ref=e383]: 울주군
+            - generic [ref=e384]:
+              - paragraph [ref=e385]: 오늘 13:50경 온산읍 학남리 55 공장 화재발생. 인근 주민은 창문을 닫아주시고, 근처 통행 차량은 우회이동 하시기 바랍니다.[울주군]
+              - generic [ref=e386]:
+                - group [ref=e387]:
+                  - generic "어려운 표현을 쉬운 말로 보기" [ref=e388] [cursor=pointer]
+                  - option "쉬운 한국어" [selected]
+                  - option "어린이"
+                  - option "고령층"
+                  - option "외국인"
+                - link "공식 원문" [ref=e389] [cursor=pointer]:
+                  - /url: https://www.safetydata.go.kr/disaster-data/disasterNotificationDetail?sn=269844
+          - article [ref=e390]:
+            - generic [ref=e391]:
+              - generic [ref=e392]: 2026/10/28 13:47:50
+              - generic [ref=e393]: 부산소방재난본부
+            - generic [ref=e394]:
+              - paragraph [ref=e395]: 오늘 14시 다대동 성창기업에서 소방훈련 실시, 실제 화재가 아닌 훈련출동으로 1개 차로에 소방차량이 정차하니 시민 여러분의 양해 바랍니다.[부산소방재난본부]
+              - generic [ref=e396]:
+                - group [ref=e397]:
+                  - generic "어려운 표현을 쉬운 말로 보기" [ref=e398] [cursor=pointer]
+                  - option "쉬운 한국어" [selected]
+                  - option "어린이"
+                  - option "고령층"
+                  - option "외국인"
+                - link "공식 원문" [ref=e399] [cursor=pointer]:
+                  - /url: https://www.safetydata.go.kr/disaster-data/disasterNotificationDetail?sn=269843
+          - article [ref=e400]:
+            - generic [ref=e401]:
+              - generic [ref=e402]: 2026/10/28 13:47:38
+              - generic [ref=e403]: 계양구청
+            - generic [ref=e404]:
+              - paragraph [ref=e405]: 오늘 13:33 귤현동 148-6 인근 화재로 연기 다량 발생 중. 인근 주민은 추가 피해에 유의 바랍니다.[계양구청]
+              - generic [ref=e406]:
+                - group [ref=e407]:
+                  - generic "어려운 표현을 쉬운 말로 보기" [ref=e408] [cursor=pointer]
+                  - option "쉬운 한국어" [selected]
+                  - option "어린이"
+                  - option "고령층"
+                  - option "외국인"
+                - link "공식 원문" [ref=e409] [cursor=pointer]:
+                  - /url: https://www.safetydata.go.kr/disaster-data/disasterNotificationDetail?sn=269842
+          - article [ref=e410]:
+            - generic [ref=e411]:
+              - generic [ref=e412]: 2026/10/28 11:18:23
+              - generic [ref=e413]: 완도군
+            - generic [ref=e414]:
+              - paragraph [ref=e415]: 최근 관내 주택, 건물 및 야외 화재가 잇따라 발생 중입니다.▲산림 인접지 불씨 주의▲가정·사업장 화기 및 전기 점검▲외출 전 화기 차단 재확인[완도군]
+              - generic [ref=e416]:
+                - group [ref=e417]:
+                  - generic "어려운 표현을 쉬운 말로 보기" [ref=e418] [cursor=pointer]
+                  - option "쉬운 한국어" [selected]
+                  - option "어린이"
+                  - option "고령층"
+                  - option "외국인"
+                - link "공식 원문" [ref=e419] [cursor=pointer]:
+                  - /url: https://www.safetydata.go.kr/disaster-data/disasterNotificationDetail?sn=269841
+          - article [ref=e420]:
+            - generic [ref=e421]:
+              - generic [ref=e422]: 2026/10/28 11:09:23
+              - generic [ref=e423]: 금천구
+            - generic [ref=e424]:
+              - paragraph [ref=e425]: 10.29.(목) 14:00~15:30 안전한국훈련으로 호암산 호압사(호암로 278) 주변 200m 출입통제 예정이니 등산로 이용에 유의하시기 바랍니다.[금천구]
+              - generic [ref=e426]:
+                - group [ref=e427]:
+                  - generic "어려운 표현을 쉬운 말로 보기" [ref=e428] [cursor=pointer]
+                  - option "쉬운 한국어" [selected]
+                  - option "어린이"
+                  - option "고령층"
+                  - option "외국인"
+                - link "공식 원문" [ref=e429] [cursor=pointer]:
+                  - /url: https://www.safetydata.go.kr/disaster-data/disasterNotificationDetail?sn=269840
+          - article [ref=e430]:
+            - generic [ref=e431]:
+              - generic [ref=e432]: 2026/10/28 10:31:26
+              - generic [ref=e433]: 계양구청
+            - generic [ref=e434]:
+              - paragraph [ref=e435]: 현재 계양역 앞 다남로 일부구간(귤현동 451-115)에 안전한국훈련 연습으로 인해 교통 통제중이오니 차량 운행, 버스 및 택시 이용에 참고하시기 바랍니다.[계양구청]
+              - generic [ref=e436]:
+                - group [ref=e437]:
+                  - generic "어려운 표현을 쉬운 말로 보기" [ref=e438] [cursor=pointer]
+                  - option "쉬운 한국어" [selected]
+                  - option "어린이"
+                  - option "고령층"
+                  - option "외국인"
+                - link "공식 원문" [ref=e439] [cursor=pointer]:
+                  - /url: https://www.safetydata.go.kr/disaster-data/disasterNotificationDetail?sn=269839
+          - article [ref=e440]:
+            - generic [ref=e441]:
+              - generic [ref=e442]: 2026/10/28 09:56:26
+              - generic [ref=e443]: 계양구청
+            - generic [ref=e444]:
+              - paragraph [ref=e445]: 금일 오전 10시부터 계양역 앞 다남로 일부 구간(귤현동 451-115)을 안전한국훈련 연습으로 인해 일부 교통 통제 통제중이오니 차량 운행에 참고하시기 바랍니다. [계양구청]
+              - generic [ref=e446]:
+                - group [ref=e447]:
+                  - generic "어려운 표현을 쉬운 말로 보기" [ref=e448] [cursor=pointer]
+                  - option "쉬운 한국어" [selected]
+                  - option "어린이"
+                  - option "고령층"
+                  - option "외국인"
+                - link "공식 원문" [ref=e449] [cursor=pointer]:
+                  - /url: https://www.safetydata.go.kr/disaster-data/disasterNotificationDetail?sn=269838
+          - article [ref=e450]:
+            - generic [ref=e451]:
+              - generic [ref=e452]: 2026/10/28 09:00:43
+              - generic [ref=e453]: 진도군
+            - generic [ref=e454]:
+              - paragraph [ref=e455]: 대조기 기간 해안가 갯벌체험 · 해루질 안전사고 주의▲나홀로 해루질 자제▲휴대전화 휴대▲구명조끼 착용▲간조 시간에 미리 육지로 이동하시기 바랍니다. [진도군]
+              - generic [ref=e456]:
+                - group [ref=e457]:
+                  - generic "어려운 표현을 쉬운 말로 보기" [ref=e458] [cursor=pointer]
+                  - option "쉬운 한국어" [selected]
+                  - option "어린이"
+                  - option "고령층"
+                  - option "외국인"
+                - link "공식 원문" [ref=e459] [cursor=pointer]:
+                  - /url: https://www.safetydata.go.kr/disaster-data/disasterNotificationDetail?sn=269837
+          - article [ref=e460]:
+            - generic [ref=e461]:
+              - generic [ref=e462]: 2026/10/28 08:58:36
+              - generic [ref=e463]: 부산소방재난본부
+            - generic [ref=e464]:
+              - paragraph [ref=e465]: 오늘 09시 다대동 성창기업에서 소방훈련 실시, 실제 화재가 아닌 훈련출동으로 1개 차로에 소방차량이 정차하니 시민 여러분의 양해 바랍니다.[부산소방재난본부]
+              - generic [ref=e466]:
+                - group [ref=e467]:
+                  - generic "어려운 표현을 쉬운 말로 보기" [ref=e468] [cursor=pointer]
+                  - option "쉬운 한국어" [selected]
+                  - option "어린이"
+                  - option "고령층"
+                  - option "외국인"
+                - link "공식 원문" [ref=e469] [cursor=pointer]:
+                  - /url: https://www.safetydata.go.kr/disaster-data/disasterNotificationDetail?sn=269836
+          - article [ref=e470]:
+            - generic [ref=e471]:
+              - generic [ref=e472]: 2026/10/28 06:02:46
+              - generic [ref=e473]: 예천군
+            - generic [ref=e474]:
+              - paragraph [ref=e475]: 오늘 아침 기온이 낮을 것으로 예상됩니다.▲외출 시 따뜻한 옷 입기▲난방기 및 보일러 이용에 따른 화재 예방에 유의하시기 바랍니다. [예천군]
+              - generic [ref=e476]:
+                - group [ref=e477]:
+                  - generic "어려운 표현을 쉬운 말로 보기" [ref=e478] [cursor=pointer]
+                  - option "쉬운 한국어" [selected]
+                  - option "어린이"
+                  - option "고령층"
+                  - option "외국인"
+                - link "공식 원문" [ref=e479] [cursor=pointer]:
+                  - /url: https://www.safetydata.go.kr/disaster-data/disasterNotificationDetail?sn=269835
+          - article [ref=e480]:
+            - generic [ref=e481]:
+              - generic [ref=e482]: 2026/10/27 22:16:20
+              - generic [ref=e483]: 부산진구
+            - generic [ref=e484]:
+              - paragraph [ref=e485]: 오늘 22시 경 선암사(부산진구 백양산로 138) 부근 주변 멧돼지가 출몰하였으니, 인근 주민께서는 안전에 유의하여 주시기 바랍니다. [부산진구]
+              - generic [ref=e486]:
+                - group [ref=e487]:
+                  - generic "어려운 표현을 쉬운 말로 보기" [ref=e488] [cursor=pointer]
+                  - option "쉬운 한국어" [selected]
+                  - option "어린이"
+                  - option "고령층"
+                  - option "외국인"
+                - link "공식 원문" [ref=e489] [cursor=pointer]:
+                  - /url: https://www.safetydata.go.kr/disaster-data/disasterNotificationDetail?sn=269834
+          - article [ref=e490]:
+            - generic [ref=e491]:
+              - generic [ref=e492]: 2026/10/27 20:43:03
+              - generic [ref=e493]: 군포시
+            - generic [ref=e494]:
+              - paragraph [ref=e495]: 한파주의보 발효로 기온이 크게 내려가니 외출 시 따뜻한 옷차림 등 건강관리에 유의하시고, 어르신·어린이는 체온 유지에 각별히 주의하시기 바랍니다.[군포시]
+              - generic [ref=e496]:
+                - group [ref=e497]:
+                  - generic "어려운 표현을 쉬운 말로 보기" [ref=e498] [cursor=pointer]
+                  - option "쉬운 한국어" [selected]
+                  - option "어린이"
+                  - option "고령층"
+                  - option "외국인"
+                - link "공식 원문" [ref=e499] [cursor=pointer]:
+                  - /url: https://www.safetydata.go.kr/disaster-data/disasterNotificationDetail?sn=269833
+          - article [ref=e500]:
+            - generic [ref=e501]:
+              - generic [ref=e502]: 2026/10/27 20:18:36
+              - generic [ref=e503]: 계룡시
+            - generic [ref=e504]:
+              - paragraph [ref=e505]: 오늘 밤 기온 하강이 예상되니 건강관리 및 농작물 냉해 피해 예방에 유의해 주시기 바랍니다. [계룡시]
+              - generic [ref=e506]:
+                - group [ref=e507]:
+                  - generic "어려운 표현을 쉬운 말로 보기" [ref=e508] [cursor=pointer]
+                  - option "쉬운 한국어" [selected]
+                  - option "어린이"
+                  - option "고령층"
+                  - option "외국인"
+                - link "공식 원문" [ref=e509] [cursor=pointer]:
+                  - /url: https://www.safetydata.go.kr/disaster-data/disasterNotificationDetail?sn=269832
+          - article [ref=e510]:
+            - generic [ref=e511]:
+              - generic [ref=e512]: 2026/10/27 20:02:51
+              - generic [ref=e513]: 당진시
+            - generic [ref=e514]:
+              - paragraph [ref=e515]: 오늘 밤 기온이 크게 낮아질 것으로 예상됩니다. ▲따뜻한 옷차림 등 건강관리 ▲농작물 냉해 예방 등 유의하시기 바랍니다. [당진시]
+              - generic [ref=e516]:
+                - group [ref=e517]:
+                  - generic "어려운 표현을 쉬운 말로 보기" [ref=e518] [cursor=pointer]
+                  - option "쉬운 한국어" [selected]
+                  - option "어린이"
+                  - option "고령층"
+                  - option "외국인"
+                - link "공식 원문" [ref=e519] [cursor=pointer]:
+                  - /url: https://www.safetydata.go.kr/disaster-data/disasterNotificationDetail?sn=269831
+          - article [ref=e520]:
+            - generic [ref=e521]:
+              - generic [ref=e522]: 2026/10/27 20:01:12
+              - generic [ref=e523]: 함평군
+            - generic [ref=e524]:
+              - paragraph [ref=e525]: 오늘 21시 한파주의보 발효. 기온이 큰 폭으로 떨어지니 난방 유지와 계량기 동파에 유의하고, 길이 얼 수 있으니 낙상에 주의하시기 바랍니다.[함평군]
+              - generic [ref=e526]:
+                - group [ref=e527]:
+                  - generic "어려운 표현을 쉬운 말로 보기" [ref=e528] [cursor=pointer]
+                  - option "쉬운 한국어" [selected]
+                  - option "어린이"
+                  - option "고령층"
+                  - option "외국인"
+                - link "공식 원문" [ref=e529] [cursor=pointer]:
+                  - /url: https://www.safetydata.go.kr/disaster-data/disasterNotificationDetail?sn=269830
+          - article [ref=e530]:
+            - generic [ref=e531]:
+              - generic [ref=e532]: 2026/10/27 20:00:14
+              - generic [ref=e533]: 하동군
+            - generic [ref=e534]:
+              - paragraph [ref=e535]: 금일 21시부로 우리군 한파주의보 발효/개인 방한용품착용/외출시, 취침시 난방기구 화재유의/도로살얼음 주의/내일 아침기온 급강하로 실내외 개인보온에 유의하여 주시기 바랍니다. [하동군]
+              - generic [ref=e536]:
+                - group [ref=e537]:
+                  - generic "어려운 표현을 쉬운 말로 보기" [ref=e538] [cursor=pointer]
+                  - option "쉬운 한국어" [selected]
+                  - option "어린이"
+                  - option "고령층"
+                  - option "외국인"
+                - link "공식 원문" [ref=e539] [cursor=pointer]:
+                  - /url: https://www.safetydata.go.kr/disaster-data/disasterNotificationDetail?sn=269829
+          - article [ref=e540]:
+            - generic [ref=e541]:
+              - generic [ref=e542]: 2026/10/27 19:35:49
+              - generic [ref=e543]: 경산시
+            - generic [ref=e544]:
+              - paragraph [ref=e545]: 오늘밤부터 기온이 급격히 낮아질 전망입니다. ▲보온에 신경쓰시고 야외활동 자제 ▲노약자 한랭질환 주의 ▲난방기 화재예방 등 안전에 유의하시기 바랍니다. [경산시]
+              - generic [ref=e546]:
+                - group [ref=e547]:
+                  - generic "어려운 표현을 쉬운 말로 보기" [ref=e548] [cursor=pointer]
+                  - option "쉬운 한국어" [selected]
+                  - option "어린이"
+                  - option "고령층"
+                  - option "외국인"
+                - link "공식 원문" [ref=e549] [cursor=pointer]:
+                  - /url: https://www.safetydata.go.kr/disaster-data/disasterNotificationDetail?sn=269828
+          - article [ref=e550]:
+            - generic [ref=e551]:
+              - generic [ref=e552]: 2026/10/27 19:13:32
+              - generic [ref=e553]: 춘천시
+            - generic [ref=e554]:
+              - paragraph [ref=e555]: 오늘밤부터 기온이 크게 떨어질 것으로 예상됩니다. 외출시 따뜻한 옷차림으로 건강관리에 유의하시고 난방기 사용시 화재예방 등 안전에 주의 바랍니다. [춘천시]
+              - generic [ref=e556]:
+                - group [ref=e557]:
+                  - generic "어려운 표현을 쉬운 말로 보기" [ref=e558] [cursor=pointer]
+                  - option "쉬운 한국어" [selected]
+                  - option "어린이"
+                  - option "고령층"
+                  - option "외국인"
+                - link "공식 원문" [ref=e559] [cursor=pointer]:
+                  - /url: https://www.safetydata.go.kr/disaster-data/disasterNotificationDetail?sn=269827
+          - article [ref=e560]:
+            - generic [ref=e561]:
+              - generic [ref=e562]: 2026/10/27 19:01:44
+              - generic [ref=e563]: 진주시
+            - generic [ref=e564]:
+              - paragraph [ref=e565]: 금일 21시부로 우리 지역에 한파주의보 발효 예정으로 기온이 급격히 떨어질 것으로 예상되니 건강 및 안전관리에 유의 하시기 바랍니다.[진주시]
+              - generic [ref=e566]:
+                - group [ref=e567]:
+                  - generic "어려운 표현을 쉬운 말로 보기" [ref=e568] [cursor=pointer]
+                  - option "쉬운 한국어" [selected]
+                  - option "어린이"
+                  - option "고령층"
+                  - option "외국인"
+                - link "공식 원문" [ref=e569] [cursor=pointer]:
+                  - /url: https://www.safetydata.go.kr/disaster-data/disasterNotificationDetail?sn=269826
+          - article [ref=e570]:
+            - generic [ref=e571]:
+              - generic [ref=e572]: 2026/10/27 19:00:12
+              - generic [ref=e573]: 부천시청
+            - generic [ref=e574]:
+              - paragraph [ref=e575]: 오늘 밤부터 기온이 크게 떨어질 것으로 예상되니, 외출 시 따뜻한 옷차림을 하고, 기온변화에 따른 건강관리와 체온 유지에 각별히 유의하시기 바랍니다. [부천시청]
+              - generic [ref=e576]:
+                - group [ref=e577]:
+                  - generic "어려운 표현을 쉬운 말로 보기" [ref=e578] [cursor=pointer]
+                  - option "쉬운 한국어" [selected]
+                  - option "어린이"
+                  - option "고령층"
+                  - option "외국인"
+                - link "공식 원문" [ref=e579] [cursor=pointer]:
+                  - /url: https://www.safetydata.go.kr/disaster-data/disasterNotificationDetail?sn=269825
+          - article [ref=e580]:
+            - generic [ref=e581]:
+              - generic [ref=e582]: 2026/10/27 18:41:13
+              - generic [ref=e583]: 서천군
+            - generic [ref=e584]:
+              - paragraph [ref=e585]: 오늘밤부터 기온이 급격히 낮아질 전망입니다. ▲외출시 따뜻한 옷차림 등 건강관리에 유의 ▲노약자 한냉질환 주의 및 외출자제 ▲난방기 화재예방 등 안전에 유의하시기 바랍니다.[서천군]
+              - generic [ref=e586]:
+                - group [ref=e587]:
+                  - generic "어려운 표현을 쉬운 말로 보기" [ref=e588] [cursor=pointer]
+                  - option "쉬운 한국어" [selected]
+                  - option "어린이"
+                  - option "고령층"
+                  - option "외국인"
+                - link "공식 원문" [ref=e589] [cursor=pointer]:
+                  - /url: https://www.safetydata.go.kr/disaster-data/disasterNotificationDetail?sn=269824
+          - article [ref=e590]:
+            - generic [ref=e591]:
+              - generic [ref=e592]: 2026/10/27 18:30:22
+              - generic [ref=e593]: 나주시
+            - generic [ref=e594]:
+              - paragraph [ref=e595]: 나주시 금일 21시 기준 한파주의보 발효 ▲ 야외활동 자제 ▲ 낮은 기온으로 안전사고 유의 ▲ 부모님 안부전화 등 건강관리에 유의 바랍니다. [나주시]
+              - generic [ref=e596]:
+                - group [ref=e597]:
+                  - generic "어려운 표현을 쉬운 말로 보기" [ref=e598] [cursor=pointer]
+                  - option "쉬운 한국어" [selected]
+                  - option "어린이"
+                  - option "고령층"
+                  - option "외국인"
+                - link "공식 원문" [ref=e599] [cursor=pointer]:
+                  - /url: https://www.safetydata.go.kr/disaster-data/disasterNotificationDetail?sn=269823
+          - article [ref=e600]:
+            - generic [ref=e601]:
+              - generic [ref=e602]: 2026/10/27 18:30:11
+              - generic [ref=e603]: 공주시
+            - generic [ref=e604]:
+              - paragraph [ref=e605]: 오늘 밤부터 기온이 크게 낮아질 전망입니다.▲보온에 신경 쓰시고 야외활동 자제▲노약자 한랭질환 주의▲전열기구 사용 시 화재예방 등 안전에 유의바랍니다. [공주시]
+              - generic [ref=e606]:
+                - group [ref=e607]:
+                  - generic "어려운 표현을 쉬운 말로 보기" [ref=e608] [cursor=pointer]
+                  - option "쉬운 한국어" [selected]
+                  - option "어린이"
+                  - option "고령층"
+                  - option "외국인"
+                - link "공식 원문" [ref=e609] [cursor=pointer]:
+                  - /url: https://www.safetydata.go.kr/disaster-data/disasterNotificationDetail?sn=269822
+          - article [ref=e610]:
+            - generic [ref=e611]:
+              - generic [ref=e612]: 2026/10/27 18:24:36
+              - generic [ref=e613]: 김포시
+            - generic [ref=e614]:
+              - paragraph [ref=e615]: 오늘 18:08 김포시 고촌읍 전호리 727 화재 발생. 인근 주민은 사고지점에서 먼 곳으로 이동하시고, 차량은 우회하세요. [김포시]
+              - generic [ref=e616]:
+                - group [ref=e617]:
+                  - generic "어려운 표현을 쉬운 말로 보기" [ref=e618] [cursor=pointer]
+                  - option "쉬운 한국어" [selected]
+                  - option "어린이"
+                  - option "고령층"
+                  - option "외국인"
+                - link "공식 원문" [ref=e619] [cursor=pointer]:
+                  - /url: https://www.safetydata.go.kr/disaster-data/disasterNotificationDetail?sn=269821
+          - article [ref=e620]:
+            - generic [ref=e621]:
+              - generic [ref=e622]: 2026/10/27 18:22:39
+              - generic [ref=e623]: 장흥군
+            - generic [ref=e624]:
+              - paragraph [ref=e625]: 오늘 밤부터 기온이 크게 낮아질 전망입니다. 외출 시 따뜻한 옷차림 등 건강관리에 유의하시고, 난방기 화재예방 등 안전에 유의하시기 바랍니다. [장흥군]
+              - generic [ref=e626]:
+                - group [ref=e627]:
+                  - generic "어려운 표현을 쉬운 말로 보기" [ref=e628] [cursor=pointer]
+                  - option "쉬운 한국어" [selected]
+                  - option "어린이"
+                  - option "고령층"
+                  - option "외국인"
+                - link "공식 원문" [ref=e629] [cursor=pointer]:
+                  - /url: https://www.safetydata.go.kr/disaster-data/disasterNotificationDetail?sn=269820
+          - article [ref=e630]:
+            - generic [ref=e631]:
+              - generic [ref=e632]: 2026/10/27 18:17:47
+              - generic [ref=e633]: 장흥군
+            - generic [ref=e634]:
+              - paragraph [ref=e635]: 우리군에 강풍주의보 발효 중. 외출을 자제하고 외출 시 수목 전도·간판 등 낙하물에 유의, 비닐하우스 등 시설물 고정·결속을 철저히 해주시기 바랍니다. [장흥군]
+              - generic [ref=e636]:
+                - group [ref=e637]:
+                  - generic "어려운 표현을 쉬운 말로 보기" [ref=e638] [cursor=pointer]
+                  - option "쉬운 한국어" [selected]
+                  - option "어린이"
+                  - option "고령층"
+                  - option "외국인"
+                - link "공식 원문" [ref=e639] [cursor=pointer]:
+                  - /url: https://www.safetydata.go.kr/disaster-data/disasterNotificationDetail?sn=269819
+          - article [ref=e640]:
+            - generic [ref=e641]:
+              - generic [ref=e642]: 2026/10/27 18:16:09
+              - generic [ref=e643]: 대구광역시
+            - generic [ref=e644]:
+              - paragraph [ref=e645]: 오늘 21:00부로 한파주의보 발효▲보온에 신경 쓰시고 야외활동 자제▲노약자 한랭질환 주의▲전열기구 사용주의 및 화재예방 등 안전에 유의바랍니다.[대구광역시]
+              - generic [ref=e646]:
+                - group [ref=e647]:
+                  - generic "어려운 표현을 쉬운 말로 보기" [ref=e648] [cursor=pointer]
+                  - option "쉬운 한국어" [selected]
+                  - option "어린이"
+                  - option "고령층"
+                  - option "외국인"
+                - link "공식 원문" [ref=e649] [cursor=pointer]:
+                  - /url: https://www.safetydata.go.kr/disaster-data/disasterNotificationDetail?sn=269818
+          - article [ref=e650]:
+            - generic [ref=e651]:
+              - generic [ref=e652]: 2026/10/27 18:10:52
+              - generic [ref=e653]: 전남광주통합특별시
+            - generic [ref=e654]:
+              - paragraph [ref=e655]: 오늘 밤부터 기온이 급격히 떨어질 것으로 예상됩니다. 외출 시 체온 유지 등 건강관리에 유의하시고 시설물 동파 및 농작물 피해 예방에도 각별히 주의하시기 바랍니다.[전남광주통합특별시]
+              - generic [ref=e656]:
+                - group [ref=e657]:
+                  - generic "어려운 표현을 쉬운 말로 보기" [ref=e658] [cursor=pointer]
+                  - option "쉬운 한국어" [selected]
+                  - option "어린이"
+                  - option "고령층"
+                  - option "외국인"
+                - link "공식 원문" [ref=e659] [cursor=pointer]:
+                  - /url: https://www.safetydata.go.kr/disaster-data/disasterNotificationDetail?sn=269817
+          - article [ref=e660]:
+            - generic [ref=e661]:
+              - generic [ref=e662]: 2026/10/27 18:10:07
+              - generic [ref=e663]: 무주군
+            - generic [ref=e664]:
+              - paragraph [ref=e665]: 오늘 밤 기온이 크게 낮아질 것으로 예상됩니다. ▲따뜻한 옷차림 등 건강관리 ▲농작물 냉해 피해 예방 등 유의하시기 바랍니다.[무주군]
+              - generic [ref=e666]:
+                - group [ref=e667]:
+                  - generic "어려운 표현을 쉬운 말로 보기" [ref=e668] [cursor=pointer]
+                  - option "쉬운 한국어" [selected]
+                  - option "어린이"
+                  - option "고령층"
+                  - option "외국인"
+                - link "공식 원문" [ref=e669] [cursor=pointer]:
+                  - /url: https://www.safetydata.go.kr/disaster-data/disasterNotificationDetail?sn=269816
+          - article [ref=e670]:
+            - generic [ref=e671]:
+              - generic [ref=e672]: 2026/10/27 18:09:52
+              - generic [ref=e673]: 홍성군
+            - generic [ref=e674]:
+              - paragraph [ref=e675]: 오늘 밤부터 기온이 크게 떨어질 것으로 예상됩니다. 외출 시 따뜻한 옷차림으로 건강관리에 유의하시고, 난방기 사용 시 화재예방 등 안전에 주의 바랍니다.[홍성군]
+              - generic [ref=e676]:
+                - group [ref=e677]:
+                  - generic "어려운 표현을 쉬운 말로 보기" [ref=e678] [cursor=pointer]
+                  - option "쉬운 한국어" [selected]
+                  - option "어린이"
+                  - option "고령층"
+                  - option "외국인"
+                - link "공식 원문" [ref=e679] [cursor=pointer]:
+                  - /url: https://www.safetydata.go.kr/disaster-data/disasterNotificationDetail?sn=269815
+          - article [ref=e680]:
+            - generic [ref=e681]:
+              - generic [ref=e682]: 2026/10/27 18:00:57
+              - generic [ref=e683]: 의성군
+            - generic [ref=e684]:
+              - paragraph [ref=e685]: 금일 밤부터 기온이 크게 낮아질 전망입니다. 갑작스러운 날씨 변화에 대비하여 외출 시 따뜻한 옷차림 등 건강관리에 유의하시기 바랍니다.[의성군]
+              - generic [ref=e686]:
+                - group [ref=e687]:
+                  - generic "어려운 표현을 쉬운 말로 보기" [ref=e688] [cursor=pointer]
+                  - option "쉬운 한국어" [selected]
+                  - option "어린이"
+                  - option "고령층"
+                  - option "외국인"
+                - link "공식 원문" [ref=e689] [cursor=pointer]:
+                  - /url: https://www.safetydata.go.kr/disaster-data/disasterNotificationDetail?sn=269814
+          - article [ref=e690]:
+            - generic [ref=e691]:
+              - generic [ref=e692]: 2026/10/27 18:00:21
+              - generic [ref=e693]: 경상남도
+            - generic [ref=e694]:
+              - paragraph [ref=e695]: 오늘 밤 9시 한파주의보 발효. 밤부터 기온이 급격히 떨어질 것으로 예상되니 급격한 기온 변화에 따른 건강 및 안전관리에 유의하시기 바랍니다. [경상남도]
+              - generic [ref=e696]:
+                - group [ref=e697]:
+                  - generic "어려운 표현을 쉬운 말로 보기" [ref=e698] [cursor=pointer]
+                  - option "쉬운 한국어" [selected]
+                  - option "어린이"
+                  - option "고령층"
+                  - option "외국인"
+                - link "공식 원문" [ref=e699] [cursor=pointer]:
+                  - /url: https://www.safetydata.go.kr/disaster-data/disasterNotificationDetail?sn=269813
+          - article [ref=e700]:
+            - generic [ref=e701]:
+              - generic [ref=e702]: 2026/10/27 18:00:11
+              - generic [ref=e703]: 행정안전부
+            - generic [ref=e704]:
+              - paragraph [ref=e705]: 금일 21시 기준 한파주의보 발효, 야외 활동을 자제하시고 외출 시 보온에 신경 쓰세요. 한랭질환 증상 발생 시 따뜻한 장소로 이동하세요. [행정안전부]
+              - generic [ref=e706]:
+                - group [ref=e707]:
+                  - generic "어려운 표현을 쉬운 말로 보기" [ref=e708] [cursor=pointer]
+                  - option "쉬운 한국어" [selected]
+                  - option "어린이"
+                  - option "고령층"
+                  - option "외국인"
+                - link "공식 원문" [ref=e709] [cursor=pointer]:
+                  - /url: https://www.safetydata.go.kr/disaster-data/disasterNotificationDetail?sn=269812
+          - article [ref=e710]:
+            - generic [ref=e711]:
+              - generic [ref=e712]: 2026/10/27 17:51:49
+              - generic [ref=e713]: 충청북도
+            - generic [ref=e714]:
+              - paragraph [ref=e715]: 오늘 밤부터 기온이 급격히 떨어질 것으로 예상되니 기온 변화에 따른 건강 및 안전관리에 유의하시기 바랍니다. [충청북도]
+              - generic [ref=e716]:
+                - group [ref=e717]:
+                  - generic "어려운 표현을 쉬운 말로 보기" [ref=e718] [cursor=pointer]
+                  - option "쉬운 한국어" [selected]
+                  - option "어린이"
+                  - option "고령층"
+                  - option "외국인"
+                - link "공식 원문" [ref=e719] [cursor=pointer]:
+                  - /url: https://www.safetydata.go.kr/disaster-data/disasterNotificationDetail?sn=269811
+          - article [ref=e720]:
+            - generic [ref=e721]:
+              - generic [ref=e722]: 2026/10/27 17:47:19
+              - generic [ref=e723]: 의정부시
+            - generic [ref=e724]:
+              - paragraph [ref=e725]: 오늘 현재 의정부시 가능동 651-14부근 에서 화재 발생. 차량은 건물 주변 도로를 우회하고, 인근 건물주민은 대피하여 주시기 대피하세요. [의정부시]
+              - generic [ref=e726]:
+                - group [ref=e727]:
+                  - generic "어려운 표현을 쉬운 말로 보기" [ref=e728] [cursor=pointer]
+                  - option "쉬운 한국어" [selected]
+                  - option "어린이"
+                  - option "고령층"
+                  - option "외국인"
+                - link "공식 원문" [ref=e729] [cursor=pointer]:
+                  - /url: https://www.safetydata.go.kr/disaster-data/disasterNotificationDetail?sn=269810
+        - generic [ref=e730]:
+          - button "이전" [disabled] [ref=e731]
+          - generic [ref=e732]: 1 / 391 · 19,531건
+          - button "다음" [ref=e733] [cursor=pointer]
+        - paragraph [ref=e734]: 선택한 기간의 전국 공개 기록을 모두 모아 페이지별로 보여줘요. 반복 발령 문자도 각각의 기록으로 포함됩니다. 쉬운 표현은 원문 뜻을 유지하는 규칙으로 바꾸며, 변환할 근거가 없는 부분은 원문을 그대로 둬요.
+  - contentinfo [ref=e735]:
+    - generic [ref=e736]:
+      - link "안심길 ●" [ref=e737] [cursor=pointer]:
+        - /url: "#home"
+        - img [ref=e739]
+        - generic [ref=e741]:
+          - text: 안심길
+          - emphasis [ref=e742]: ●
+      - generic [ref=e743]: 더 쉬운 안내가, 더 빠른 대피로 이어지도록.
+      - generic [ref=e744]: 공개 데이터 제공 범위는 지역별로 다를 수 있습니다.
+  - status

@@ -1,0 +1,743 @@
+- generic [active] [ref=e1]:
+  - banner [ref=e2]:
+    - navigation "주요 메뉴" [ref=e3]:
+      - link "안심길 홈" [ref=e4] [cursor=pointer]:
+        - /url: "#home"
+        - img [ref=e6]
+        - generic [ref=e8]:
+          - text: 안심길
+          - emphasis [ref=e9]: ●
+      - generic [ref=e10]:
+        - link "문자 쉽게 보기" [ref=e11] [cursor=pointer]:
+          - /url: "#translate"
+        - link "대피소 지도" [ref=e12] [cursor=pointer]:
+          - /url: "#map-section"
+        - link "알림 설정" [ref=e13] [cursor=pointer]:
+          - /url: "#alerts"
+        - generic [ref=e14]:
+          - img [ref=e15]
+          - combobox "사이트 언어" [ref=e18]:
+            - option "한국어" [selected]
+            - option "English"
+            - option "中文"
+            - option "Tiếng Việt"
+            - option "नेपाली"
+            - option "Filipino"
+            - option "ไทย"
+        - button "글자 크기 설정 열기" [ref=e19] [cursor=pointer]:
+          - img [ref=e20]
+          - generic [ref=e23]: 설정
+        - link "안내 시작하기" [ref=e24] [cursor=pointer]:
+          - /url: "#translate"
+  - main [ref=e25]:
+    - generic [ref=e27]:
+      - generic [ref=e28]:
+        - generic [ref=e29]: DISASTER MESSAGE, MADE CLEAR
+        - heading "위험한 순간, 쉬운 말로 먼저." [level=1] [ref=e30]:
+          - text: 위험한 순간,
+          - text: 쉬운 말로
+          - text: 먼저.
+        - paragraph [ref=e31]: 어려운 재난문자를 쉬운 말로 바꾸고, 내 주변 대피소까지 한눈에. 언어가 달라도 안전한 다음 행동을 놓치지 않도록 도와드려요.
+        - generic [ref=e32]:
+          - link "재난문자 쉽게 보기" [ref=e33] [cursor=pointer]:
+            - /url: "#translate"
+            - text: 재난문자 쉽게 보기
+            - img [ref=e34]
+          - link "대피소 먼저 찾기" [ref=e36] [cursor=pointer]:
+            - /url: "#map-section"
+      - generic "재난문자가 쉬운 행동 안내로 바뀌는 모습" [ref=e37]:
+        - article [ref=e39]:
+          - generic [ref=e40]:
+            - generic [ref=e41]: 긴급 재난문자
+            - generic [ref=e42]: 방금 전
+          - paragraph [ref=e43]: 호우로 인한 하천 범람 우려가 있으니 저지대 주민은 신속히 대피하시기 바랍니다.
+          - generic [ref=e44]:
+            - text: 비가 많이 와서 강물이 넘칠 수 있어요.
+            - text: 높은 곳이나 안전한 곳으로 이동해요.
+        - generic [ref=e46]: 긴급 문자 → 쉬운 말
+    - generic [ref=e48]:
+      - generic [ref=e49]:
+        - generic [ref=e50]:
+          - generic [ref=e51]: MY MESSAGE / MAKE IT CLEAR
+          - heading "받은 문자를 쉽게 바꿔보기" [level=2] [ref=e52]:
+            - text: 받은 문자를
+            - text: 쉽게 바꿔보기
+        - paragraph [ref=e53]: 문자를 붙여넣거나 예시를 골라보세요. 쉬운 설명과 선택한 언어 번역을 함께 보여드려요.
+      - generic [ref=e54]:
+        - generic [ref=e55]:
+          - generic [ref=e56]:
+            - text: 재난문자 원문
+            - generic [ref=e57]: 개인정보는 입력하지 마세요
+          - textbox "재난문자 원문 개인정보는 입력하지 마세요" [ref=e58]:
+            - /placeholder: 재난문자 내용을 여기에 붙여넣어 주세요.
+          - generic [ref=e59]: 사이트 언어
+          - group "안내 언어" [ref=e60]:
+            - button "한국어" [ref=e61] [cursor=pointer]
+            - button "English" [ref=e62] [cursor=pointer]
+            - button "中文" [ref=e63] [cursor=pointer]
+            - button "Tiếng Việt" [ref=e64] [cursor=pointer]
+            - button "नेपाली" [ref=e65] [cursor=pointer]
+            - button "Filipino" [ref=e66] [cursor=pointer]
+            - button "ไทย" [ref=e67] [cursor=pointer]
+          - generic [ref=e68]:
+            - button "쉬운 설명과 번역 보기" [ref=e69] [cursor=pointer]:
+              - text: 쉬운 설명과 번역 보기
+              - generic [ref=e70]: →
+            - button "예시 문구" [ref=e71] [cursor=pointer]
+          - status [ref=e72]: 재난문자 내용을 입력해 주세요.
+        - article [ref=e73]:
+          - generic [ref=e74]: EASY RESULT / 한국어
+          - heading "문자를 입력하면 쉬운 안내가 보여요" [level=3] [ref=e75]
+          - generic [ref=e76]: 재난문자 원문이 여기에 표시됩니다.
+          - paragraph [ref=e77]: 문자를 입력하고 ‘쉬운 설명과 번역 보기’를 눌러주세요.
+      - group [ref=e78]:
+        - generic "API 연결 방법과 사용법 보기" [ref=e79] [cursor=pointer]
+    - generic [ref=e81]:
+      - generic [ref=e82]:
+        - generic [ref=e83]:
+          - generic [ref=e84]: OPEN MAP / NEARBY SAFE PLACES
+          - heading "내 주변 대피소 찾기" [level=2] [ref=e85]:
+            - text: 내 주변
+            - text: 대피소 찾기
+        - paragraph [ref=e86]: 지도에서 위치를 확인하고 주변 장소를 검색해 보세요. 위치 권한은 직접 눌렀을 때만 요청해요.
+      - generic [ref=e87]:
+        - generic [ref=e88]:
+          - application "OpenStreetMap 지도" [ref=e89]:
+            - generic:
+              - generic:
+                - button "Marker" [ref=e90] [cursor=pointer]
+                - button "Marker" [ref=e91] [cursor=pointer]
+                - button "Marker" [ref=e92] [cursor=pointer]
+                - button "Marker" [ref=e93] [cursor=pointer]
+                - button "Marker" [ref=e94] [cursor=pointer]
+                - button "Marker" [ref=e95] [cursor=pointer]
+                - button "Marker" [ref=e96] [cursor=pointer]
+                - button "Marker" [ref=e97] [cursor=pointer]
+                - button "Marker" [ref=e98] [cursor=pointer]
+                - button "Marker" [ref=e99] [cursor=pointer]
+                - button "Marker" [ref=e100] [cursor=pointer]
+                - button "Marker" [ref=e101] [cursor=pointer]
+                - button "Marker" [ref=e102] [cursor=pointer]
+                - button "Marker" [ref=e103] [cursor=pointer]
+                - button "Marker" [ref=e104] [cursor=pointer]
+                - button "Marker" [ref=e105] [cursor=pointer]
+                - button "Marker" [ref=e106] [cursor=pointer]
+                - button "Marker" [ref=e107] [cursor=pointer]
+                - button "Marker" [ref=e108] [cursor=pointer]
+                - button "Marker" [ref=e109] [cursor=pointer]
+                - button "Marker" [ref=e110] [cursor=pointer]
+                - button "Marker" [ref=e111] [cursor=pointer]
+                - button "Marker" [ref=e112] [cursor=pointer]
+            - generic:
+              - generic [ref=e113]:
+                - button "Zoom in" [ref=e114] [cursor=pointer]: +
+                - button "Zoom out" [ref=e115] [cursor=pointer]: −
+              - generic [ref=e116]:
+                - link "Leaflet" [ref=e117] [cursor=pointer]:
+                  - /url: https://leafletjs.com
+                  - img [ref=e118]
+                  - text: Leaflet
+                - text: "| © OpenStreetMap"
+          - generic [ref=e122]:
+            - button "현재 위치 사용" [ref=e123] [cursor=pointer]
+            - button "주변 대피소 찾기" [ref=e124] [cursor=pointer]
+          - generic [ref=e125]: 지도 © OpenStreetMap 기여자
+        - complementary [ref=e126]:
+          - generic [ref=e127]:
+            - heading "공식 민방위 대피시설" [level=3] [ref=e128]
+            - generic [ref=e129]: 행안부 자료
+          - generic [ref=e130]:
+            - searchbox "지역이나 장소 검색" [ref=e131]
+            - button "검색" [ref=e132] [cursor=pointer]: ⌕
+          - generic [ref=e133]:
+            - generic [ref=e134]: 길 안내 방식
+            - combobox "길 안내 방식" [ref=e135]:
+              - option "도보" [selected]
+              - option "차량"
+            - button "위치 추적 끄기" [pressed] [ref=e136] [cursor=pointer]
+          - paragraph [ref=e137]: 실시간 위치를 따라가고 있어요. 이동하면 주변 시설과 선택한 경로도 갱신돼요.
+          - generic [ref=e138]:
+            - generic [ref=e139]:
+              - button "거창군청 지하1층 대피소 0.1 km · 경상남도 거창군 거창읍 중앙로 103 (거창군청) 지하 · 수용인원 320명 · 운영 중" [ref=e140] [cursor=pointer]:
+                - text: 거창군청 지하1층 대피소
+                - generic [ref=e141]: 0.1 km · 경상남도 거창군 거창읍 중앙로 103 (거창군청)
+                - generic [ref=e142]: 지하 · 수용인원 320명 · 운영 중
+              - button "거창군청 지하1층 대피소 길 안내" [ref=e143] [cursor=pointer]: 길 안내
+            - generic [ref=e144]:
+              - button "적십자병원 지하1층 대피소 0.1 km · 경상남도 거창군 거창읍 중앙로 91 (거창적십자병원) 지하 · 수용인원 650명 · 운영 중" [ref=e145] [cursor=pointer]:
+                - text: 적십자병원 지하1층 대피소
+                - generic [ref=e146]: 0.1 km · 경상남도 거창군 거창읍 중앙로 91 (거창적십자병원)
+                - generic [ref=e147]: 지하 · 수용인원 650명 · 운영 중
+              - button "적십자병원 지하1층 대피소 길 안내" [ref=e148] [cursor=pointer]: 길 안내
+            - generic [ref=e149]:
+              - button "거창군 종합사회복지관 지하 1층 대피소 0.2 km · 경상남도 거창군 거창읍 아림로 66 (거창군종합사회복지관) 지하 · 수용인원 132명 · 운영 중" [ref=e150] [cursor=pointer]:
+                - text: 거창군 종합사회복지관 지하 1층 대피소
+                - generic [ref=e151]: 0.2 km · 경상남도 거창군 거창읍 아림로 66 (거창군종합사회복지관)
+                - generic [ref=e152]: 지하 · 수용인원 132명 · 운영 중
+              - button "거창군 종합사회복지관 지하 1층 대피소 길 안내" [ref=e153] [cursor=pointer]: 길 안내
+            - generic [ref=e154]:
+              - button "거창성당 지하 1층 대피소 0.6 km · 경상남도 거창군 거창읍 창남1길 58, 거창천주교회 지하 · 수용인원 1,633명 · 운영 중" [ref=e155] [cursor=pointer]:
+                - text: 거창성당 지하 1층 대피소
+                - generic [ref=e156]: 0.6 km · 경상남도 거창군 거창읍 창남1길 58, 거창천주교회
+                - generic [ref=e157]: 지하 · 수용인원 1,633명 · 운영 중
+              - button "거창성당 지하 1층 대피소 길 안내" [ref=e158] [cursor=pointer]: 길 안내
+            - generic [ref=e159]:
+              - button "무지개APT 지하주차장 1층 대피소 0.7 km · 경상남도 거창군 거창읍 죽전7길 13 (무지개아파트) 지하 · 수용인원 214명 · 운영 중" [ref=e160] [cursor=pointer]:
+                - text: 무지개APT 지하주차장 1층 대피소
+                - generic [ref=e161]: 0.7 km · 경상남도 거창군 거창읍 죽전7길 13 (무지개아파트)
+                - generic [ref=e162]: 지하 · 수용인원 214명 · 운영 중
+              - button "무지개APT 지하주차장 1층 대피소 길 안내" [ref=e163] [cursor=pointer]: 길 안내
+            - generic [ref=e164]:
+              - button "대경넥스빌APT 지하주차장 1층 대피소 0.7 km · 경상남도 거창군 거창읍 거열로7길 29 (대경넥스빌) 지하 · 수용인원 1,844명 · 운영 중" [ref=e165] [cursor=pointer]:
+                - text: 대경넥스빌APT 지하주차장 1층 대피소
+                - generic [ref=e166]: 0.7 km · 경상남도 거창군 거창읍 거열로7길 29 (대경넥스빌)
+                - generic [ref=e167]: 지하 · 수용인원 1,844명 · 운영 중
+              - button "대경넥스빌APT 지하주차장 1층 대피소 길 안내" [ref=e168] [cursor=pointer]: 길 안내
+            - generic [ref=e169]:
+              - button "신흥1차APT 지하주차장 1층 대피소 0.8 km · 경상남도 거창군 거창읍 강변로9길 41 (신흥아파트) 지하 · 수용인원 940명 · 운영 중" [ref=e170] [cursor=pointer]:
+                - text: 신흥1차APT 지하주차장 1층 대피소
+                - generic [ref=e171]: 0.8 km · 경상남도 거창군 거창읍 강변로9길 41 (신흥아파트)
+                - generic [ref=e172]: 지하 · 수용인원 940명 · 운영 중
+              - button "신흥1차APT 지하주차장 1층 대피소 길 안내" [ref=e173] [cursor=pointer]: 길 안내
+            - generic [ref=e174]:
+              - button "화목APT 지하주차장 1층 대피소 0.8 km · 경상남도 거창군 거창읍 거열로2길 34-9 (화목아파트) 지하 · 수용인원 1,650명 · 운영 중" [ref=e175] [cursor=pointer]:
+                - text: 화목APT 지하주차장 1층 대피소
+                - generic [ref=e176]: 0.8 km · 경상남도 거창군 거창읍 거열로2길 34-9 (화목아파트)
+                - generic [ref=e177]: 지하 · 수용인원 1,650명 · 운영 중
+              - button "화목APT 지하주차장 1층 대피소 길 안내" [ref=e178] [cursor=pointer]: 길 안내
+            - generic [ref=e179]:
+              - button "현대아파트APT 지하주차장 1층 대피소 0.8 km · 경상남도 거창군 거창읍 거열로8길 33 (현대아파트) 지하 · 수용인원 693명 · 운영 중" [ref=e180] [cursor=pointer]:
+                - text: 현대아파트APT 지하주차장 1층 대피소
+                - generic [ref=e181]: 0.8 km · 경상남도 거창군 거창읍 거열로8길 33 (현대아파트)
+                - generic [ref=e182]: 지하 · 수용인원 693명 · 운영 중
+              - button "현대아파트APT 지하주차장 1층 대피소 길 안내" [ref=e183] [cursor=pointer]: 길 안내
+            - generic [ref=e184]:
+              - button "신흥3차APT 지하주차장 1층 대피소 0.8 km · 경상남도 거창군 거창읍 강양4길 11 (신흥3차아파트) 지하 · 수용인원 914명 · 운영 중" [ref=e185] [cursor=pointer]:
+                - text: 신흥3차APT 지하주차장 1층 대피소
+                - generic [ref=e186]: 0.8 km · 경상남도 거창군 거창읍 강양4길 11 (신흥3차아파트)
+                - generic [ref=e187]: 지하 · 수용인원 914명 · 운영 중
+              - button "신흥3차APT 지하주차장 1층 대피소 길 안내" [ref=e188] [cursor=pointer]: 길 안내
+            - generic [ref=e189]:
+              - button "대우APT 지하주차장 1층 대피소 0.9 km · 경상남도 거창군 거창읍 거열로4길 144-20 (대우아파트) 지하 · 수용인원 3,738명 · 운영 중" [ref=e190] [cursor=pointer]:
+                - text: 대우APT 지하주차장 1층 대피소
+                - generic [ref=e191]: 0.9 km · 경상남도 거창군 거창읍 거열로4길 144-20 (대우아파트)
+                - generic [ref=e192]: 지하 · 수용인원 3,738명 · 운영 중
+              - button "대우APT 지하주차장 1층 대피소 길 안내" [ref=e193] [cursor=pointer]: 길 안내
+            - generic [ref=e194]:
+              - button "신세계APT 지하주차장 1층 대피소 0.9 km · 경상남도 거창군 거창읍 거열로1길 78-23 (신세계타운) 지하 · 수용인원 2,640명 · 운영 중" [ref=e195] [cursor=pointer]:
+                - text: 신세계APT 지하주차장 1층 대피소
+                - generic [ref=e196]: 0.9 km · 경상남도 거창군 거창읍 거열로1길 78-23 (신세계타운)
+                - generic [ref=e197]: 지하 · 수용인원 2,640명 · 운영 중
+              - button "신세계APT 지하주차장 1층 대피소 길 안내" [ref=e198] [cursor=pointer]: 길 안내
+            - generic [ref=e199]:
+              - button "명성빌딩 지하주차장 1층 대피소 0.9 km · 경상남도 거창군 거창읍 중앙로 8 지하 · 수용인원 279명 · 운영 중" [ref=e200] [cursor=pointer]:
+                - text: 명성빌딩 지하주차장 1층 대피소
+                - generic [ref=e201]: 0.9 km · 경상남도 거창군 거창읍 중앙로 8
+                - generic [ref=e202]: 지하 · 수용인원 279명 · 운영 중
+              - button "명성빌딩 지하주차장 1층 대피소 길 안내" [ref=e203] [cursor=pointer]: 길 안내
+            - generic [ref=e204]:
+              - button "푸르지오 아파트 지하주차장 1층 대피소 1.0 km · 경상남도 거창군 거창읍 송정2길 33 (푸르지오아파트) 지하 · 수용인원 23,004명 · 운영 중" [ref=e205] [cursor=pointer]:
+                - text: 푸르지오 아파트 지하주차장 1층 대피소
+                - generic [ref=e206]: 1.0 km · 경상남도 거창군 거창읍 송정2길 33 (푸르지오아파트)
+                - generic [ref=e207]: 지하 · 수용인원 23,004명 · 운영 중
+              - button "푸르지오 아파트 지하주차장 1층 대피소 길 안내" [ref=e208] [cursor=pointer]: 길 안내
+            - generic [ref=e209]:
+              - button "삼아APT 지하주차장 1층 대피소 1.0 km · 경상남도 거창군 거창읍 김천1길 14 ((주)삼아그린타운) 지하 · 수용인원 1,468명 · 운영 중" [ref=e210] [cursor=pointer]:
+                - text: 삼아APT 지하주차장 1층 대피소
+                - generic [ref=e211]: 1.0 km · 경상남도 거창군 거창읍 김천1길 14 ((주)삼아그린타운)
+                - generic [ref=e212]: 지하 · 수용인원 1,468명 · 운영 중
+              - button "삼아APT 지하주차장 1층 대피소 길 안내" [ref=e213] [cursor=pointer]: 길 안내
+            - generic [ref=e214]:
+              - button "더샵거창포르시엘 지하1~2층 주차장 1.0 km · 경상남도 거창군 거창읍 거열로8길 76 (더샵거창포르시엘) 지하 · 수용인원 18,111명 · 운영 중" [ref=e215] [cursor=pointer]:
+                - text: 더샵거창포르시엘 지하1~2층 주차장
+                - generic [ref=e216]: 1.0 km · 경상남도 거창군 거창읍 거열로8길 76 (더샵거창포르시엘)
+                - generic [ref=e217]: 지하 · 수용인원 18,111명 · 운영 중
+              - button "더샵거창포르시엘 지하1~2층 주차장 길 안내" [ref=e218] [cursor=pointer]: 길 안내
+            - generic [ref=e219]:
+              - button "세륭APT 지하주차장 1층 대피소 1.0 km · 경상남도 거창군 거창읍 김천1길 20 (세륭아파트) 지하 · 수용인원 660명 · 운영 중" [ref=e220] [cursor=pointer]:
+                - text: 세륭APT 지하주차장 1층 대피소
+                - generic [ref=e221]: 1.0 km · 경상남도 거창군 거창읍 김천1길 20 (세륭아파트)
+                - generic [ref=e222]: 지하 · 수용인원 660명 · 운영 중
+              - button "세륭APT 지하주차장 1층 대피소 길 안내" [ref=e223] [cursor=pointer]: 길 안내
+            - generic [ref=e224]:
+              - button "한흥빌딩 지하주차장 1층 대피소 1.0 km · 경상남도 거창군 거창읍 창동로 119 (한흥스포렉스,한흥아파트) 지하 · 수용인원 660명 · 운영 중" [ref=e225] [cursor=pointer]:
+                - text: 한흥빌딩 지하주차장 1층 대피소
+                - generic [ref=e226]: 1.0 km · 경상남도 거창군 거창읍 창동로 119 (한흥스포렉스,한흥아파트)
+                - generic [ref=e227]: 지하 · 수용인원 660명 · 운영 중
+              - button "한흥빌딩 지하주차장 1층 대피소 길 안내" [ref=e228] [cursor=pointer]: 길 안내
+            - generic [ref=e229]:
+              - button "SG서경병원 지하 1층 대피소 1.2 km · 경상남도 거창군 거창읍 송정1길 24-13, 한국병원 지하 · 수용인원 1,115명 · 운영 중" [ref=e230] [cursor=pointer]:
+                - text: SG서경병원 지하 1층 대피소
+                - generic [ref=e231]: 1.2 km · 경상남도 거창군 거창읍 송정1길 24-13, 한국병원
+                - generic [ref=e232]: 지하 · 수용인원 1,115명 · 운영 중
+              - button "SG서경병원 지하 1층 대피소 길 안내" [ref=e233] [cursor=pointer]: 길 안내
+            - generic [ref=e234]:
+              - button "신흥2차APT 지하주차장 1층 대피소 1.2 km · 경상남도 거창군 거창읍 동동3길 15 (신흥2차아파트) 지하 · 수용인원 2,557명 · 운영 중" [ref=e235] [cursor=pointer]:
+                - text: 신흥2차APT 지하주차장 1층 대피소
+                - generic [ref=e236]: 1.2 km · 경상남도 거창군 거창읍 동동3길 15 (신흥2차아파트)
+                - generic [ref=e237]: 지하 · 수용인원 2,557명 · 운영 중
+              - button "신흥2차APT 지하주차장 1층 대피소 길 안내" [ref=e238] [cursor=pointer]: 길 안내
+            - generic [ref=e239]:
+              - button "코아루에듀시티 지하주차장 1층 대피소 1.5 km · 경상남도 거창군 거창읍 강남로 266-0 (거창코아루에듀시티) 지하 · 수용인원 13,496명 · 운영 중" [ref=e240] [cursor=pointer]:
+                - text: 코아루에듀시티 지하주차장 1층 대피소
+                - generic [ref=e241]: 1.5 km · 경상남도 거창군 거창읍 강남로 266-0 (거창코아루에듀시티)
+                - generic [ref=e242]: 지하 · 수용인원 13,496명 · 운영 중
+              - button "코아루에듀시티 지하주차장 1층 대피소 길 안내" [ref=e243] [cursor=pointer]: 길 안내
+            - generic [ref=e244]:
+              - button "코아루2차아파트 지하주차장 1층 대피소 1.7 km · 경상남도 거창군 거창읍 새동네2길 40 (코아루2차아파트) 지하 · 수용인원 11,395명 · 운영 중" [ref=e245] [cursor=pointer]:
+                - text: 코아루2차아파트 지하주차장 1층 대피소
+                - generic [ref=e246]: 1.7 km · 경상남도 거창군 거창읍 새동네2길 40 (코아루2차아파트)
+                - generic [ref=e247]: 지하 · 수용인원 11,395명 · 운영 중
+              - button "코아루2차아파트 지하주차장 1층 대피소 길 안내" [ref=e248] [cursor=pointer]: 길 안내
+          - paragraph [ref=e249]:
+            - strong [ref=e250]: 자료 안내.
+            - text: 행정안전부 전국 민방위대피시설 공개자료예요. 민방위 시설이 호우·산불 등 모든 재난의 대피소로 지정된 것은 아니니, 실제 대피 전에는 재난문자와 지자체 안내를 확인해 주세요.
+            - link "자료 출처 보기" [ref=e251] [cursor=pointer]:
+              - /url: https://www.data.go.kr/data/15044951/fileData.do
+    - generic [ref=e253]:
+      - generic [ref=e254]:
+        - generic [ref=e255]: ALERTS / STAY INFORMED
+        - heading "앱을 보고 있지 않아도 안전 안내를 놓치지 않게." [level=2] [ref=e256]:
+          - text: 앱을 보고 있지 않아도
+          - text: 안전 안내를 놓치지 않게.
+        - generic [ref=e257]:
+          - img [ref=e259]
+          - heading "이 기기에서 알림 테스트" [level=3] [ref=e261]
+          - paragraph [ref=e262]: 브라우저 알림을 허용하고 테스트 메시지를 보내볼 수 있어요. 실제 재난문자 연동이 아닌 미리보기 기능입니다.
+          - button "알림 허용하고 테스트하기" [ref=e263] [cursor=pointer]
+          - status [ref=e264]: 현재는 이 페이지를 열어 둔 상태에서만 테스트할 수 있어요.
+      - generic [ref=e265]:
+        - generic [ref=e266]:
+          - generic [ref=e267]: "01"
+          - generic [ref=e268]:
+            - strong [ref=e269]: 현재 웹 미리보기에서 가능한 것
+            - paragraph [ref=e270]: 문자 쉬운 설명, 공개 지도 확인, 이 기기에서 브라우저 알림 테스트를 할 수 있어요.
+        - generic [ref=e271]:
+          - generic [ref=e272]: "02"
+          - generic [ref=e273]:
+            - strong [ref=e274]: 앱을 닫았을 때의 실제 재난 알림
+            - paragraph [ref=e275]: 공식 재난문자 수신 연동과 서버 푸시 또는 Android 앱 개발이 별도로 필요해요. 브라우저만으로 한국 긴급문자를 직접 읽어오는 기능은 제공되지 않아요.
+        - generic [ref=e276]:
+          - generic [ref=e277]: "03"
+          - generic [ref=e278]:
+            - strong [ref=e279]: 안전 안내는 공식 정보를 우선해요
+            - paragraph [ref=e280]: 번역은 이해를 돕기 위한 참고예요. 대피 판단과 행동은 지자체·소방 당국의 최신 안내를 따라주세요.
+    - generic [ref=e282]:
+      - generic [ref=e283]:
+        - generic [ref=e284]:
+          - generic [ref=e285]: QUICK GUIDE / STAY SAFE
+          - heading "그림으로 보는 지금 해야 할 일" [level=2] [ref=e286]:
+            - text: 그림으로 보는
+            - text: 지금 해야 할 일
+        - paragraph [ref=e287]: 재난 유형별 기본 행동을 빠르게 확인하세요. 실제 상황에서는 재난문자와 현장 안내를 먼저 따라주세요.
+      - generic [ref=e288]:
+        - article [ref=e289]:
+          - img [ref=e291]
+          - text: 산불
+          - heading "불 반대 방향으로 이동" [level=3] [ref=e294]
+          - paragraph [ref=e295]: 연기가 보이면 낮은 자세로 안전한 곳으로 이동해요.
+        - article [ref=e296]:
+          - img [ref=e298]
+          - text: 호우
+          - heading "높은 곳으로 이동" [level=3] [ref=e301]
+          - paragraph [ref=e302]: 하천과 지하차도에 가지 말고 물이 빠질 때까지 기다려요.
+        - article [ref=e303]:
+          - img [ref=e305]
+          - text: 폭염
+          - heading "물을 자주 마시기" [level=3] [ref=e308]
+          - paragraph [ref=e309]: 그늘이나 시원한 곳에서 쉬고 무리하지 마세요.
+        - article [ref=e310]:
+          - img [ref=e312]
+          - text: 지진
+          - heading "머리를 보호하기" [level=3] [ref=e316]
+          - paragraph [ref=e317]: 흔들림이 멈춘 뒤 계단으로 이동하고 넓은 곳으로 가요.
+        - article [ref=e318]:
+          - img [ref=e320]
+          - text: 한파
+          - heading "따뜻하게 입기" [level=3] [ref=e322]
+          - paragraph [ref=e323]: 추운 곳에 오래 있지 말고 실내에서 쉬세요.
+        - article [ref=e324]:
+          - img [ref=e326]
+          - text: 대설
+          - heading "천천히 걷기" [level=3] [ref=e329]
+          - paragraph [ref=e330]: 눈길·빙판길 외출을 줄이고 미끄럼을 조심해요.
+    - generic [ref=e332]:
+      - generic [ref=e333]:
+        - generic [ref=e334]:
+          - generic [ref=e335]: OFFICIAL DISASTER MESSAGES
+          - heading "거창 재난문자 목록" [level=2] [ref=e336]:
+            - text: 거창 재난문자
+            - text: 목록
+        - paragraph [ref=e337]: 공식 공개 기록에서 거창 관련 문자를 기간별로 확인할 수 있어요.
+      - generic [ref=e338]:
+        - generic [ref=e339]:
+          - generic [ref=e340]:
+            - generic [ref=e341]: OFFICIAL ARCHIVE / GEOCHANG
+            - heading "거창군 재난문자 목록" [level=3] [ref=e342]
+            - paragraph [ref=e343]: 조회 기간 2026-08-01 ~ 2026-10-29
+          - generic [ref=e344]:
+            - generic [ref=e345]: 조회 기간
+            - combobox "조회 기간" [ref=e346]:
+              - option "최근 30일"
+              - option "최근 90일" [selected]
+              - option "최근 1년"
+            - button "목록 새로고침" [ref=e347] [cursor=pointer]
+        - status [ref=e348]: 공식 목록에서 23건을 찾았어요
+        - generic [ref=e349]:
+          - article [ref=e350]:
+            - generic [ref=e351]:
+              - generic [ref=e352]: 2026/09/27 14:00:04
+              - generic [ref=e353]: 거창군
+            - generic [ref=e354]:
+              - paragraph [ref=e355]: 추석연휴 벌초·성묘객 증가로 산불발생 위험이 높습니다. ▲산림 및 연접지 소각·불씨 사용 금지▲입산시 화기소지 금지, 불법소각 시 과태료 50만원 부과[거창군]
+              - generic [ref=e356]:
+                - group [ref=e357]:
+                  - generic "어려운 표현을 쉬운 말로 보기" [ref=e358] [cursor=pointer]
+                  - option "쉬운 한국어" [selected]
+                  - option "어린이"
+                  - option "고령층"
+                  - option "외국인"
+                - link "공식 원문" [ref=e359] [cursor=pointer]:
+                  - /url: https://www.safetydata.go.kr/disaster-data/disasterNotificationDetail?sn=269185
+          - article [ref=e360]:
+            - generic [ref=e361]:
+              - generic [ref=e362]: 2026/09/26 14:03:18
+              - generic [ref=e363]: 거창군
+            - generic [ref=e364]:
+              - paragraph [ref=e365]: 추석연휴 벌초·성묘객 증가로 산불발생 위험이 높습니다. ▲산림 및 연접지 소각·불씨 사용 금지▲입산시 화기소지 금지, 불법소각 시 과태료 50만원 부과[거창군]
+              - generic [ref=e366]:
+                - group [ref=e367]:
+                  - generic "어려운 표현을 쉬운 말로 보기" [ref=e368] [cursor=pointer]
+                  - option "쉬운 한국어" [selected]
+                  - option "어린이"
+                  - option "고령층"
+                  - option "외국인"
+                - link "공식 원문" [ref=e369] [cursor=pointer]:
+                  - /url: https://www.safetydata.go.kr/disaster-data/disasterNotificationDetail?sn=269155
+          - article [ref=e370]:
+            - generic [ref=e371]:
+              - generic [ref=e372]: 2026/09/25 14:09:59
+              - generic [ref=e373]: 거창군
+            - generic [ref=e374]:
+              - paragraph [ref=e375]: 추석연휴 벌초·성묘객 증가로 산불발생 위험이 높습니다. ▲산림 및 연접지 소각·불씨 사용 금지▲입산시 화기소지 금지, 불법소각 시 과태료 50만원 부과[거창군]
+              - generic [ref=e376]:
+                - group [ref=e377]:
+                  - generic "어려운 표현을 쉬운 말로 보기" [ref=e378] [cursor=pointer]
+                  - option "쉬운 한국어" [selected]
+                  - option "어린이"
+                  - option "고령층"
+                  - option "외국인"
+                - link "공식 원문" [ref=e379] [cursor=pointer]:
+                  - /url: https://www.safetydata.go.kr/disaster-data/disasterNotificationDetail?sn=269124
+          - article [ref=e380]:
+            - generic [ref=e381]:
+              - generic [ref=e382]: 2026/09/24 14:00:09
+              - generic [ref=e383]: 거창군
+            - generic [ref=e384]:
+              - paragraph [ref=e385]: 추석연휴 벌초·성묘객 증가로 산불발생 위험이 높습니다. ▲산림 및 연접지 소각·불씨 사용 금지▲입산시 화기소지 금지, 불법소각 시 과태료 50만원 부과[거창군]
+              - generic [ref=e386]:
+                - group [ref=e387]:
+                  - generic "어려운 표현을 쉬운 말로 보기" [ref=e388] [cursor=pointer]
+                  - option "쉬운 한국어" [selected]
+                  - option "어린이"
+                  - option "고령층"
+                  - option "외국인"
+                - link "공식 원문" [ref=e389] [cursor=pointer]:
+                  - /url: https://www.safetydata.go.kr/disaster-data/disasterNotificationDetail?sn=269084
+          - article [ref=e390]:
+            - generic [ref=e391]:
+              - generic [ref=e392]: 2026/09/20 14:01:27
+              - generic [ref=e393]: 거창군
+            - generic [ref=e394]:
+              - paragraph [ref=e395]: 추석 성묘·벌초객 증가로 산불발생 위험이 높습니다. ▲산 연접 소각 금지 ▲불씨 취급 주의 ▲입산 시 화기소지 금지, 불법소각 시 과태료 50만원 부과[거창군]
+              - generic [ref=e396]:
+                - group [ref=e397]:
+                  - generic "어려운 표현을 쉬운 말로 보기" [ref=e398] [cursor=pointer]
+                  - option "쉬운 한국어" [selected]
+                  - option "어린이"
+                  - option "고령층"
+                  - option "외국인"
+                - link "공식 원문" [ref=e399] [cursor=pointer]:
+                  - /url: https://www.safetydata.go.kr/disaster-data/disasterNotificationDetail?sn=268999
+          - article [ref=e400]:
+            - generic [ref=e401]:
+              - generic [ref=e402]: 2026/09/19 14:00:08
+              - generic [ref=e403]: 거창군
+            - generic [ref=e404]:
+              - paragraph [ref=e405]: 추석 성묘·벌초객 증가로 산불발생 위험이 높습니다. ▲산 연접 소각 금지 ▲불씨 취급 주의 ▲입산 시 화기소지 금지, 불법소각 시 과태료 50만원 부과[거창군]
+              - generic [ref=e406]:
+                - group [ref=e407]:
+                  - generic "어려운 표현을 쉬운 말로 보기" [ref=e408] [cursor=pointer]
+                  - option "쉬운 한국어" [selected]
+                  - option "어린이"
+                  - option "고령층"
+                  - option "외국인"
+                - link "공식 원문" [ref=e409] [cursor=pointer]:
+                  - /url: https://www.safetydata.go.kr/disaster-data/disasterNotificationDetail?sn=268974
+          - article [ref=e410]:
+            - generic [ref=e411]:
+              - generic [ref=e412]: 2026/08/30 16:59:38
+              - generic [ref=e413]: 거창군
+            - generic [ref=e414]:
+              - paragraph [ref=e415]: 거창북부 호우경보 발효중, 산사태 위험이 높으니 산림 인접 주민들께서는 외부 활동을 자제하여 주시고 산사태 징후 확인 시 즉시 대피하시기 바랍니다. [거창군]
+              - generic [ref=e416]:
+                - group [ref=e417]:
+                  - generic "어려운 표현을 쉬운 말로 보기" [ref=e418] [cursor=pointer]
+                  - option "쉬운 한국어" [selected]
+                  - option "어린이"
+                  - option "고령층"
+                  - option "외국인"
+                - link "공식 원문" [ref=e419] [cursor=pointer]:
+                  - /url: https://www.safetydata.go.kr/disaster-data/disasterNotificationDetail?sn=268219
+          - article [ref=e420]:
+            - generic [ref=e421]:
+              - generic [ref=e422]: 2026/08/30 16:35:00
+              - generic [ref=e423]: 거창군
+            - generic [ref=e424]:
+              - paragraph [ref=e425]: 거창북부 호우경보 발효 중, 하천변·계곡·급경사지 등 위험지역 접근을 자제하고, 저지대 침수 및 산사태 등 안전사고에 각별히 유의하시기 바랍니다. [거창군]
+              - generic [ref=e426]:
+                - group [ref=e427]:
+                  - generic "어려운 표현을 쉬운 말로 보기" [ref=e428] [cursor=pointer]
+                  - option "쉬운 한국어" [selected]
+                  - option "어린이"
+                  - option "고령층"
+                  - option "외국인"
+                - link "공식 원문" [ref=e429] [cursor=pointer]:
+                  - /url: https://www.safetydata.go.kr/disaster-data/disasterNotificationDetail?sn=268208
+          - article [ref=e430]:
+            - generic [ref=e431]:
+              - generic [ref=e432]: 2026/08/30 16:18:37
+              - generic [ref=e433]: 경상남도
+            - generic [ref=e434]:
+              - paragraph [ref=e435]: 도내 거창군 호우경보 발표. 산간계곡, 하천변, 급경사지, 농수로, 지하공간 등 위험지역 출입금지. 대피권고를 받으면 즉시 대피하세요. [경상남도]
+              - generic [ref=e436]:
+                - group [ref=e437]:
+                  - generic "어려운 표현을 쉬운 말로 보기" [ref=e438] [cursor=pointer]
+                  - option "쉬운 한국어" [selected]
+                  - option "어린이"
+                  - option "고령층"
+                  - option "외국인"
+                - link "공식 원문" [ref=e439] [cursor=pointer]:
+                  - /url: https://www.safetydata.go.kr/disaster-data/disasterNotificationDetail?sn=268201
+          - article [ref=e440]:
+            - generic [ref=e441]:
+              - generic [ref=e442]: 2026/08/30 16:05:01
+              - generic [ref=e443]: 행정안전부
+            - generic [ref=e444]:
+              - paragraph [ref=e445]: 오늘 16:00 경남(거창북부) 호우경보. 하천 주변, 계곡, 급경사지, 농수로 등 위험지역 출입 금지, 대피권고를 받으면 즉시 대피하세요. [행정안전부]
+              - generic [ref=e446]:
+                - group [ref=e447]:
+                  - generic "어려운 표현을 쉬운 말로 보기" [ref=e448] [cursor=pointer]
+                  - option "쉬운 한국어" [selected]
+                  - option "어린이"
+                  - option "고령층"
+                  - option "외국인"
+                - link "공식 원문" [ref=e449] [cursor=pointer]:
+                  - /url: https://www.safetydata.go.kr/disaster-data/disasterNotificationDetail?sn=268198
+          - article [ref=e450]:
+            - generic [ref=e451]:
+              - generic [ref=e452]: 2026/08/30 16:00:49
+              - generic [ref=e453]: 거창군
+            - generic [ref=e454]:
+              - paragraph [ref=e455]: 거창북부지역 호우주의보 발효, 산간 계곡, 하천변 산책로, 급경사지 등 위험지역 출입자제, 비상시 긴급대피 바랍니다.[거창군]
+              - generic [ref=e456]:
+                - group [ref=e457]:
+                  - generic "어려운 표현을 쉬운 말로 보기" [ref=e458] [cursor=pointer]
+                  - option "쉬운 한국어" [selected]
+                  - option "어린이"
+                  - option "고령층"
+                  - option "외국인"
+                - link "공식 원문" [ref=e459] [cursor=pointer]:
+                  - /url: https://www.safetydata.go.kr/disaster-data/disasterNotificationDetail?sn=268196
+          - article [ref=e460]:
+            - generic [ref=e461]:
+              - generic [ref=e462]: 2026/08/27 18:25:43
+              - generic [ref=e463]: 거창군
+            - generic [ref=e464]:
+              - paragraph [ref=e465]: 현재 강한 국지성 호우가 내리고 있으니, 외출 자제, 하천변 등 위험지역 출입금지, 필요시 주민대피, 안부연락 등 안전사고에 유의하여 주시기 바랍니다.[거창군]
+              - generic [ref=e466]:
+                - group [ref=e467]:
+                  - generic "어려운 표현을 쉬운 말로 보기" [ref=e468] [cursor=pointer]
+                  - option "쉬운 한국어" [selected]
+                  - option "어린이"
+                  - option "고령층"
+                  - option "외국인"
+                - link "공식 원문" [ref=e469] [cursor=pointer]:
+                  - /url: https://www.safetydata.go.kr/disaster-data/disasterNotificationDetail?sn=267932
+          - article [ref=e470]:
+            - generic [ref=e471]:
+              - generic [ref=e472]: 2026/08/26 13:41:02
+              - generic [ref=e473]: 거창군
+            - generic [ref=e474]:
+              - paragraph [ref=e475]: 거창군 폭염특보 발효 중 ▲한낮 야외활동 자제 ▲무더위쉼터 이용 ▲물 많이 마시기 ▲그늘휴식 ▲이웃 안전확인 등 안전 및 건강에 유의하시기 바랍니다.[거창군]
+              - generic [ref=e476]:
+                - group [ref=e477]:
+                  - generic "어려운 표현을 쉬운 말로 보기" [ref=e478] [cursor=pointer]
+                  - option "쉬운 한국어" [selected]
+                  - option "어린이"
+                  - option "고령층"
+                  - option "외국인"
+                - link "공식 원문" [ref=e479] [cursor=pointer]:
+                  - /url: https://www.safetydata.go.kr/disaster-data/disasterNotificationDetail?sn=267764
+          - article [ref=e480]:
+            - generic [ref=e481]:
+              - generic [ref=e482]: 2026/08/25 13:14:54
+              - generic [ref=e483]: 거창군
+            - generic [ref=e484]:
+              - paragraph [ref=e485]: 거창군 폭염특보 발효 중 ▲한낮 야외활동 자제 ▲무더위쉼터 이용 ▲물 많이 마시기 ▲그늘휴식 ▲이웃 안전확인 등 안전 및 건강에 유의하시기 바랍니다.[거창군]
+              - generic [ref=e486]:
+                - group [ref=e487]:
+                  - generic "어려운 표현을 쉬운 말로 보기" [ref=e488] [cursor=pointer]
+                  - option "쉬운 한국어" [selected]
+                  - option "어린이"
+                  - option "고령층"
+                  - option "외국인"
+                - link "공식 원문" [ref=e489] [cursor=pointer]:
+                  - /url: https://www.safetydata.go.kr/disaster-data/disasterNotificationDetail?sn=267610
+          - article [ref=e490]:
+            - generic [ref=e491]:
+              - generic [ref=e492]: 2026/08/15 22:18:28
+              - generic [ref=e493]: 거창군
+            - generic [ref=e494]:
+              - paragraph [ref=e495]: 8.16.(일)새벽~아침 많은 비 예보▲야영장, 계곡, 하천 저지대 침수가 우려되니 위험지역 접근을 자제하고, 안전한 곳으로 대피하여 주시기 바랍니다.[거창군]
+              - generic [ref=e496]:
+                - group [ref=e497]:
+                  - generic "어려운 표현을 쉬운 말로 보기" [ref=e498] [cursor=pointer]
+                  - option "쉬운 한국어" [selected]
+                  - option "어린이"
+                  - option "고령층"
+                  - option "외국인"
+                - link "공식 원문" [ref=e499] [cursor=pointer]:
+                  - /url: https://www.safetydata.go.kr/disaster-data/disasterNotificationDetail?sn=266565
+          - article [ref=e500]:
+            - generic [ref=e501]:
+              - generic [ref=e502]: 2026/08/07 11:43:04
+              - generic [ref=e503]: 거창군
+            - generic [ref=e504]:
+              - paragraph [ref=e505]: 폭염으로 인한 온열질환 위험 ▲한낮 야외활동 자제 ▲무더위쉼터 이용 ▲물 많이 마시기 ▲그늘휴식 ▲이웃 안전확인 등 안전 및 건강에 유의하시기 바랍니다.[거창군]
+              - generic [ref=e506]:
+                - group [ref=e507]:
+                  - generic "어려운 표현을 쉬운 말로 보기" [ref=e508] [cursor=pointer]
+                  - option "쉬운 한국어" [selected]
+                  - option "어린이"
+                  - option "고령층"
+                  - option "외국인"
+                - link "공식 원문" [ref=e509] [cursor=pointer]:
+                  - /url: https://www.safetydata.go.kr/disaster-data/disasterNotificationDetail?sn=265554
+          - article [ref=e510]:
+            - generic [ref=e511]:
+              - generic [ref=e512]: 2026/08/06 11:24:39
+              - generic [ref=e513]: 거창군
+            - generic [ref=e514]:
+              - paragraph [ref=e515]: 거창군 폭염특보 발효 중 ▲한낮 야외활동 자제 ▲무더위쉼터 이용 ▲물 많이 마시기 ▲그늘휴식 ▲이웃 안전확인 등 안전 및 건강에 유의하시기 바랍니다.[거창군]
+              - generic [ref=e516]:
+                - group [ref=e517]:
+                  - generic "어려운 표현을 쉬운 말로 보기" [ref=e518] [cursor=pointer]
+                  - option "쉬운 한국어" [selected]
+                  - option "어린이"
+                  - option "고령층"
+                  - option "외국인"
+                - link "공식 원문" [ref=e519] [cursor=pointer]:
+                  - /url: https://www.safetydata.go.kr/disaster-data/disasterNotificationDetail?sn=265296
+          - article [ref=e520]:
+            - generic [ref=e521]:
+              - generic [ref=e522]: 2026/08/05 16:44:53
+              - generic [ref=e523]: 거창군
+            - generic [ref=e524]:
+              - paragraph [ref=e525]: 거창군 폭염특보 발효 중 ▲한낮 야외활동 자제 ▲무더위쉼터 이용 ▲물 많이 마시기 ▲그늘휴식 ▲이웃 안전확인 등 안전 및 건강에 유의하시기 바랍니다.[거창군]
+              - generic [ref=e526]:
+                - group [ref=e527]:
+                  - generic "어려운 표현을 쉬운 말로 보기" [ref=e528] [cursor=pointer]
+                  - option "쉬운 한국어" [selected]
+                  - option "어린이"
+                  - option "고령층"
+                  - option "외국인"
+                - link "공식 원문" [ref=e529] [cursor=pointer]:
+                  - /url: https://www.safetydata.go.kr/disaster-data/disasterNotificationDetail?sn=265172
+          - article [ref=e530]:
+            - generic [ref=e531]:
+              - generic [ref=e532]: 2026/08/04 11:36:59
+              - generic [ref=e533]: 거창군
+            - generic [ref=e534]:
+              - paragraph [ref=e535]: 거창군 폭염특보 발효 중 ▲한낮 야외활동 자제 ▲무더위쉼터 이용 ▲물 많이 마시기 ▲그늘휴식 ▲이웃 안전확인 등 안전 및 건강에 유의하시기 바랍니다.[거창군]
+              - generic [ref=e536]:
+                - group [ref=e537]:
+                  - generic "어려운 표현을 쉬운 말로 보기" [ref=e538] [cursor=pointer]
+                  - option "쉬운 한국어" [selected]
+                  - option "어린이"
+                  - option "고령층"
+                  - option "외국인"
+                - link "공식 원문" [ref=e539] [cursor=pointer]:
+                  - /url: https://www.safetydata.go.kr/disaster-data/disasterNotificationDetail?sn=264828
+          - article [ref=e540]:
+            - generic [ref=e541]:
+              - generic [ref=e542]: 2026/08/03 12:32:23
+              - generic [ref=e543]: 거창군
+            - generic [ref=e544]:
+              - paragraph [ref=e545]: 거창군 전역 폭염특보 발효 중 ▲한낮 야외활동 자제 ▲무더위쉼터 이용 ▲물 많이 마시기 ▲그늘휴식 ▲이웃 안전확인 등 안전관리에 유의하시기 바랍니다.[거창군]
+              - generic [ref=e546]:
+                - group [ref=e547]:
+                  - generic "어려운 표현을 쉬운 말로 보기" [ref=e548] [cursor=pointer]
+                  - option "쉬운 한국어" [selected]
+                  - option "어린이"
+                  - option "고령층"
+                  - option "외국인"
+                - link "공식 원문" [ref=e549] [cursor=pointer]:
+                  - /url: https://www.safetydata.go.kr/disaster-data/disasterNotificationDetail?sn=264583
+          - article [ref=e550]:
+            - generic [ref=e551]:
+              - generic [ref=e552]: 2026/08/02 15:18:47
+              - generic [ref=e553]: 거창군
+            - generic [ref=e554]:
+              - paragraph [ref=e555]: 거창군 전역 폭염특보 발효 중으로 ▲낮 시간 야외활동 자제 ▲폭염예방수칙 준수 ▲물놀이 안전수칙 준수 ▲안부연락 등 안전사고에 유의하시기 바랍니다.[거창군]
+              - generic [ref=e556]:
+                - group [ref=e557]:
+                  - generic "어려운 표현을 쉬운 말로 보기" [ref=e558] [cursor=pointer]
+                  - option "쉬운 한국어" [selected]
+                  - option "어린이"
+                  - option "고령층"
+                  - option "외국인"
+                - link "공식 원문" [ref=e559] [cursor=pointer]:
+                  - /url: https://www.safetydata.go.kr/disaster-data/disasterNotificationDetail?sn=264428
+          - article [ref=e560]:
+            - generic [ref=e561]:
+              - generic [ref=e562]: 2026/08/02 10:28:52
+              - generic [ref=e563]: 거창군
+            - generic [ref=e564]:
+              - paragraph [ref=e565]: 거창군 전역 폭염특보 발효 중으로 ▲충분한 수분 섭취와 휴식 ▲낮시간 야외활동 자제 ▲물놀이 안전수칙 준수 ▲안부연락 등 안전관리에 유의하시기 바랍니다.[거창군]
+              - generic [ref=e566]:
+                - group [ref=e567]:
+                  - generic "어려운 표현을 쉬운 말로 보기" [ref=e568] [cursor=pointer]
+                  - option "쉬운 한국어" [selected]
+                  - option "어린이"
+                  - option "고령층"
+                  - option "외국인"
+                - link "공식 원문" [ref=e569] [cursor=pointer]:
+                  - /url: https://www.safetydata.go.kr/disaster-data/disasterNotificationDetail?sn=264269
+          - article [ref=e570]:
+            - generic [ref=e571]:
+              - generic [ref=e572]: 2026/08/01 12:45:31
+              - generic [ref=e573]: 거창군
+            - generic [ref=e574]:
+              - paragraph [ref=e575]: 거창군 전역 폭염특보 발효 중으로 ▲낮 시간 야외활동 자제 ▲폭염예방수칙 준수 ▲물놀이 안전수칙 준수 ▲안부연락 등 안전사고에 유의하시기 바랍니다.[거창군]
+              - generic [ref=e576]:
+                - group [ref=e577]:
+                  - generic "어려운 표현을 쉬운 말로 보기" [ref=e578] [cursor=pointer]
+                  - option "쉬운 한국어" [selected]
+                  - option "어린이"
+                  - option "고령층"
+                  - option "외국인"
+                - link "공식 원문" [ref=e579] [cursor=pointer]:
+                  - /url: https://www.safetydata.go.kr/disaster-data/disasterNotificationDetail?sn=264073
+        - paragraph [ref=e580]: 재난안전데이터공유플랫폼의 공개 검색 목록에서 ‘거창’을 포함한 문자를 가져와요. 공식 출처에 등록된 문자이며, 실제 대피 시에는 최신 재난문자 안내를 우선해 주세요.
+  - contentinfo [ref=e581]:
+    - generic [ref=e582]:
+      - link "안심길 ●" [ref=e583] [cursor=pointer]:
+        - /url: "#home"
+        - img [ref=e585]
+        - generic [ref=e587]:
+          - text: 안심길
+          - emphasis [ref=e588]: ●
+      - generic [ref=e589]: 더 쉬운 안내가, 더 빠른 대피로 이어지도록.
+      - generic [ref=e590]: 공개 데이터 제공 범위는 지역별로 다를 수 있습니다.
+  - status

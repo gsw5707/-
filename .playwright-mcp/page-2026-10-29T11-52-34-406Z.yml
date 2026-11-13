@@ -1,0 +1,629 @@
+- generic [active] [ref=e1]:
+  - banner [ref=e2]:
+    - navigation "undefined주요 메뉴undefined" [ref=e517]:
+      - link "안심길 홈" [ref=e4] [cursor=pointer]:
+        - /url: "#home"
+        - img [ref=e6]
+        - generic [ref=e8]:
+          - text: 안심길
+          - emphasis [ref=e9]: ●
+      - generic [ref=e10]:
+        - link "ง่ายต่อการอ่านข้อความ" [ref=e518] [cursor=pointer]:
+          - /url: "#translate"
+        - link "แผนที่ที่พักอาศัย" [ref=e519] [cursor=pointer]:
+          - /url: "#map-section"
+        - link "การตั้งค่าการแจ้งเตือน" [ref=e520] [cursor=pointer]:
+          - /url: "#alerts"
+        - button "undefined글자 크기 설정 열기undefined" [ref=e521] [cursor=pointer]:
+          - img [ref=e15]
+          - generic [ref=e18]: การตั้งค่า
+        - link "เริ่มต้นด้วยคำแนะนำ" [ref=e522] [cursor=pointer]:
+          - /url: "#translate"
+  - main [ref=e20]:
+    - generic [ref=e22]:
+      - generic [ref=e23]:
+        - generic [ref=e24]: DISASTER MESSAGE, MADE CLEAR
+        - heading "위험한 순간, 쉬운 말로 먼저." [level=1] [ref=e25]
+        - paragraph [ref=e26]: เปลี่ยนจดหมายภัยพิบัติที่ยากให้เป็นคำพูดง่ายๆและมองไปที่ที่พักพิงรอบๆตัวคุณแม้ว่าคุณจะพูดภาษาอื่นเราจะช่วยให้คุณมั่นใจได้ว่าจะไม่พลาดสิ่งที่ต้องทำต่อไปอย่างปลอดภัย
+        - generic [ref=e27]:
+          - link "เข้าถึงตัวอักษรภัยพิบัติได้ง่าย" [ref=e523] [cursor=pointer]:
+            - /url: "#translate"
+            - text: เข้าถึงตัวอักษรภัยพิบัติได้ง่าย
+            - img [ref=e29]
+          - link "ค้นหาที่พักพิงก่อน" [ref=e524] [cursor=pointer]:
+            - /url: "#map-section"
+      - generic "undefined재난문자가 쉬운 행동 안내로 바뀌는 모습undefined" [ref=e525]:
+        - article [ref=e34]:
+          - generic [ref=e35]:
+            - generic [ref=e36]: จดหมายภัยพิบัติฉุกเฉิน
+            - generic [ref=e37]: มีความกังวลเกี่ยวกับน้ำท่วมแม่น้ำเนื่องจากฝนตกหนักก่อนถึง
+          - paragraph [ref=e38]: ดังนั้นโปรดอพยพผู้อยู่อาศัยในพื้นที่ลุ่มต่ำโดยเร็ว
+          - generic [ref=e39]:
+            - text: ฝนตกมากแม่น้ำจึงล้นได้
+            - text: ไปที่สูงหรือที่ปลอดภัยกันเถอะ
+        - generic [ref=e41]: อักขระเร่งด่วน → Easy Words วางตัวอักษร
+    - generic [ref=e43]:
+      - generic [ref=e44]:
+        - generic [ref=e45]:
+          - generic [ref=e46]: MY MESSAGE / MAKE IT CLEAR
+          - heading "받은 문자를 쉽게 바꿔보기" [level=2] [ref=e47]
+        - paragraph [ref=e48]: หรือเลือกตัวอย่างเราจะแสดงคำอธิบายและคำแปลภาษาที่คุณเลือกได้อย่างง่ายดาย
+      - generic [ref=e49]:
+        - generic [ref=e50]:
+          - generic [ref=e51]:
+            - text: ข้อความภัยพิบัติข้อความต้นฉบับ
+            - generic [ref=e52]: อย่าป้อนข้อมูลส่วนบุคคล
+          - textbox "ข้อความภัยพิบัติข้อความต้นฉบับ อย่าป้อนข้อมูลส่วนบุคคล" [ref=e526]:
+            - /placeholder: undefined재난문자 내용을 여기에 붙여넣어 주세요.undefined
+          - generic [ref=e54]: ภาษาของเว็บไซต์
+          - group "undefined안내 언어undefined" [ref=e527]:
+            - button "한국어" [ref=e56] [cursor=pointer]
+            - button "English" [ref=e57] [cursor=pointer]
+            - button "中文" [ref=e58] [cursor=pointer]
+            - button "Tiếng Việt" [ref=e59] [cursor=pointer]
+            - button "नेपाली" [ref=e60] [cursor=pointer]
+            - button "Filipino" [ref=e61] [cursor=pointer]
+            - button "ไทย" [ref=e62] [cursor=pointer]
+          - generic [ref=e63]:
+            - button "ดูคำอธิบายและคำแปลง่ายๆ" [ref=e528] [cursor=pointer]:
+              - text: ดูคำอธิบายและคำแปลง่ายๆ
+              - generic [ref=e65]: →
+            - button "ตัวอย่างวลีข้อความภัยพิบัติ" [ref=e529] [cursor=pointer]
+          - status [ref=e67]: ดูวิธีเชื่อมต่อกับ
+        - article [ref=e68]:
+          - generic [ref=e69]: EASY RESULT / ไทย
+          - heading "문자를 입력하면 쉬운 안내가 보여요" [level=3] [ref=e70]
+          - generic [ref=e71]: 재난문자 원문이 여기에 표시됩니다.
+          - paragraph [ref=e72]: 문자를 입력하고 ‘쉬운 설명과 번역 보기’를 눌러주세요.
+      - group [ref=e73]:
+        - generic "API และวิธีใช้" [ref=e530] [cursor=pointer]
+    - generic [ref=e76]:
+      - generic [ref=e77]:
+        - generic [ref=e78]:
+          - generic [ref=e79]: OPEN MAP / NEARBY SAFE PLACES
+          - heading "내 주변 대피소 찾기" [level=2] [ref=e80]
+        - paragraph [ref=e81]: ดูว่าคุณอยู่ที่ไหนบนแผนที่และค้นหาสถานที่ใกล้เคียงเราจะขอสิทธิ์เข้าถึงตำแหน่งเมื่อกดโดยตรงเท่านั้น
+      - generic [ref=e82]:
+        - generic [ref=e83]:
+          - application "undefinedOpenStreetMap 지도undefined" [ref=e531]:
+            - generic:
+              - generic [ref=e85]:
+                - button "undefinedZoom inundefined" [ref=e532] [cursor=pointer]: +
+                - button "undefinedZoom outundefined" [ref=e533] [cursor=pointer]: −
+              - generic [ref=e88]:
+                - link "Leaflet" [ref=e89] [cursor=pointer]:
+                  - /url: https://leafletjs.com
+                  - img [ref=e90]
+                  - text: Leaflet
+                - text: "| © OpenStreetMap"
+          - generic [ref=e94]:
+            - button "현재 위치 사용" [ref=e95] [cursor=pointer]
+            - button "주변 대피소 찾기" [ref=e96] [cursor=pointer]
+          - generic [ref=e97]: 지도 © OpenStreetMap 기여자
+        - complementary [ref=e98]:
+          - generic [ref=e99]:
+            - heading "공식 민방위 대피시설" [level=3] [ref=e100]
+            - generic [ref=e101]: 행안부 자료
+          - generic [ref=e102]:
+            - searchbox "undefined지역이나 장소 검색undefined" [ref=e534]
+            - button "undefined검색undefined" [ref=e535] [cursor=pointer]: ⌕
+          - generic [ref=e106]:
+            - text: 현재 위치를 선택하거나 지역을 검색한 뒤
+            - text: 주변 대피시설 찾기를 눌러보세요.
+          - paragraph [ref=e107]:
+            - strong [ref=e108]: 자료 안내.
+            - text: นี่เป็นการเผยแพร่ต่อสาธารณะของสถานที่อพยพป้องกันภัยพลเรือนแห่งชาติของกระทรวงรัฐประศาสนศาสตร์และความปลอดภัยสิ่งอำนวยความสะดวกด้านการป้องกันพลเรือนไม่ได้ถูกกำหนดให้เป็นที่พักพิงสำหรับภัยพิบัติทั้งหมดเช่นฝนตกหนักและไฟป่าดังนั้นโปรดตรวจสอบข้อความภัยพิบัติและคำแนะนำของรัฐบาลท้องถิ่นก่อนอพยพ
+            - link "ดูแหล่งข้อมูล" [ref=e536] [cursor=pointer]:
+              - /url: https://www.data.go.kr/data/15044951/fileData.do
+    - generic [ref=e111]:
+      - generic [ref=e112]:
+        - generic [ref=e113]: ALERTS / STAY INFORMED
+        - heading "앱을 보고 있지 않아도 안전 안내를 놓치지 않게." [level=2] [ref=e114]
+        - generic [ref=e115]:
+          - img [ref=e117]
+          - heading "이 기기에서 알림 테스트" [level=3] [ref=e119]
+          - paragraph [ref=e120]: 브라우저 알림을 허용하고 테스트 메시지를 보내볼 수 있어요. 실제 재난문자 연동이 아닌 미리보기 기능입니다.
+          - button "알림 허용하고 테스트하기" [ref=e121] [cursor=pointer]
+          - status [ref=e122]: 현재는 이 페이지를 열어 둔 상태에서만 테스트할 수 있어요.
+      - generic [ref=e123]:
+        - generic [ref=e124]:
+          - generic [ref=e125]: "01"
+          - generic [ref=e126]:
+            - strong [ref=e127]: 현재 웹 미리보기에서 가능한 것
+            - paragraph [ref=e128]: ส่งคำแนะนำง่ายๆดูแผนที่สาธารณะและทดสอบการแจ้งเตือนเบราว์เซอร์บนอุปกรณ์นี้
+        - generic [ref=e129]:
+          - generic [ref=e130]: "02"
+          - generic [ref=e131]:
+            - strong [ref=e132]: การแจ้งเตือนภัยพิบัติจริงเมื่อปิดแอป
+            - paragraph [ref=e133]: 공식 재난문자 수신 연동과 서버 푸시 또는 Android 앱 개발이 별도로 필요해요. 브라우저만으로 한국 긴급문자를 직접 읽어오는 기능은 제공되지 않아요.
+        - generic [ref=e134]:
+          - generic [ref=e135]: "03"
+          - generic [ref=e136]:
+            - strong [ref=e137]: 안전 안내는 공식 정보를 우선해요
+            - paragraph [ref=e138]: 번역은 이해를 돕기 위한 참고예요. 대피 판단과 행동은 지자체·소방 당국의 최신 안내를 따라주세요.
+    - generic [ref=e140]:
+      - generic [ref=e141]:
+        - generic [ref=e142]:
+          - generic [ref=e143]: QUICK GUIDE / STAY SAFE
+          - heading "그림으로 보는 지금 해야 할 일" [level=2] [ref=e144]
+        - paragraph [ref=e145]: 재난 유형별 기본 행동을 빠르게 확인하세요. 실제 상황에서는 재난문자와 현장 안내를 먼저 따라주세요.
+      - generic [ref=e146]:
+        - article [ref=e147]:
+          - img [ref=e149]
+          - text: 산불
+          - heading "불 반대 방향으로 이동" [level=3] [ref=e152]
+          - paragraph [ref=e153]: 연기가 보이면 낮은 자세로 안전한 곳으로 이동해요.
+        - article [ref=e154]:
+          - img [ref=e156]
+          - text: 호우
+          - heading "높은 곳으로 이동" [level=3] [ref=e159]
+          - paragraph [ref=e160]: 하천과 지하차도에 가지 말고 물이 빠질 때까지 기다려요.
+        - article [ref=e161]:
+          - img [ref=e163]
+          - text: 폭염
+          - heading "물을 자주 마시기" [level=3] [ref=e166]
+          - paragraph [ref=e167]: 그늘이나 시원한 곳에서 쉬고 무리하지 마세요.
+        - article [ref=e168]:
+          - img [ref=e170]
+          - text: 지진
+          - heading "머리를 보호하기" [level=3] [ref=e174]
+          - paragraph [ref=e175]: 흔들림이 멈춘 뒤 계단으로 이동하고 넓은 곳으로 가요.
+        - article [ref=e176]:
+          - img [ref=e178]
+          - text: 한파
+          - heading "따뜻하게 입기" [level=3] [ref=e180]
+          - paragraph [ref=e181]: 추운 곳에 오래 있지 말고 실내에서 쉬세요.
+        - article [ref=e182]:
+          - img [ref=e184]
+          - text: 대설
+          - heading "천천히 걷기" [level=3] [ref=e187]
+          - paragraph [ref=e188]: 눈길·빙판길 외출을 줄이고 미끄럼을 조심해요.
+    - generic [ref=e190]:
+      - generic [ref=e191]:
+        - generic [ref=e192]:
+          - generic [ref=e193]: MESSAGE LIBRARY / OFFICIAL + EXAMPLES
+          - heading "재난문자 찾아보기" [level=2] [ref=e194]
+        - paragraph [ref=e195]: 공식 거창군 기록을 모아보고, 예시 문자는 쉬운 안내와 함께 확인하세요.
+      - generic [ref=e196]:
+        - generic [ref=e197]:
+          - generic [ref=e198]:
+            - generic [ref=e199]: OFFICIAL ARCHIVE / GEOCHANG
+            - heading "거창군 재난문자 목록" [level=3] [ref=e200]
+            - paragraph [ref=e201]: ช่วงเวลาสอบถาม 2026 -08 -01 ~ 2026 -10 -29
+          - generic [ref=e202]:
+            - generic [ref=e203]: 조회 기간
+            - combobox "조회 기간" [ref=e204]:
+              - option "최근 30일"
+              - option "최근 90일" [selected]
+              - option "최근 1년"
+            - button "목록 새로고침" [ref=e205] [cursor=pointer]
+        - status [ref=e206]: 공식 목록에서 23건을 찾았어요
+        - generic [ref=e207]:
+          - article [ref=e208]:
+            - generic [ref=e209]:
+              - generic [ref=e210]: 2026/09/27 14:00:04
+              - generic [ref=e211]: 거창군
+            - generic [ref=e212]:
+              - paragraph [ref=e213]: 추석연휴 벌초·성묘객 증가로 산불발생 위험이 높습니다. ▲산림 및 연접지 소각·불씨 사용 금지▲입산시 화기소지 금지, 불법소각 시 과태료 50만원 부과[거창군]
+              - generic [ref=e214]:
+                - group [ref=e215]:
+                  - generic "어려운 표현을 쉬운 말로 보기" [ref=e216] [cursor=pointer]
+                  - option "ง่ายเกาหลี" [selected]
+                  - option "เด็ก"
+                  - option "ผู้สูงอายุ"
+                  - option "ชาวต่างชาติ"
+                - link "ข้อความต้นฉบับอย่างเป็นทางการ" [ref=e537] [cursor=pointer]:
+                  - /url: https://www.safetydata.go.kr/disaster-data/disasterNotificationDetail?sn=269185
+          - article [ref=e218]:
+            - generic [ref=e219]:
+              - generic [ref=e220]: 2026/09/26 14:03:18
+              - generic [ref=e221]: 거창군
+            - generic [ref=e222]:
+              - paragraph [ref=e223]: 추석연휴 벌초·성묘객 증가로 산불발생 위험이 높습니다. ▲산림 및 연접지 소각·불씨 사용 금지▲입산시 화기소지 금지, 불법소각 시 과태료 50만원 부과[거창군]
+              - generic [ref=e224]:
+                - group [ref=e225]:
+                  - generic "어려운 표현을 쉬운 말로 보기" [ref=e226] [cursor=pointer]
+                  - option "ง่ายเกาหลี" [selected]
+                  - option "เด็ก"
+                  - option "ผู้สูงอายุ"
+                  - option "ชาวต่างชาติ"
+                - link "ข้อความต้นฉบับอย่างเป็นทางการ" [ref=e538] [cursor=pointer]:
+                  - /url: https://www.safetydata.go.kr/disaster-data/disasterNotificationDetail?sn=269155
+          - article [ref=e228]:
+            - generic [ref=e229]:
+              - generic [ref=e230]: 2026/09/25 14:09:59
+              - generic [ref=e231]: 거창군
+            - generic [ref=e232]:
+              - paragraph [ref=e233]: 추석연휴 벌초·성묘객 증가로 산불발생 위험이 높습니다. ▲산림 및 연접지 소각·불씨 사용 금지▲입산시 화기소지 금지, 불법소각 시 과태료 50만원 부과[거창군]
+              - generic [ref=e234]:
+                - group [ref=e235]:
+                  - generic "어려운 표현을 쉬운 말로 보기" [ref=e236] [cursor=pointer]
+                  - option "ง่ายเกาหลี" [selected]
+                  - option "เด็ก"
+                  - option "ผู้สูงอายุ"
+                  - option "ชาวต่างชาติ"
+                - link "ข้อความต้นฉบับอย่างเป็นทางการ" [ref=e539] [cursor=pointer]:
+                  - /url: https://www.safetydata.go.kr/disaster-data/disasterNotificationDetail?sn=269124
+          - article [ref=e238]:
+            - generic [ref=e239]:
+              - generic [ref=e240]: 2026/09/24 14:00:09
+              - generic [ref=e241]: 거창군
+            - generic [ref=e242]:
+              - paragraph [ref=e243]: 추석연휴 벌초·성묘객 증가로 산불발생 위험이 높습니다. ▲산림 및 연접지 소각·불씨 사용 금지▲입산시 화기소지 금지, 불법소각 시 과태료 50만원 부과[거창군]
+              - generic [ref=e244]:
+                - group [ref=e245]:
+                  - generic "어려운 표현을 쉬운 말로 보기" [ref=e246] [cursor=pointer]
+                  - option "ง่ายเกาหลี" [selected]
+                  - option "เด็ก"
+                  - option "ผู้สูงอายุ"
+                  - option "ชาวต่างชาติ"
+                - link "ข้อความต้นฉบับอย่างเป็นทางการ" [ref=e540] [cursor=pointer]:
+                  - /url: https://www.safetydata.go.kr/disaster-data/disasterNotificationDetail?sn=269084
+          - article [ref=e248]:
+            - generic [ref=e249]:
+              - generic [ref=e250]: 2026/09/20 14:01:27
+              - generic [ref=e251]: 거창군
+            - generic [ref=e252]:
+              - paragraph [ref=e253]: ความเสี่ยงของไฟป่ามีสูงเนื่องจากจำนวนผู้เข้าชม oleifera และ oleifera ▲เพิ่มขึ้นห้ามเผาติดกับ▲กรดห้ามใช้อาวุธปืนเมื่อใช้▲ความระมัดระวังและมีการปรับ 500,000 วอนสำหรับการเผาที่ผิดกฎหมาย [Geochang-gun]
+              - generic [ref=e254]:
+                - group [ref=e255]:
+                  - generic "어려운 표현을 쉬운 말로 보기" [ref=e256] [cursor=pointer]
+                  - option "ง่ายเกาหลี" [selected]
+                  - option "เด็ก"
+                  - option "ผู้สูงอายุ"
+                  - option "ชาวต่างชาติ"
+                - link "ข้อความต้นฉบับอย่างเป็นทางการ" [ref=e541] [cursor=pointer]:
+                  - /url: https://www.safetydata.go.kr/disaster-data/disasterNotificationDetail?sn=268999
+          - article [ref=e258]:
+            - generic [ref=e259]:
+              - generic [ref=e260]: 2026/09/19 14:00:08
+              - generic [ref=e261]: 거창군
+            - generic [ref=e262]:
+              - paragraph [ref=e263]: ความเสี่ยงของไฟป่ามีสูงเนื่องจากจำนวนผู้เข้าชม oleifera และ oleifera ▲เพิ่มขึ้นห้ามเผาติดกับ▲กรดห้ามใช้อาวุธปืนเมื่อใช้▲ความระมัดระวังและมีการปรับ 500,000 วอนสำหรับการเผาที่ผิดกฎหมาย [Geochang-gun]
+              - generic [ref=e264]:
+                - group [ref=e265]:
+                  - generic "어려운 표현을 쉬운 말로 보기" [ref=e266] [cursor=pointer]
+                  - option "ง่ายเกาหลี" [selected]
+                  - option "เด็ก"
+                  - option "ผู้สูงอายุ"
+                  - option "ชาวต่างชาติ"
+                - link "ข้อความต้นฉบับอย่างเป็นทางการ" [ref=e542] [cursor=pointer]:
+                  - /url: https://www.safetydata.go.kr/disaster-data/disasterNotificationDetail?sn=268974
+          - article [ref=e268]:
+            - generic [ref=e269]:
+              - generic [ref=e270]: 2026/08/30 16:59:38
+              - generic [ref=e271]: 거창군
+            - generic [ref=e272]:
+              - paragraph [ref=e273]: เนื่องจากมีความเสี่ยงสูงที่จะเกิดดินถล่มในระหว่างการหมักหมมของคำเตือนฝนตกหนักของนอร์เทิร์นเทร์ริทอรีผู้อยู่อาศัยในป่าที่อยู่ติดกันควรละเว้นจากกิจกรรมภายนอกและอพยพทันทีเมื่อตรวจสอบสัญญาณของดินถล่ม [Geochang-gun]
+              - generic [ref=e274]:
+                - group [ref=e275]:
+                  - generic "어려운 표현을 쉬운 말로 보기" [ref=e276] [cursor=pointer]
+                  - option "ง่ายเกาหลี" [selected]
+                  - option "เด็ก"
+                  - option "ผู้สูงอายุ"
+                  - option "ชาวต่างชาติ"
+                - link "ข้อความต้นฉบับอย่างเป็นทางการ" [ref=e543] [cursor=pointer]:
+                  - /url: https://www.safetydata.go.kr/disaster-data/disasterNotificationDetail?sn=268219
+          - article [ref=e278]:
+            - generic [ref=e279]:
+              - generic [ref=e280]: 2026/08/30 16:35:00
+              - generic [ref=e281]: 거창군
+            - generic [ref=e282]:
+              - paragraph [ref=e283]: โปรดละเว้นจากการเข้าถึงพื้นที่อันตรายเช่นริมแม่น้ำหุบเขาและทางลาดชันอย่างกะทันหันในขณะที่การแจ้งเตือน Geochang North Geochang Heavy Rain มีผลบังคับใช้และให้ความสนใจเป็นพิเศษกับอุบัติเหตุด้านความปลอดภัยเช่นน้ำท่วมต่ำและดินถล่ม [Geochang-gun]
+              - generic [ref=e284]:
+                - group [ref=e285]:
+                  - generic "어려운 표현을 쉬운 말로 보기" [ref=e286] [cursor=pointer]
+                  - option "ง่ายเกาหลี" [selected]
+                  - option "เด็ก"
+                  - option "ผู้สูงอายุ"
+                  - option "ชาวต่างชาติ"
+                - link "ข้อความต้นฉบับอย่างเป็นทางการ" [ref=e544] [cursor=pointer]:
+                  - /url: https://www.safetydata.go.kr/disaster-data/disasterNotificationDetail?sn=268208
+          - article [ref=e288]:
+            - generic [ref=e289]:
+              - generic [ref=e290]: 2026/08/30 16:18:37
+              - generic [ref=e291]: Gyeongsangnam-do
+            - generic [ref=e292]:
+              - paragraph [ref=e293]: Geochang-gun Hou Alert ประกาศในโตเกียวไม่มีการเข้าถึงพื้นที่อันตรายเช่นหุบเขาภูเขาริมฝั่งแม่น้ำความลาดชันฉับพลันท่อน้ำเพื่อการเกษตรและพื้นที่ใต้ดินหากคุณได้รับคำแนะนำให้อพยพให้อพยพทันที [Gyeongsangnam-do]
+              - generic [ref=e294]:
+                - group [ref=e295]:
+                  - generic "어려운 표현을 쉬운 말로 보기" [ref=e296] [cursor=pointer]
+                  - option "ง่ายเกาหลี" [selected]
+                  - option "เด็ก"
+                  - option "ผู้สูงอายุ"
+                  - option "ชาวต่างชาติ"
+                - link "ข้อความต้นฉบับอย่างเป็นทางการ" [ref=e545] [cursor=pointer]:
+                  - /url: https://www.safetydata.go.kr/disaster-data/disasterNotificationDetail?sn=268201
+          - article [ref=e298]:
+            - generic [ref=e299]:
+              - generic [ref=e300]: 2026/08/30 16:05:01
+              - generic [ref=e301]: กระทรวงรัฐประศาสนศาสตร์และความปลอดภัย
+            - generic [ref=e302]:
+              - paragraph [ref=e303]: วันนี้ 16:00 Gyeongnam (Geochang North) สัญญาณเตือนฝนตกหนักหากคุณได้รับคำแนะนำให้อพยพหรือห้ามไม่ให้เข้าถึงพื้นที่อันตรายเช่นแม่น้ำหุบเขาทางลาดชันหรือน้ำเพื่อการเกษตรให้อพยพทันที [กระทรวงการบริหารราชการและความปลอดภัย]
+              - generic [ref=e304]:
+                - group [ref=e305]:
+                  - generic "어려운 표현을 쉬운 말로 보기" [ref=e306] [cursor=pointer]
+                  - option "ง่ายเกาหลี" [selected]
+                  - option "เด็ก"
+                  - option "ผู้สูงอายุ"
+                  - option "ชาวต่างชาติ"
+                - link "ข้อความต้นฉบับอย่างเป็นทางการ" [ref=e546] [cursor=pointer]:
+                  - /url: https://www.safetydata.go.kr/disaster-data/disasterNotificationDetail?sn=268198
+          - article [ref=e308]:
+            - generic [ref=e309]:
+              - generic [ref=e310]: 2026/08/30 16:00:49
+              - generic [ref=e311]: 거창군
+            - generic [ref=e312]:
+              - paragraph [ref=e313]: ในกรณีฉุกเฉินโปรดอพยพออกจากพื้นที่อันตรายเช่นการหมัก Hojubo ในพื้นที่ Geochang ทางตอนเหนือหุบเขาภูเขาทางเดินริมแม่น้ำและความลาดชันอย่างกะทันหัน [Geochang-gun]
+              - generic [ref=e314]:
+                - group [ref=e315]:
+                  - generic "어려운 표현을 쉬운 말로 보기" [ref=e316] [cursor=pointer]
+                  - option "ง่ายเกาหลี" [selected]
+                  - option "เด็ก"
+                  - option "ผู้สูงอายุ"
+                  - option "ชาวต่างชาติ"
+                - link "ข้อความต้นฉบับอย่างเป็นทางการ" [ref=e547] [cursor=pointer]:
+                  - /url: https://www.safetydata.go.kr/disaster-data/disasterNotificationDetail?sn=268196
+          - article [ref=e318]:
+            - generic [ref=e319]:
+              - generic [ref=e320]: 2026/08/27 18:25:43
+              - generic [ref=e321]: 거창군
+            - generic [ref=e322]:
+              - paragraph [ref=e323]: มีฝนตกหนักในท้องถิ่นในขณะนี้ดังนั้นโปรดระวังอุบัติเหตุด้านความปลอดภัยเช่นการละเว้นจากการออกนอกบ้านการห้ามไม่ให้เข้าถึงพื้นที่อันตรายเช่นริมแม่น้ำการอพยพผู้อยู่อาศัยหากจำเป็นและการติดต่อขอความนับถือ [Geochang-gun]
+              - generic [ref=e324]:
+                - group [ref=e325]:
+                  - generic "어려운 표현을 쉬운 말로 보기" [ref=e326] [cursor=pointer]
+                  - option "ง่ายเกาหลี" [selected]
+                  - option "เด็ก"
+                  - option "ผู้สูงอายุ"
+                  - option "ชาวต่างชาติ"
+                - link "ข้อความต้นฉบับอย่างเป็นทางการ" [ref=e548] [cursor=pointer]:
+                  - /url: https://www.safetydata.go.kr/disaster-data/disasterNotificationDetail?sn=267932
+          - article [ref=e328]:
+            - generic [ref=e329]:
+              - generic [ref=e330]: 2026/08/26 13:41:02
+              - generic [ref=e331]: 거창군
+            - generic [ref=e332]:
+              - paragraph [ref=e333]: ในระหว่างการหมักรายงานพิเศษ▲คลื่นความร้อน Geochang-gun โปรด▲ระมัดระวังเรื่องความปลอดภัยและสุขภาพเช่น▲งดกิจกรรมกลางแจ้งดื่ม▲น้ำมากพักผ่อนในที่ร่มและตรวจสอบความปลอดภัยของ▲เพื่อนบ้าน [Geochang-gun]
+              - generic [ref=e334]:
+                - group [ref=e335]:
+                  - generic "어려운 표현을 쉬운 말로 보기" [ref=e336] [cursor=pointer]
+                  - option "ง่ายเกาหลี" [selected]
+                  - option "เด็ก"
+                  - option "ผู้สูงอายุ"
+                  - option "ชาวต่างชาติ"
+                - link "ข้อความต้นฉบับอย่างเป็นทางการ" [ref=e549] [cursor=pointer]:
+                  - /url: https://www.safetydata.go.kr/disaster-data/disasterNotificationDetail?sn=267764
+          - article [ref=e338]:
+            - generic [ref=e339]:
+              - generic [ref=e340]: 2026/08/25 13:14:54
+              - generic [ref=e341]: 거창군
+            - generic [ref=e342]:
+              - paragraph [ref=e343]: ในระหว่างการหมักรายงานพิเศษ▲คลื่นความร้อน Geochang-gun โปรด▲ระมัดระวังเรื่องความปลอดภัยและสุขภาพเช่น▲งดกิจกรรมกลางแจ้งดื่ม▲น้ำมากพักผ่อนในที่ร่มและตรวจสอบความปลอดภัยของ▲เพื่อนบ้าน [Geochang-gun]
+              - generic [ref=e344]:
+                - group [ref=e345]:
+                  - generic "어려운 표현을 쉬운 말로 보기" [ref=e346] [cursor=pointer]
+                  - option "ง่ายเกาหลี" [selected]
+                  - option "เด็ก"
+                  - option "ผู้สูงอายุ"
+                  - option "ชาวต่างชาติ"
+                - link "ข้อความต้นฉบับอย่างเป็นทางการ" [ref=e550] [cursor=pointer]:
+                  - /url: https://www.safetydata.go.kr/disaster-data/disasterNotificationDetail?sn=267610
+          - article [ref=e348]:
+            - generic [ref=e349]:
+              - generic [ref=e350]: 2026/08/15 22:18:28
+              - generic [ref=e351]: 거창군
+            - generic [ref=e352]:
+              - paragraph [ref=e353]: 8.16 (ดวงอาทิตย์) โปรดงดเว้นการเข้าถึงพื้นที่อันตรายและอพยพไปยังที่ปลอดภัยเนื่องจากมีฝนตกชุกพื้นที่▲ตั้งแคมป์หุบเขาและน้ำท่วมที่ราบลุ่มแม่น้ำในตอนเช้า [Geochang-gun]
+              - generic [ref=e354]:
+                - group [ref=e355]:
+                  - generic "어려운 표현을 쉬운 말로 보기" [ref=e356] [cursor=pointer]
+                  - option "ง่ายเกาหลี" [selected]
+                  - option "เด็ก"
+                  - option "ผู้สูงอายุ"
+                  - option "ชาวต่างชาติ"
+                - link "ข้อความต้นฉบับอย่างเป็นทางการ" [ref=e551] [cursor=pointer]:
+                  - /url: https://www.safetydata.go.kr/disaster-data/disasterNotificationDetail?sn=266565
+          - article [ref=e358]:
+            - generic [ref=e359]:
+              - generic [ref=e360]: 2026/08/07 11:43:04
+              - generic [ref=e361]: 거창군
+            - generic [ref=e362]:
+              - paragraph [ref=e363]: ความเสี่ยงของการเจ็บป่วยจากความร้อนเนื่องจากคลื่นความร้อนงดกิจกรรมกลางแจ้งในระหว่าง▲วันดื่ม▲น้ำมากๆโดย▲ใช้ที่พักพิงความร้อนการแบ่ง▲เฉดสีโปรดระมัดระวังความปลอดภัยและสุขภาพเช่นการตรวจสอบความปลอดภัยของ▲เพื่อนบ้านของคุณ [Geochang-gun]
+              - generic [ref=e364]:
+                - group [ref=e365]:
+                  - generic "어려운 표현을 쉬운 말로 보기" [ref=e366] [cursor=pointer]
+                  - option "ง่ายเกาหลี" [selected]
+                  - option "เด็ก"
+                  - option "ผู้สูงอายุ"
+                  - option "ชาวต่างชาติ"
+                - link "ข้อความต้นฉบับอย่างเป็นทางการ" [ref=e552] [cursor=pointer]:
+                  - /url: https://www.safetydata.go.kr/disaster-data/disasterNotificationDetail?sn=265554
+          - article [ref=e368]:
+            - generic [ref=e369]:
+              - generic [ref=e370]: 2026/08/06 11:24:39
+              - generic [ref=e371]: 거창군
+            - generic [ref=e372]:
+              - paragraph [ref=e373]: ในระหว่างการหมักรายงานพิเศษ▲คลื่นความร้อน Geochang-gun โปรด▲ระมัดระวังเรื่องความปลอดภัยและสุขภาพเช่น▲งดกิจกรรมกลางแจ้งดื่ม▲น้ำมากพักผ่อนในที่ร่มและตรวจสอบความปลอดภัยของ▲เพื่อนบ้าน [Geochang-gun]
+              - generic [ref=e374]:
+                - group [ref=e375]:
+                  - generic "어려운 표현을 쉬운 말로 보기" [ref=e376] [cursor=pointer]
+                  - option "ง่ายเกาหลี" [selected]
+                  - option "เด็ก"
+                  - option "ผู้สูงอายุ"
+                  - option "ชาวต่างชาติ"
+                - link "ข้อความต้นฉบับอย่างเป็นทางการ" [ref=e553] [cursor=pointer]:
+                  - /url: https://www.safetydata.go.kr/disaster-data/disasterNotificationDetail?sn=265296
+          - article [ref=e378]:
+            - generic [ref=e379]:
+              - generic [ref=e380]: 2026/08/05 16:44:53
+              - generic [ref=e381]: 거창군
+            - generic [ref=e382]:
+              - paragraph [ref=e383]: ในระหว่างการหมักรายงานพิเศษ▲คลื่นความร้อน Geochang-gun โปรด▲ระมัดระวังเรื่องความปลอดภัยและสุขภาพเช่น▲งดกิจกรรมกลางแจ้งดื่ม▲น้ำมากพักผ่อนในที่ร่มและตรวจสอบความปลอดภัยของ▲เพื่อนบ้าน [Geochang-gun]
+              - generic [ref=e384]:
+                - group [ref=e385]:
+                  - generic "어려운 표현을 쉬운 말로 보기" [ref=e386] [cursor=pointer]
+                  - option "ง่ายเกาหลี" [selected]
+                  - option "เด็ก"
+                  - option "ผู้สูงอายุ"
+                  - option "ชาวต่างชาติ"
+                - link "ข้อความต้นฉบับอย่างเป็นทางการ" [ref=e554] [cursor=pointer]:
+                  - /url: https://www.safetydata.go.kr/disaster-data/disasterNotificationDetail?sn=265172
+          - article [ref=e388]:
+            - generic [ref=e389]:
+              - generic [ref=e390]: 2026/08/04 11:36:59
+              - generic [ref=e391]: 거창군
+            - generic [ref=e392]:
+              - paragraph [ref=e393]: ในระหว่างการหมักรายงานพิเศษ▲คลื่นความร้อน Geochang-gun โปรด▲ระมัดระวังเรื่องความปลอดภัยและสุขภาพเช่น▲งดกิจกรรมกลางแจ้งดื่ม▲น้ำมากพักผ่อนในที่ร่มและตรวจสอบความปลอดภัยของ▲เพื่อนบ้าน [Geochang-gun]
+              - generic [ref=e394]:
+                - group [ref=e395]:
+                  - generic "어려운 표현을 쉬운 말로 보기" [ref=e396] [cursor=pointer]
+                  - option "ง่ายเกาหลี" [selected]
+                  - option "เด็ก"
+                  - option "ผู้สูงอายุ"
+                  - option "ชาวต่างชาติ"
+                - link "ข้อความต้นฉบับอย่างเป็นทางการ" [ref=e555] [cursor=pointer]:
+                  - /url: https://www.safetydata.go.kr/disaster-data/disasterNotificationDetail?sn=264828
+          - article [ref=e398]:
+            - generic [ref=e399]:
+              - generic [ref=e400]: 2026/08/03 12:32:23
+              - generic [ref=e401]: 거창군
+            - generic [ref=e402]:
+              - paragraph [ref=e403]: ในระหว่างการหมักการแจ้งเตือนคลื่นความร้อนทั่วโลกใน Geochang-gun โปรดระมัดระวังการ▲จัดการความปลอดภัยเช่นการงดกิจกรรมกลางแจ้งในตอน▲กลางวัน▲การดื่ม▲น้ำมากๆการพักผ่อนในที่ร่มและการตรวจสอบความปลอดภัยของ▲เพื่อนบ้าน [Geochang-gun]
+              - generic [ref=e404]:
+                - group [ref=e405]:
+                  - generic "어려운 표현을 쉬운 말로 보기" [ref=e406] [cursor=pointer]
+                  - option "ง่ายเกาหลี" [selected]
+                  - option "เด็ก"
+                  - option "ผู้สูงอายุ"
+                  - option "ชาวต่างชาติ"
+                - link "ข้อความต้นฉบับอย่างเป็นทางการ" [ref=e556] [cursor=pointer]:
+                  - /url: https://www.safetydata.go.kr/disaster-data/disasterNotificationDetail?sn=264583
+          - article [ref=e408]:
+            - generic [ref=e409]:
+              - generic [ref=e410]: 2026/08/02 15:18:47
+              - generic [ref=e411]: 거창군
+            - generic [ref=e412]:
+              - paragraph [ref=e413]: การแจ้งเตือนคลื่นความร้อนทั่วโลกสำหรับ Geochang-gun มีผลแล้วดังนั้นโปรดระวังอุบัติเหตุด้านความปลอดภัยเช่นกิจกรรมใน▲ ▲เวลากลางวันการละเว้นจากกิจกรรมกลางแจ้งการปฏิบัติตาม▲กฎการป้องกันคลื่นความร้อนการปฏิบัติตามกฎความปลอดภัยในการ▲เล่นน้ำและการติดต่อกับผู้อื่น [Geochang-gun]
+              - generic [ref=e414]:
+                - group [ref=e415]:
+                  - generic "어려운 표현을 쉬운 말로 보기" [ref=e416] [cursor=pointer]
+                  - option "ง่ายเกาหลี" [selected]
+                  - option "เด็ก"
+                  - option "ผู้สูงอายุ"
+                  - option "ชาวต่างชาติ"
+                - link "ข้อความต้นฉบับอย่างเป็นทางการ" [ref=e557] [cursor=pointer]:
+                  - /url: https://www.safetydata.go.kr/disaster-data/disasterNotificationDetail?sn=264428
+          - article [ref=e418]:
+            - generic [ref=e419]:
+              - generic [ref=e420]: 2026/08/02 10:28:52
+              - generic [ref=e421]: 거창군
+            - generic [ref=e422]:
+              - paragraph [ref=e423]: โปรดระมัดระวังเกี่ยวกับการจัดการความปลอดภัยเช่นการดื่มน้ำให้▲เพียงพอและการพักผ่อนใน▲ระหว่างการหมักการแจ้งเตือนคลื่นความร้อนทั่ว▲โลกใน Geochang-gun และปฏิบัติตามกฎความปลอดภัยสำหรับการ▲เล่นน้ำกลางแจ้งในระหว่างวัน [Geochang-gun]
+              - generic [ref=e424]:
+                - group [ref=e425]:
+                  - generic "어려운 표현을 쉬운 말로 보기" [ref=e426] [cursor=pointer]
+                  - option "ง่ายเกาหลี" [selected]
+                  - option "เด็ก"
+                  - option "ผู้สูงอายุ"
+                  - option "ชาวต่างชาติ"
+                - link "ข้อความต้นฉบับอย่างเป็นทางการ" [ref=e558] [cursor=pointer]:
+                  - /url: https://www.safetydata.go.kr/disaster-data/disasterNotificationDetail?sn=264269
+          - article [ref=e428]:
+            - generic [ref=e429]:
+              - generic [ref=e430]: 2026/08/01 12:45:31
+              - generic [ref=e431]: 거창군
+            - generic [ref=e432]:
+              - paragraph [ref=e433]: การแจ้งเตือนคลื่นความร้อนทั่วโลกสำหรับ Geochang-gun มีผลแล้วดังนั้นโปรดระวังอุบัติเหตุด้านความปลอดภัยเช่นกิจกรรมใน▲ ▲เวลากลางวันการละเว้นจากกิจกรรมกลางแจ้งการปฏิบัติตาม▲กฎการป้องกันคลื่นความร้อนการปฏิบัติตามกฎความปลอดภัยในการ▲เล่นน้ำและการติดต่อกับผู้อื่น [Geochang-gun]
+              - generic [ref=e434]:
+                - group [ref=e435]:
+                  - generic "어려운 표현을 쉬운 말로 보기" [ref=e436] [cursor=pointer]
+                  - option "ง่ายเกาหลี" [selected]
+                  - option "เด็ก"
+                  - option "ผู้สูงอายุ"
+                  - option "ชาวต่างชาติ"
+                - link "ข้อความต้นฉบับอย่างเป็นทางการ" [ref=e559] [cursor=pointer]:
+                  - /url: https://www.safetydata.go.kr/disaster-data/disasterNotificationDetail?sn=264073
+        - paragraph [ref=e438]: 재난안전데이터공유플랫폼의 공개 검색 목록에서 ‘거창’을 포함한 문자를 가져와요. 공식 출처에 등록된 문자이며, 실제 대피 시에는 최신 재난문자 안내를 우선해 주세요.
+      - generic [ref=e439]:
+        - text: SAMPLE MESSAGES
+        - heading "예시 문자 둘러보기" [level=3] [ref=e440]
+      - generic [ref=e441]:
+        - generic [ref=e442]:
+          - group "undefined재난 종류 필터undefined" [ref=e560]:
+            - button "전체" [pressed] [ref=e444] [cursor=pointer]
+            - button "호우" [ref=e445] [cursor=pointer]
+            - button "폭염" [ref=e446] [cursor=pointer]
+            - button "대설·한파" [ref=e447] [cursor=pointer]
+            - button "지진" [ref=e448] [cursor=pointer]
+            - button "산불" [ref=e449] [cursor=pointer]
+          - generic "undefined재난문자 예시 목록undefined" [ref=e561]:
+            - button "호우 하천 범람 우려 안내 비가 많이 와서 강물이 넘칠 수 있으니 낮은 곳 주민은 바로 안전한 곳으로 안전한 곳으로 이동하세요. 07.18 10:42" [ref=e451] [cursor=pointer]:
+              - generic [ref=e452]: 호우
+              - generic [ref=e453]:
+                - strong [ref=e454]: 하천 범람 우려 안내
+                - generic [ref=e455]: 비가 많이 와서 강물이 넘칠 수 있으니 낮은 곳 주민은 바로 안전한 곳으로 안전한 곳으로 이동하세요.
+              - generic [ref=e456]: 07.18 10:42
+            - button "폭염 폭염 주의보 발령 매우 더운 날씨가 계속되고 있어요. 밖에서 하는 활동을 줄이고 물을 자주 마시고, 몸이 이상하면 바로 도움을 받으세요. 07.17 14:10" [ref=e457] [cursor=pointer]:
+              - generic [ref=e458]: 폭염
+              - generic [ref=e459]:
+                - strong [ref=e460]: 폭염 주의보 발령
+                - generic [ref=e461]: 매우 더운 날씨가 계속되고 있어요. 밖에서 하는 활동을 줄이고 물을 자주 마시고, 몸이 이상하면 바로 도움을 받으세요.
+              - generic [ref=e462]: 07.17 14:10
+            - button "대설·한파 많은 눈 예상 안내 눈이 많이 올 것 같아요. 빙판길에 주의하고 꼭 필요한 일이 아니면 밖에 나가거나 차를 몰지 마세요. 01.22 08:35" [ref=e463] [cursor=pointer]:
+              - generic [ref=e464]: 대설·한파
+              - generic [ref=e465]:
+                - strong [ref=e466]: 많은 눈 예상 안내
+                - generic [ref=e467]: 눈이 많이 올 것 같아요. 빙판길에 주의하고 꼭 필요한 일이 아니면 밖에 나가거나 차를 몰지 마세요.
+              - generic [ref=e468]: 01.22 08:35
+            - button "지진 지진 발생 안내 지진으로 땅이 흔들렸어요. 흔들림이 멈출 때까지 몸을 보호하세요, 이후 안내에 따라 안전한 곳으로 이동하세요. 01.08 19:03" [ref=e469] [cursor=pointer]:
+              - generic [ref=e470]: 지진
+              - generic [ref=e471]:
+                - strong [ref=e472]: 지진 발생 안내
+                - generic [ref=e473]: 지진으로 땅이 흔들렸어요. 흔들림이 멈출 때까지 몸을 보호하세요, 이후 안내에 따라 안전한 곳으로 이동하세요.
+              - generic [ref=e474]: 01.08 19:03
+            - button "산불 산불 주변 접근 금지 산불이 번지고 있습니다. 산불 반대 방향의 안전한 곳으로 바로 이동하고 현장 안내에 따라주세요. 03.04 16:20" [ref=e475] [cursor=pointer]:
+              - generic [ref=e476]: 산불
+              - generic [ref=e477]:
+                - strong [ref=e478]: 산불 주변 접근 금지
+                - generic [ref=e479]: 산불이 번지고 있습니다. 산불 반대 방향의 안전한 곳으로 바로 이동하고 현장 안내에 따라주세요.
+              - generic [ref=e480]: 03.04 16:20
+            - button "한파 급격한 기온 하락 날씨가 갑자기 추워져요. 외출을 줄이고 따뜻한 옷을 입으세요. 추위에 약한 분은 주변의 도움을 확인하세요. 02.01 07:15" [ref=e481] [cursor=pointer]:
+              - generic [ref=e482]: 한파
+              - generic [ref=e483]:
+                - strong [ref=e484]: 급격한 기온 하락
+                - generic [ref=e485]: 날씨가 갑자기 추워져요. 외출을 줄이고 따뜻한 옷을 입으세요. 추위에 약한 분은 주변의 도움을 확인하세요.
+              - generic [ref=e486]: 02.01 07:15
+        - article [ref=e487]:
+          - generic [ref=e488]:
+            - generic [ref=e489]: 호우 / TH VIEW
+            - generic [ref=e490]: 07.18 10:42
+          - heading "ความกังวลเรื่องน้ำท่วมในแม่น้ำ" [level=3] [ref=e562]
+          - generic [ref=e492]: 호우로 인한 하천 범람 우려가 있으니 저지대 주민은 신속히 안전한 곳으로 대피하시기 바랍니다.
+          - group "undefined예시 안내 언어undefined" [ref=e563]:
+            - button "한국어" [ref=e494] [cursor=pointer]
+            - button "English" [ref=e495] [cursor=pointer]
+            - button "中文" [ref=e496] [cursor=pointer]
+            - button "Tiếng Việt" [ref=e497] [cursor=pointer]
+            - button "नेपाली" [ref=e498] [cursor=pointer]
+            - button "Filipino" [ref=e499] [cursor=pointer]
+            - button "ไทย" [ref=e500] [cursor=pointer]
+          - paragraph [ref=e501]: ฝนตกมากและแม่น้ำอาจเอ่อล้นดังนั้นผู้อยู่อาศัยที่อยู่ในระดับต่ำควรไปยังสถานที่ที่ปลอดภัยทันที
+          - generic [ref=e502]:
+            - strong [ref=e503]: สิ่งที่ควรทำตอนนี้
+            - list [ref=e504]:
+              - listitem [ref=e564]: อยู่ห่างจากแม่น้ำหุบเขาและน้ำล้น
+              - listitem [ref=e565]: หากระดับต่ำเป็นอันตรายให้ทำตามคำแนะนำเพื่อความปลอดภัย
+              - listitem [ref=e566]: ตรวจสอบข้อความภัยพิบัติใหม่และคำแนะนำสถานที่
+          - status [ref=e506]: คำแนะนำในการแปลเท่านั้นในกรณีฉุกเฉินโปรดจัดลำดับความสำคัญของคำแนะนำอย่างเป็นทางการ
+  - contentinfo [ref=e507]:
+    - generic [ref=e508]:
+      - link "안심길 ●" [ref=e509] [cursor=pointer]:
+        - /url: "#home"
+        - img [ref=e511]
+        - generic [ref=e513]:
+          - text: 안심길
+          - emphasis [ref=e514]: ●
+      - generic [ref=e515]: 더 쉬운 안내가, 더 빠른 대피로 이어지도록.
+      - generic [ref=e516]: 공개 데이터 제공 범위는 지역별로 다를 수 있습니다.
+  - status
