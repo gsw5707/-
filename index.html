@@ -314,7 +314,7 @@
     <section class="section dictionary-section" id="dictionary">
       <div class="wrap">
         <div class="section-head"><div><h2>쉬운 말 사전</h2></div></div>
-        <p class="dictionary-intro">재난문자의 어려운 말을 우리 팀이 직접 쉬운 표현으로 정리했어요. 이 사전은 <code>dictionary.json</code>에서 관리합니다.</p>
+        <p class="dictionary-intro">보관된 재난문자에서 자주 나온 어려운 말을 모았어요. 초1 교과서에서 익숙한 짧은 말을 기준으로 바꾸고, 재난 종류가 아닌 농사·행정 표현은 “기타”에 모았어요. 사전은 <code>dictionary.json</code>에서 관리합니다.</p>
         <div class="dictionary-toolbar"><label class="sr-only" for="dictionarySearch">쉬운 말 사전 검색</label><input class="dictionary-search" id="dictionarySearch" type="search" placeholder="어려운 말이나 쉬운 말 검색" aria-label="쉬운 말 사전 검색"><p class="dictionary-count" id="dictionaryCount" role="status" aria-live="polite"></p></div>
         <div class="dictionary-filters" id="dictionaryFilters" role="group" aria-label="재난 유형 필터"></div>
         <div class="dictionary-entries" id="dictionaryEntries" aria-live="polite"></div>
@@ -325,7 +325,7 @@
             <div class="dictionary-field"><label for="dictionaryHard">어려운 말</label><input id="dictionaryHard" name="hard" required maxlength="60" autocomplete="off"></div>
             <div class="dictionary-field"><label for="dictionaryEasy">쉬운 말</label><input id="dictionaryEasy" name="easy" required maxlength="100" autocomplete="off"></div>
             <div class="dictionary-field dictionary-field-wide"><label for="dictionaryReason">왜 바꿨는지 한 줄</label><textarea id="dictionaryReason" name="reason" required maxlength="180" rows="2"></textarea></div>
-            <fieldset class="dictionary-field dictionary-field-wide" style="border:0;padding:0;margin:0"><legend class="dictionary-field label">재난 유형 태그</legend><div class="dictionary-tag-options" id="dictionaryTagOptions"></div></fieldset>
+            <fieldset class="dictionary-field dictionary-field-wide" style="border:0;padding:0;margin:0"><legend class="dictionary-field label">재난 유형·기타 분류</legend><div class="dictionary-tag-options" id="dictionaryTagOptions"></div></fieldset>
             <div class="dictionary-form-actions"><button class="dictionary-form-button" type="submit">제안 저장</button><button class="dictionary-export-button" id="dictionaryExport" type="button">dictionary.json 내려받기</button></div>
             <p class="dictionary-draft-status" id="dictionaryDraftStatus" role="status" aria-live="polite"></p>
             <pre class="dictionary-draft-json" id="dictionaryDraftJson" hidden></pre>
@@ -492,12 +492,12 @@
     speakEasyButton.addEventListener('click',()=>startSpeech(easySpeechText,'easy',easySpeechLanguage));
     stopSpeechButton.addEventListener('click',()=>stopSpeech());
     updateSpeechButtons(false);
-    const dictionaryCategories=['호우','산불','지진','폭염','한파','민방위','공통'];
+    const dictionaryCategories=['호우','산불','지진','폭염','한파','민방위','공통','기타'];
     const dictionaryDraftKey='ansimgil-dictionary-drafts-v1';
     let easyDictionary=[];
     let dictionaryDrafts=[];
     let activeDictionaryCategory='전체';
-    const statisticsCategories=['호우','산불','지진','폭염','한파','태풍·강풍','민방위','공통'];
+    const statisticsCategories=['호우','산불','지진','폭염','한파','태풍·강풍','민방위','공통','기타'];
     let difficultWords=[];
     let activeStatisticsCategory='전체';
     let statisticsLoaded=false;
@@ -1132,6 +1132,66 @@
         const entry=entryFor(hard);if(!entry)return;
         output=output.replace(pattern,(...args)=>{const easy=makeEasy(...args);applied.push({hard:entry.hard,easy:entry.easy,display:easy});return easy;});
       };
+      replacePhrase('건조경보',/현재\s*건조경보가?\s*발효되어\s*산불 위험이 매우 높습니다\.?/g,()=> '공기가 바짝 말라 산불이 날 위험이 매우 커요.');
+      replacePhrase('산불 위험',/산불 위험이 매우 높습니다/g,()=> '산불이 날 위험이 매우 커요');
+      replacePhrase('산불예방',/산불예방에\s*협조하여\s*(?:주시기 바랍니다|해요|해 주세요)/g,()=> '산불이 나지 않게 함께 조심해 주세요');
+      replacePhrase('산불예방',/산불을 미리 막기에\s*협조하여\s*(?:주시기 바랍니다|해요|해 주세요)/g,()=> '산불이 나지 않게 함께 조심해 주세요');
+      replacePhrase('지속',/무더운 날씨\s*지속중\.?/g,()=> '더운 날씨가 계속돼요.');
+      replacePhrase('야외활동 자제',/논·밭\s*등\s*야외활동자제/g,()=> '논밭에서는 밖에서 하는 일을 줄이세요');
+      replacePhrase('무더위쉼터이용',/더위를 피해서 쉴 수 있는 곳이용/g,()=> '더위를 피하는 곳에서 쉬세요');
+      replacePhrase('폭염안전수칙',/더운 날 지켜야 할 안전수칙\([^)]*\)\s*(?:잘 지키기|준수)?/g,()=> '더운 날에는 물을 마시고, 그늘에서 쉬고, 자주 쉬세요');
+      replacePhrase('폭염안전수칙',/더운 날 지켜야 할 안전을 위해 지킬 일\([^)]*\)\s*잘 지키기/g,()=> '더운 날에는 물을 마시고, 그늘에서 쉬고, 자주 쉬세요');
+      replacePhrase('안부묻기',/하루\s*2번 부모님 안부묻기/g,()=> '하루에 두 번 부모님께 잘 지내시는지 물어보세요');
+      replacePhrase('건강관리',/건강관리에\s*(?:유의바랍니다|유의하시기 바랍니다|유의하세요)/g,()=> '몸을 잘 돌봐 주세요');
+      replacePhrase('건강관리',/몸 돌보기에 조심하세요/g,()=> '몸을 잘 돌봐 주세요');
+      replacePhrase('불씨 관리',/나무를 태워 난방하는 보일러의 작은 불을 조심해요/g,()=> '나무 보일러 불씨도 조심하세요');
+      replacePhrase('불씨 관리',/나무를 태워 난방하는 보일러의 불씨를 조심해요/g,()=> '나무 보일러 불씨도 조심하세요');
+      replacePhrase('안부확인',/어르신 그리고 매우 더운 날씨민감대상 안부확인/g,()=> '어르신과 더위에 약한 분이 잘 지내는지 살펴보기');
+      replacePhrase('동파예방',/수도계량기\s*수도관이나 물이 얼어 터지는 일\s*(?:방지|예방)/g,()=> '수도 계량기가 얼어 터지지 않게 감싸 주세요');
+      replacePhrase('수도계량기',/수도계량기\s*(?:수도관이나 물이 얼어 터지는 일|동파)/g,()=> '수도 계량기가 얼어 터질 수 있어요');
+      replacePhrase('보온조치',/수도계량기\s*보온조치/g,()=> '수도 계량기를 따뜻하게 감싸 주세요');
+      replacePhrase('안전관리',/다치거나 위험해지는 일와 몸 돌보기에 조심하세요/g,()=> '다치지 않게 조심하고 몸을 잘 돌봐 주세요');
+      replacePhrase('불씨',/작은\s+작은 불/g,()=> '작은 불');
+      replacePhrase('건조경보',/현재\s*건조경보가?\s*발효되어\s*산불 위험이 매우 높습니다\.?/g,()=> '공기가 바짝 말라 산불이 날 위험이 매우 커요.');
+      replacePhrase('산불 위험',/산불 위험이 매우 높습니다/g,()=> '산불이 날 위험이 매우 커요');
+      replacePhrase('폭염안전수칙',/더운 날 지켜야 할 안전수칙\([^)]*\)\s*(?:잘 지키기|준수)?/g,()=> '더운 날에는 물을 마시고, 그늘에서 쉬고, 자주 쉬세요');
+      replacePhrase('폭염안전수칙',/폭염안전수칙\([^)]*\)\s*(?:잘 지키기|준수)/g,()=> '더운 날에는 물을 마시고, 그늘에서 쉬고, 자주 쉬세요');
+      replacePhrase('영농작업',/무더위\s*더운 시간\s*논밭·농사일,?\s*야외작업\s*자제/g,()=> '더운 시간에는 논밭이나 밖에서 하는 일을 줄이세요');
+      replacePhrase('야외작업',/논·밭\s*등\s*밖에서 하는 활동자제/g,()=> '논밭에서는 밖에서 하는 일을 줄이세요');
+      replacePhrase('야외활동 자제',/낮시간대 외출·밖에서 하는 활동을 줄여주세요/g,()=> '낮의 더운 시간에는 밖에 나가거나 활동하는 일을 줄이세요');
+      replacePhrase('무더위쉼터',/더위를 피해서 쉴 수 있는 곳이용/g,()=> '더위를 피하는 곳에서 쉬세요');
+      replacePhrase('안전수칙',/더운 날 지켜야 할 안전을 위해 지킬 일\([^)]*\)\s*잘 지키기/g,()=> '더운 날에는 물을 마시고, 그늘에서 쉬고, 자주 쉬세요');
+      replacePhrase('안부묻기',/하루\s*2번 부모님 안부묻기/g,()=> '하루에 두 번 부모님께 잘 지내시는지 물어보세요');
+      replacePhrase('건강관리',/건강살피기에 조심하세요/g,()=> '몸을 잘 돌보세요');
+      replacePhrase('산불예방',/산불을 미리 막기에 협조하여 해요/g,()=> '산불이 나지 않게 함께 조심해 주세요');
+      replacePhrase('동파예방',/수도계량기 수도관이나 물이 얼어 터지는 일\s*(?:방지|예방)/g,()=> '수도관이 얼어 터지지 않게 막으세요');
+      replacePhrase('수도계량기',/수도계량기 보온조치/g,()=> '수도 계량기를 따뜻하게 감싸 주세요');
+      replacePhrase('노약자',/어르신이나 몸이 약한 분분/g,()=> '어르신이나 몸이 약한 분');
+      replacePhrase('야외활동 자제',/밖에서 하는 활동을 줄여주세요해 주시고/g,()=> '밖에서 하는 일을 줄이고');
+      replacePhrase('건조경보',/바짝 마름위험 알림이 내려졌어요되어 산불 위험이 매우 높습니다/g,()=> '공기가 바짝 말라 산불이 날 위험이 매우 커요');
+      replacePhrase('건조','(?:현재\s*)?건조경보가?\s*발효되어/g',()=> '지금 공기가 바짝 말라 불이 나기 쉬워요.');
+      replacePhrase('산불위험지수',/산불 위험이 매우 높습니다/g,()=> '산에 불이 날 위험이 매우 커요.');
+      replacePhrase('산불예방',/산불(?:을)?\s*미리 막기(?:에)?\s*협조하여\s*해 주세요/g,()=> '산불이 나지 않게 함께 조심해 주세요.');
+      replacePhrase('산불예방',/산불예방에\s*협조하여\s*해 주세요/g,()=> '산불이 나지 않게 함께 조심해 주세요.');
+      replacePhrase('산불예방',/산불예방에\s*협조하여\s*주시기 바랍니다/g,()=> '산불이 나지 않게 함께 조심해 주세요.');
+      replacePhrase('폭염안전수칙',/더운 날 지켜야 할 안전수칙\([^)]*\)\s*(?:잘 지키기|준수)?/g,()=> '더운 날에는 물을 마시고 그늘에서 쉬며 자주 쉬세요');
+      replacePhrase('폭염안전수칙',/폭염안전수칙\([^)]*\)\s*(?:잘 지키기|준수)/g,()=> '더운 날에는 물을 마시고 그늘에서 쉬며 자주 쉬세요');
+      replacePhrase('폭염예방수칙',/폭염예방수칙\s*준수/g,()=> '더운 날 안전 수칙을 지켜주세요');
+      replacePhrase('폭염중대경보',/폭염중대경보/g,()=> '더위가 매우 심하다는 아주 위험한 알림');
+      replacePhrase('폭염',/매우 더운 날씨 경보가 내려졌어요\s*중/g,()=> '매우 더운 날씨 경보가 내려졌어요');
+      replacePhrase('영농작업',/무더위\s*더운 시간/g,()=> '더운 시간');
+      replacePhrase('영농작업',/논밭·농사일,?\s*야외작업\s*자제/g,()=> '논밭이나 밖에서 일하는 일을 줄이세요');
+      replacePhrase('폭염예방수칙',/낮시간대 외출·밖에서 하는 활동을 줄여주세요/g,()=> '낮의 더운 시간에는 밖에 나가거나 활동하는 일을 줄이세요');
+      replacePhrase('안전관리',/건강관리에\s*조심하세요/g,()=> '몸을 잘 돌보세요');
+      replacePhrase('기온 급강하',/급격한 기온 하강이 예상됩니다/g,()=> '날씨가 갑자기 크게 추워질 거예요');
+      replacePhrase('수도계량기',/수도계량기\s*수도관이나 물이 얼어 터지는 일\s*(?:방지|예방)/g,()=> '수도 계량기가 얼어 터지지 않게 감싸 주세요');
+      replacePhrase('수도계량기',/수도계량기\s*동파\s*(?:방지|예방)/g,()=> '수도 계량기가 얼어 터지지 않게 감싸 주세요');
+      replacePhrase('대비',/수도계량기\s*보온조치/g,()=> '수도 계량기를 따뜻하게 감싸기');
+      replacePhrase('산림인접지',/산림인접지\s*화기\s*사용\s*금지/g,()=> '숲 가까운 곳에서 불을 피우지 마세요');
+      replacePhrase('안전거리',/안전거리\s*확보/g,()=> '앞차와 거리를 넉넉히 두세요');
+      replacePhrase('안전요원',/안전관리요원/g,()=> '안전을 살피는 사람');
+      replacePhrase('대피명령',/대피명령/g,()=> '지금 안전한 곳으로 가라는 안내');
+      replacePhrase('폭염특보',/폭염특보/g,()=> '매우 더운 날씨 알림');
       replacePhrase('주의보',/(건조)\s*주의보(?:가)?\s*(?:발효|발령)(?:\s*중)?/g,()=> '공기가 말라 불이 나기 쉬워요');
       replacePhrase('주의보',/센 바람주의보 발령으로 산불 발생 위험이 높습니다\.?/g,()=> '센 바람이 불어 산불 위험이 커요.');
       replacePhrase('주의보',/(?:센 바람|많은 비|매우 더운 날씨|매우 추운 날씨|많은 눈)\s*주의보\s*(?:(?:발효|발령)(?:\s*중)?(?:으로)?)?/g,(whole)=>`${whole.replace(/주의보\s*(?:(?:발효|발령)(?:\s*중)?(?:으로)?)?$/,'').trim()} 조심 알림이 나왔어요`);
@@ -1148,6 +1208,35 @@
       replacePhrase('주의보',/매우 더운 날씨 주의 알림이 내려졌어요/g,()=> '매우 더우니 시원한 곳에서 쉬세요');
       replacePhrase('경보',/(?:조심|위험) 알림이 내려졌어요\s*중/g,match=>match.replace(/\s*중$/,''));
       replacePhrase('안전수칙',/(?:안전수칙|안전 수칙)\s*(?:준수|지켜주시기 바랍니다|지켜 주시기 바랍니다)/g,()=> '안전 수칙을 지켜주세요');
+      replacePhrase('폭염안전수칙',/폭염안전수칙(?:\([^)]*\))?\s*(?:준수|지켜주세요|지키기)/g,()=> '더운 날에는 물을 마시고 그늘에서 쉬며 자주 쉬어 주세요');
+      replacePhrase('폭염예방수칙',/폭염예방수칙\s*준수/g,()=> '더운 날 다치지 않게 조심하세요');
+      replacePhrase('폭염특보',/폭염특보(?:가)?\s*(?:발효\s*중|발효|발령)?/g,()=> '매우 더운 날씨 알림이 내려졌어요');
+      replacePhrase('폭염중대경보',/폭염중대경보/g,()=> '매우 더워서 아주 위험하다는 알림');
+      replacePhrase('호우주의보',/호우주의보(?:가)?\s*(?:발효\s*중|발효|발령)?/g,()=> '비가 많이 올 수 있다는 조심 알림이 내려왔어요');
+      replacePhrase('호우특보',/호우특보(?:가)?\s*(?:발효\s*중|발효|발령)?/g,()=> '비가 많이 올 때 내리는 위험 알림이 내려왔어요');
+      replacePhrase('산림인접지',/산림인접지\s*화기\s*사용\s*금지/g,()=> '숲 가까운 곳에서 불을 피우지 마세요');
+      replacePhrase('산림 인접지',/산림\s*연접지/g,()=> '숲 가까운 곳');
+      replacePhrase('영농부산물',/영농부산물(?:\s*및\s*쓰레기)?(?:,\s*논·밭두렁)?\s*(?:절대\s*)?소각\s*금지/g,()=> '농사 뒤 남은 풀과 쓰레기를 태우지 마세요');
+      replacePhrase('영농부산물',/영농부산물\s*쓰레기/g,()=> '농사 뒤 남은 풀과 줄기, 쓰레기');
+      replacePhrase('불법소각',/불법\s*소각\s*금지/g,()=> '허락 없이 태우지 마세요');
+      replacePhrase('안전거리',/안전거리\s*확보/g,()=> '앞차와 거리를 넉넉히 두세요');
+      replacePhrase('안전운전',/안전운전(?:에)?\s*(?:유의|주의)(?:바랍니다|하세요|해 주세요)?/g,()=> '조심해서 운전하세요');
+      replacePhrase('감속운행',/(?:차량|차)\s*감속운행/g,()=> '차 속도를 줄여 가세요');
+      replacePhrase('동파예방',/수도계량기\s*동파\s*(?:예방|방지)/g,()=> '수도 계량기가 얼어 터지지 않게 감싸 주세요');
+      replacePhrase('동파예방',/동파\s*(?:예방|방지)/g,()=> '수도관이 얼어 터지지 않게 막기');
+      replacePhrase('냉해예방',/냉해\s*예방/g,()=> '추위에 농작물이 상하지 않게 막기');
+      replacePhrase('영농작업',/영농작업/g,()=> '농사일');
+      replacePhrase('산불위험지수',/산불위험지수(?:가)?\s*높습니다/g,()=> '산에 불이 날 위험이 높아요');
+      replacePhrase('산불예방',/산불예방에\s*협조하여\s*주시기 바랍니다/g,()=> '산불이 나지 않게 도와주세요');
+      replacePhrase('산불위기경보',/산불위기경보/g,()=> '산불 위험 알림');
+      replacePhrase('국가위기경보',/국가위기경보/g,()=> '나라에서 큰 위험을 알리는 말');
+      replacePhrase('교통통제',/교통통제/g,()=> '차와 사람이 못 지나가게 막음');
+      replacePhrase('통제중이오니',/통제중이오니/g,()=> '못 지나가게 막고 있으니');
+      replacePhrase('통제중',/통제중/g,()=> '못 지나가게 막고 있음');
+      replacePhrase('안전관리요원',/안전관리요원/g,()=> '안전을 살피는 사람');
+      replacePhrase('안전요원',/안전요원/g,()=> '안전을 살피는 사람');
+      replacePhrase('안전확인',/이웃\s*안전확인/g,()=> '이웃이 괜찮은지 살펴보기');
+      replacePhrase('대피명령',/대피명령/g,()=> '지금 안전한 곳으로 가라는 안내');
       replacePhrase('급격히',/기온이?\s*급격히\s*떨어(?:지니|져|질 것으로 예상됩니다)/g,()=> '날씨가 갑자기 추워져요');
       replacePhrase('기온 급강하',/기온\s*급강하/g,()=> '날씨가 갑자기 크게 추워짐');
       replacePhrase('기온 강하',/기온\s*강하/g,()=> '날씨가 추워짐');
@@ -1333,7 +1422,7 @@
         const pattern=new RegExp(escapeRegExp(entry.hard),'g');
         output=output.replace(pattern,()=>{applied.push({hard:entry.hard,easy:entry.easy,display:entry.easy});return entry.easy;});
       });
-      output=output.replace(/안전한 곳으로\s+안전한 곳으로/g,'안전한 곳으로').replace(/수도\s+수도관/g,'수도관').replace(/\.{2,}/g,'.');
+      output=output.replace(/안전한 곳으로\s+안전한 곳으로/g,'안전한 곳으로').replace(/수도\s+수도관/g,'수도관').replace(/(위험 알림|조심 알림)가 내려졌어요/g,'$1이 내려졌어요').replace(/알림이 내려졌어요중/g,'알림이 내려졌어요').replace(/위험 알림가 내려졌어요/g,'위험 알림이 내려졌어요').replace(/나무 보일러의\s+작은 불/g,'나무 보일러의 작은 불').replace(/\.{2,}/g,'.');
       const applyContextualRule=(hard,pattern,replacement)=>{
         if(!sourceText.includes(hard))return;
         const entry=easyDictionary.find(item=>item.hard===hard);if(!entry)return;
@@ -1352,6 +1441,22 @@
         const match=output.match(/안전한 곳으로 (?:이동(?:해 주세요|하세요|합니다|하시고|하고|해요)?|가(?:세요|시고|고|기)?)/);
         if(entry&&match)applied.push({hard:entry.hard,easy:entry.easy,display:match[0]});
       }
+      output=output
+        .replace(/수도\s+수돗물\s+(?:쓴|쓰는) 양을 재는 기계가 얼어 터질 수 있어요/g,'물을 쓰는 양을 재는 기계가 얼어 터질 수 있어요')
+        .replace(/수도\s+수돗물\s+(?:쓴|쓰는) 양을 재는 기계\s+보온조치/g,'수도 계량기를 따뜻하게 감싸 주세요')
+        .replace(/농축산 건물과 물건 피해/g,'밭에서 기르는 것과 동물, 건물이 상할 수 있어요')
+        .replace(/난방기 화재를 조심/g,'난방기에서 불이 나지 않게 조심하세요')
+        .replace(/따뜻한 옷과 장갑·모자 착용/g,'따뜻하게 입으세요')
+        .replace(/등 안전에 조심하여 해요/g,'안전을 지켜주세요')
+        .replace(/등 다치거나 위험해지는 일와 몸 돌보기에 조심하세요/g,'다치지 않게 조심하고 몸을 잘 돌봐 주세요')
+        .replace(/작은\s+작은 불/g,'작은 불')
+        .replace(/작은 작은 불/g,'작은 불')
+        .replace(/나무를 태워 난방하는 보일러의 작은 불/g,'나무 보일러에서 나온 작은 불')
+        .replace(/나무 보일러 작은 불/g,'나무 보일러에서 나온 작은 불')
+        .replace(/나무 보일러의 작은 불/g,'나무 보일러에서 나온 작은 불')
+        .replace(/작은 불도 산불을 낼 수 있어요/g,'작은 불씨도 산불을 낼 수 있어요');
+      if(/영농부산물/.test(sourceText))output=output.replace(/농사 뒤 남은 풀과 줄기를 태우지 마세요,\s*(.+?)\s*등 산불이 나지 않게 함께 조심해 주세요\.?/g,'농사 뒤 남은 풀과 줄기를 태우지 마세요. $1. 산불이 나지 않게 함께 조심해 주세요.');
+      if(/영농부산물.*(?:절대\s*)?소각 금지/.test(sourceText))output=output.replace(/농사 뒤 남은 풀과 줄기 그리고 쓰레기, 논밭의 둑 절대 태우기 금지/g,'농사 뒤 남은 풀과 쓰레기, 논과 밭 사이 둑을 태우지 마세요');
       return {text:output,applied};
     }
     function renderEasyLines(element,text,dictionaryMarks=[],disasterType='',suggestionWords=[]){
@@ -1533,7 +1638,7 @@
           const actions=document.createElement('div');actions.className='geochang-item-actions';const details=document.createElement('details');details.className='geochang-easy';details.dataset.originalMessage=item.message;const summary=document.createElement('summary');summary.textContent='쉬운 말 보기';
           const detailBody=document.createElement('div');detailBody.className='geochang-easy-body';const controls=document.createElement('div');controls.className='geochang-easy-controls';
           const audienceLabel=document.createElement('label');audienceLabel.textContent='안내 대상';const audience=document.createElement('select');audience.className='geochang-audience';
-          [['general','쉬운 한국어'],['child','어린이'],['senior','고령층'],['foreign','외국인']].forEach(([value,label])=>{const option=document.createElement('option');option.value=value;option.textContent=label;audience.append(option);});audienceLabel.append(audience);
+           [['child','초1 수준'],['general','쉬운 한국어'],['senior','고령층'],['foreign','외국인']].forEach(([value,label])=>{const option=document.createElement('option');option.value=value;option.textContent=label;audience.append(option);});audienceLabel.append(audience);
           const languageLabel=document.createElement('label');languageLabel.className='geochang-language-label';languageLabel.hidden=true;languageLabel.append(document.createTextNode('언어 '));const language=document.createElement('select');language.className='geochang-audience-language';
           [['en','English'],['zh-CN','中文'],['vi','Tiếng Việt'],['ne','नेपाली'],['tl','Filipino'],['th','ไทย']].forEach(([value,label])=>{const option=document.createElement('option');option.value=value;option.textContent=label;language.append(option);});languageLabel.append(language);
           controls.append(audienceLabel,languageLabel);const output=document.createElement('p');output.className='geochang-easy-output';output.dataset.noSiteTranslate='true';const easyStatus=document.createElement('p');easyStatus.className='geochang-easy-status';easyStatus.textContent='원문 보존 · 쉬운 표현 참고용';detailBody.append(controls,easyStatus,output);details.append(summary,detailBody);
@@ -1575,7 +1680,8 @@
       if(/한파|대설|폭설|결빙|빙판|강추위|동파|눈길|적설/.test(text))categories.push('한파');
       if(/태풍|강풍|풍랑|돌풍|강한 바람/.test(text))categories.push('태풍·강풍');
       if(/민방위/.test(text))categories.push('민방위');
-      return categories.length?categories:['공통'];
+      categories.push('기타');
+      return categories;
     }
     function matchDifficultWords(text){return difficultWordMatchers.filter(item=>item.test.test(text)).map(item=>item.entry);}
     function applyStatisticsWordList(text){
@@ -1705,6 +1811,10 @@
         .replaceAll('및 2인 이상 함께 활동','혼자 가지 말고 2명 이상 함께 가세요')
         .replace(/[<>]/g,'');
       const phrases=[
+        ['현재 건조경보가 발효되어 산불 위험이 매우 높습니다. 영농부산물 소각 금지, 화목보일러 불씨 주의 등 산불예방에 협조하여 주시기 바랍니다.','공기가 바짝 말라 불이 나기 쉬워요. 산불이 날 위험이 커요. 농사 뒤 남은 풀을 태우지 마세요. 나무 보일러 불도 조심하고, 산불이 나지 않게 함께 조심해요.'],
+        ['무더운 날씨 지속중. 논·밭 등 야외활동자제, 무더위쉼터이용, 폭염안전수칙(물,그늘,휴식)준수, 하루 2번 부모님 안부묻기 등 건강관리에 유의바랍니다.','더운 날씨가 계속돼요. 논밭이나 밖에서 하는 일을 줄이세요. 더위를 피하는 곳에서 쉬세요. 물을 마시고 그늘에서 쉬세요. 하루 두 번 부모님께 잘 지내시는지 물어보세요.'],
+        ['폭염경보 발효중▲무더위 취약시간대 논밭·영농작업,야외작업 자제▲낮시간대 외출·야외활동 자제▲폭염안전수칙(물,휴식,그늘) 준수 등 건강관리에 유의하세요.','매우 더운 날씨예요. 더운 시간에는 논밭이나 밖에서 일하지 마세요. 낮에는 밖에 나가거나 움직이는 일을 줄이세요. 물을 마시고 쉬며 그늘에 있으세요. 몸을 잘 돌보세요.'],
+        ['오늘 밤부터 강추위가 예상됩니다. 농축산 시설물 피해, 수도계량기 동파, 난방기 화재 주의, 방한용품 착용 등 안전에 유의하여 주시기 바랍니다.','오늘 밤부터 매우 추울 거예요. 밭에서 기르는 것과 동물이 추위에 상하지 않게 조심하세요. 수돗물 쓰는 양을 재는 기계를 따뜻하게 감싸 주세요. 난방기에서 불이 나지 않게 조심하고 따뜻하게 입으세요.'],
         ['폭염으로 온열질환 발생 위험이 높습니다. 취약시간대에는 야외 작업 및 외출을 자제하시고, 안전수칙(물,그늘,휴식) 준수 등 안전을 지키시기 바랍니다.','매우 더운 날씨예요. 더위로 몸이 아플 수 있어요. 더운 시간에는 밖에서 일하거나 외출하는 일을 줄이세요. 물을 마시고 그늘에서 쉬며 충분히 휴식하세요.'],
         ['취약시간대에는 야외 작업 및 외출을 자제하시고','더운 시간에는 밖에서 일하거나 외출하는 일을 줄이세요'],
         ['안전수칙(물,그늘,휴식) 준수','물 마시기, 그늘에서 쉬기, 충분히 휴식하기'],
@@ -2181,10 +2291,16 @@
       const output=details.querySelector('.geochang-easy-output');const status=details.querySelector('.geochang-easy-status');
       details.classList.toggle('audience-child',audience==='child');details.classList.toggle('audience-senior',audience==='senior');
       const requestId=Number(details.dataset.requestId||0)+1;details.dataset.requestId=String(requestId);
-      const simple=simplifyDisasterMessage(message,audience);
+      const base=simplifyDisasterMessage(message,audience);
+      status.textContent='쉬운 말 사전을 살펴보고 있어요…';
+      await dictionaryLoadPromise;
+      if(details.dataset.requestId!==String(requestId)||!details.open)return;
+      const dictionaryResult=applyEasyDictionary(base,message);
+      const simple=dictionaryResult.text;
       if(audience!=='foreign'){
         output.textContent=simple;
-        status.textContent='원문 보존 · 쉬운 표현 참고용';
+        const audienceName=audience==='child'?'초1 수준':audience==='senior'?'고령층용 큰 글자':'쉬운 한국어';
+        status.textContent=dictionaryResult.applied.length?`${audienceName} · 팀 사전 ${dictionaryResult.applied.length}개 적용 · 원문은 그대로예요`: `${audienceName} · 쉬운 말 규칙 적용 · 원문은 그대로예요`;
         return;
       }
       const cacheKey=`${message}|${language}`;
@@ -2193,7 +2309,7 @@
         const translated=disasterEasyCache.get(cacheKey)||await translateText(simple,language);
         disasterEasyCache.set(cacheKey,translated);
         if(details.dataset.requestId!==String(requestId)||!details.open)return;
-        output.textContent=translated;status.textContent='기계 번역 · 원문·공식 안내 확인';
+        output.textContent=translated;status.textContent=`팀 사전 ${dictionaryResult.applied.length}개 적용 · 기계 번역 · 원문·공식 안내 확인`;
       }catch(error){
         if(details.dataset.requestId!==String(requestId)||!details.open)return;
         status.textContent='번역 실패 · 쉬운 한국어와 원문 확인';
