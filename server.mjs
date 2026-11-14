@@ -7,6 +7,9 @@ import { fileURLToPath } from 'node:url';
 const root = path.dirname(fileURLToPath(import.meta.url));
 const dataDirectory = path.join(root, 'data');
 const feedbackFile = path.join(dataDirectory, 'understanding-feedback.json');
+const disasterSource = 'https://www.safetydata.go.kr/disaster-data/disasterNotification';
+const localDataOrigin = 'https://file.localdata.go.kr';
+const publicFacilityOrigin = 'https://life.ttpk.co.kr';
 const port = Number(process.env.PORT) || 3000;
 const mimeTypes = {
   '.css': 'text/css; charset=utf-8',
@@ -22,6 +25,8 @@ const mimeTypes = {
 
 let feedbackRecords = null;
 let saveQueue = Promise.resolve();
+const knownRegions = new Set();
+const civilShelterCache = new Map();
 
 function sendJson(response, status, payload) {
   response.writeHead(status, {
@@ -75,6 +80,375 @@ function readJsonBody(request) {
   });
 }
 
+function decodeHtml(value) {
+  return value
+    .replace(/<br\s*\/?\s*>/gi, ' ')
+    .replace(/<[^>]*>/g, ' ')
+    .replace(/&nbsp;|&#160;/gi, ' ')
+    .replace(/&amp;/gi, '&')
+    .replace(/&quot;/gi, '"')
+    .replace(/&#39;|&apos;/gi, "'")
+    .replace(/&lt;/gi, '<')
+    .replace(/&gt;/gi, '>')
+    .replace(/&#(\d+);/g, (_, number) => String.fromCodePoint(Number(number)))
+    .replace(/&#x([\da-f]+);/gi, (_, number) => String.fromCodePoint(parseInt(number, 16)))
+    .replace(/\s+/g, ' ')
+    .trim();
+}
+
+function getKoreanDate(date) {
+  const parts = new Intl.DateTimeFormat('en-CA', {
+    day: '2-digit',
+    month: '2-digit',
+    timeZone: 'Asia/Seoul',
+    year: 'numeric',
+  }).formatToParts(date);
+  const values = Object.fromEntries(parts.map(part => [part.type, part.value]));
+  return `${values.year}-${values.month}-${values.day}`;
+}
+
+function parseDisasterRows(html) {
+  const entries = [];
+  const rowPattern = /<tr\b[^>]*>([\s\S]*?)<\/tr>/gi;
+  let rowMatch;
+  while ((rowMatch = rowPattern.exec(html))) {
+    const row = rowMatch[1];
+    const number = row.match(/<td[^>]*class="cell-no"[^>]*>([\s\S]*?)<\/td>/i)?.[1];
+    const subject = row.match(/<td[^>]*class="[^"]*cell-subject[^"]*"[^>]*>[\s\S]*?<a[^>]*href="([^"]+)"[^>]*>([\s\S]*?)<\/a>/i);
+    const createdAt = row.match(/<td[^>]*class="cell-date"[^>]*>([\s\S]*?)<\/td>/i)?.[1];
+    if (!number || !subject || !createdAt) continue;
+    const message = decodeHtml(subject[2]);
+    const region = message.match(/\[([^\]]+)\]\s*$/)?.[1]?.trim() || '전국';
+    knownRegions.add(region);
+    entries.push({
+      id: decodeHtml(number),
+      region,
+      createdAt: decodeHtml(createdAt),
+      agency: region,
+      message,
+      sourceUrl: new URL(subject[1], 'https://www.safetydata.go.kr').toString(),
+    });
+  }
+  return entries;
+}
+
+async function getDisasterMessages(url, response) {
+  const page = Math.max(1, Math.min(10000, Number(url.searchParams.get('page')) || 1));
+  const pageSize = Math.max(10, Math.min(50, Number(url.searchParams.get('pageSize')) || 50));
+  const days = Math.max(1, Math.min(365, Number(url.searchParams.get('days')) || 30));
+  const keyword = (url.searchParams.get('keyword') || '').trim().slice(0, 80);
+  const region = (url.searchParams.get('region') || '').trim().slice(0, 80);
+  const endDate = getKoreanDate(new Date());
+  const startDate = getKoreanDate(new Date(Date.now() - (days - 1) * 86400000));
+  const sourceKeyword = region || keyword;
+  const sourceUrl = new URL(disasterSource);
+  sourceUrl.searchParams.set('currentPage', String(page));
+  sourceUrl.searchParams.set('cntPerPage', String(pageSize));
+  sourceUrl.searchParams.set('pageSize', String(pageSize));
+  sourceUrl.searchParams.set('searchStartDttm', startDate);
+  sourceUrl.searchParams.set('searchEndDttm', endDate);
+  sourceUrl.searchParams.set('keyword', sourceKeyword);
+
+  try {
+    const upstream = await fetch(sourceUrl, {
+      headers: { 'User-Agent': 'Mozilla/5.0 (compatible; DisasterMessageReader/1.0)' },
+      redirect: 'follow',
+      signal: AbortSignal.timeout(20000),
+    });
+    if (!upstream.ok) {
+      sendJson(response, 502, { error: '공식 재난문자 목록에 연결하지 못했어요.' });
+      return;
+    }
+    const html = await upstream.text();
+    const matchTotal = html.match(/<span[^>]*>([\d,]+)<\/span>\s*건의 게시물이 검색되었습니다/);
+    const sourceTotal = Number((matchTotal?.[1] || '0').replace(/,/g, ''));
+    let items = parseDisasterRows(html);
+    if (keyword && region) items = items.filter(item => item.message.includes(keyword));
+    const regionCounts = {};
+    items.forEach(item => { regionCounts[item.region] = (regionCounts[item.region] || 0) + 1; });
+    const totalCount = region && keyword ? items.length : sourceTotal;
+    const pageCount = Math.max(1, Math.ceil(totalCount / pageSize));
+    sendJson(response, 200, {
+      page,
+      pageSize,
+      pageCount,
+      totalCount,
+      nationalCount: sourceTotal,
+      collectedCount: sourceTotal,
+      complete: true,
+      startDate,
+      endDate,
+      regions: [...knownRegions].sort((a, b) => a.localeCompare(b, 'ko')),
+      regionCounts,
+      items,
+    });
+  } catch {
+    sendJson(response, 502, { error: '공식 재난문자 목록을 불러오지 못했어요. 잠시 후 다시 시도해 주세요.' });
+  }
+}
+
+function distanceKm(a, b) {
+  const radians = value => value * Math.PI / 180;
+  const dLat = radians(b.lat - a.lat);
+  const dLon = radians(b.lon - a.lon);
+  const lat1 = radians(a.lat);
+  const lat2 = radians(b.lat);
+  const h = Math.sin(dLat / 2) ** 2 + Math.cos(lat1) * Math.cos(lat2) * Math.sin(dLon / 2) ** 2;
+  return 6371 * 2 * Math.atan2(Math.sqrt(h), Math.sqrt(1 - h));
+}
+
+function csvRows(text) {
+  const rows = [];
+  let row = [];
+  let value = '';
+  let quoted = false;
+  for (let index = 0; index < text.length; index += 1) {
+    const char = text[index];
+    if (char === '"') {
+      if (quoted && text[index + 1] === '"') { value += '"'; index += 1; }
+      else quoted = !quoted;
+    } else if (char === ',' && !quoted) {
+      row.push(value); value = '';
+    } else if ((char === '\n' || char === '\r') && !quoted) {
+      if (char === '\r' && text[index + 1] === '\n') index += 1;
+      row.push(value); value = '';
+      if (row.some(cell => cell.trim())) rows.push(row);
+      row = [];
+    } else value += char;
+  }
+  if (value || row.length) { row.push(value); rows.push(row); }
+  return rows;
+}
+
+function getProvince(latitude, longitude, area = '') {
+  const byName = [
+    ['서울특별시', '6110000'], ['부산광역시', '6260000'], ['대구광역시', '6270000'],
+    ['인천광역시', '6280000'], ['전남광주통합특별시', '6130000'], ['광주광역시', '6290000'],
+    ['대전광역시', '6300000'], ['울산광역시', '6310000'], ['세종특별자치시', '5690000'],
+    ['경기도', '6410000'], ['강원특별자치도', '6530000'], ['강원도', '6530000'],
+    ['충청북도', '6430000'], ['충청남도', '6440000'], ['전북특별자치도', '6540000'],
+    ['전라북도', '6540000'], ['전라남도', '6460000'], ['경상북도', '6470000'],
+    ['경상남도', '6480000'], ['제주특별자치도', '6500000'],
+  ];
+  const named = byName.find(([name]) => area.includes(name));
+  if (named) return named[1];
+  const bounds = [
+    ['6110000', 37.4, 37.72, 126.75, 127.22], ['6280000', 36.9, 37.95, 124.4, 126.8],
+    ['6260000', 34.8, 35.45, 128.7, 129.35], ['6270000', 35.58, 36.05, 128.3, 128.9],
+    ['6290000', 35.0, 35.3, 126.6, 127.0], ['6300000', 36.2, 36.5, 127.2, 127.5],
+    ['6310000', 35.3, 35.75, 128.95, 129.5], ['5690000', 36.4, 36.7, 127.1, 127.4],
+    ['6500000', 32.9, 33.7, 125.9, 127.0], ['6530000', 37.0, 38.65, 127.4, 129.6],
+    ['6430000', 36.0, 37.25, 127.3, 128.7], ['6440000', 35.8, 37.1, 125.8, 127.5],
+    ['6540000', 35.2, 36.2, 126.3, 127.9], ['6460000', 34.0, 35.5, 125.0, 127.7],
+    ['6470000', 35.5, 37.3, 128.0, 130.0], ['6480000', 34.5, 36.1, 127.5, 129.5],
+    ['6410000', 36.8, 38.3, 126.3, 127.9], ['6410000', 35.9, 37.2, 127.5, 128.6],
+  ];
+  return bounds.find(([, south, north, west, east]) => latitude >= south && latitude <= north && longitude >= west && longitude <= east)?.[0] || '6410000';
+}
+
+async function downloadCivilShelters(orgCode) {
+  if (civilShelterCache.has(orgCode)) return civilShelterCache.get(orgCode);
+  const promise = (async () => {
+    const headers = { 'Referer': 'https://www.data.go.kr/data/15044951/fileData.do', 'User-Agent': 'Mozilla/5.0' };
+    const landing = await fetch(`${localDataOrigin}/file/civil_defense_shelter_info/info`, { headers, signal: AbortSignal.timeout(20000) });
+    if (!landing.ok) throw new Error('공개 민방위 시설 자료에 연결하지 못했어요.');
+    const cookies = landing.headers.getSetCookie().map(cookie => cookie.split(';')[0]).join('; ');
+    const download = await fetch(`${localDataOrigin}/file/download/civil_defense_shelter_info/info?orgCode=${orgCode}_ALL`, {
+      headers: { ...headers, Cookie: cookies },
+      signal: AbortSignal.timeout(30000),
+    });
+    if (!download.ok) throw new Error('민방위 시설 공개 파일을 내려받지 못했어요.');
+    const text = new TextDecoder('euc-kr').decode(await download.arrayBuffer());
+    const [header = [], ...rows] = csvRows(text);
+    const columns = new Map(header.map((name, index) => [name.replace(/^\uFEFF/, '').trim(), index]));
+    const value = (row, name) => row[columns.get(name)]?.trim() || '';
+    const facilities = rows.map(row => ({
+      id: value(row, '관리번호'),
+      name: value(row, '시설명'),
+      address: value(row, '도로명전체주소') || value(row, '소재지전체주소'),
+      lat: Number(value(row, '위도(EPSG4326)')),
+      lon: Number(value(row, '경도(EPSG4326)')),
+      floor: value(row, '시설위치(지상/지하)'),
+      capacity: Number(value(row, '최대수용인원')) || null,
+      statusLabel: value(row, '운영상태'),
+      kindLabel: '민방위 대피시설',
+    })).filter(item => Number.isFinite(item.lat) && Number.isFinite(item.lon) && item.name && !/해제|폐지/.test(item.statusLabel));
+    return facilities;
+  })();
+  civilShelterCache.set(orgCode, promise);
+  try { return await promise; }
+  catch (error) { civilShelterCache.delete(orgCode); throw error; }
+}
+
+async function getNearbyShelters(url, response, samples = false) {
+  const lat = Number(url.searchParams.get('lat'));
+  const lon = Number(url.searchParams.get('lon'));
+  const radiusKm = Math.max(1, Math.min(30, Number(url.searchParams.get('radiusKm')) || 8));
+  const type = samples ? url.searchParams.get('type') : 'civil';
+  if (!Number.isFinite(lat) || !Number.isFinite(lon)) {
+    sendJson(response, 400, { error: '현재 위치나 지도 위치를 확인해 주세요.' });
+    return;
+  }
+  try {
+    let facilities;
+    let sourceUrl;
+    let scopeLabel;
+    if (type === 'tsunami') {
+      const data = JSON.parse(await readFile(path.join(root, 'tsunami-shelters.json'), 'utf8'));
+      facilities = data.items.map(item => ({ ...item, kindLabel: '지진해일 긴급대피장소' }));
+      sourceUrl = data.sourceUrl;
+      scopeLabel = `전국 지진해일 긴급대피장소 · ${facilities.length}곳`;
+    } else if (type === 'civil') {
+      const orgCode = getProvince(lat, lon, url.searchParams.get('area') || '');
+      facilities = await downloadCivilShelters(orgCode);
+      sourceUrl = 'https://www.data.go.kr/data/15044951/fileData.do';
+      scopeLabel = '전국 행정안전부 민방위 대피시설';
+    } else {
+      const slugByType = { earthquake: 'shelter-eq', heat: 'shelter-heat', cold: 'shelter-cold' };
+      const slug = slugByType[type];
+      if (!slug) {
+        sendJson(response, 400, { error: '해당 재난의 공개 대피소 자료를 찾지 못했어요.' });
+        return;
+      }
+      const latitudeDelta = radiusKm * 1.4 / 111;
+      const longitudeDelta = radiusKm * 1.4 / (111 * Math.max(0.2, Math.cos(lat * Math.PI / 180)));
+      const params = new URLSearchParams({
+        swLat: String(lat - latitudeDelta), swLng: String(lon - longitudeDelta),
+        neLat: String(lat + latitudeDelta), neLng: String(lon + longitudeDelta),
+      });
+      const upstream = await fetch(`${publicFacilityOrigin}/${slug}/api/in-bounds?${params}`, {
+        headers: { 'Referer': `${publicFacilityOrigin}/${slug}/map`, 'User-Agent': 'Mozilla/5.0' },
+        signal: AbortSignal.timeout(20000),
+      });
+      const data = await upstream.json();
+      if (!upstream.ok || !data.success || !Array.isArray(data.data)) throw new Error('전국 공개 대피시설을 불러오지 못했어요.');
+      facilities = data.data.map(item => ({
+        id: item._id,
+        name: item._name,
+        address: item._addr || item._address || '',
+        lat: Number(item.lat),
+        lon: Number(item.lng),
+        kindLabel: type === 'earthquake' ? '지진 옥외대피장소' : type === 'heat' ? '무더위쉼터' : '한파쉼터',
+        statusLabel: item._status || '',
+      })).filter(item => Number.isFinite(item.lat) && Number.isFinite(item.lon));
+      sourceUrl = `${publicFacilityOrigin}/${slug}/map`;
+      scopeLabel = type === 'earthquake' ? '전국 지진 옥외대피장소' : type === 'heat' ? '전국 무더위쉼터' : '전국 한파쉼터';
+    }
+
+    const items = facilities.map(item => ({
+      ...item,
+      distanceKm: distanceKm({ lat, lon }, { lat: item.lat, lon: item.lon }),
+    })).filter(item => item.distanceKm <= radiusKm).sort((a, b) => a.distanceKm - b.distanceKm).slice(0, 60);
+    const regions = [...new Set(facilities.map(item => item.address.match(/^(.*?(?:특별자치도|특별자치시|광역시|특별시|도|시|군|구))/)?.[1]).filter(Boolean))];
+    sendJson(response, 200, {
+      items,
+      sampleCount: facilities.length,
+      regionName: regions.find(region => (url.searchParams.get('area') || '').includes(region)) || regions[0] || '전국 공개목록',
+      scopeLabel,
+      sourceUrl,
+      temporary: false,
+    });
+  } catch (error) {
+    sendJson(response, 502, { error: error.message || '공개 대피시설을 불러오지 못했어요.' });
+  }
+}
+
+async function getDirections(url, response) {
+  const originLat = Number(url.searchParams.get('originLat'));
+  const originLon = Number(url.searchParams.get('originLon'));
+  const destLat = Number(url.searchParams.get('destLat'));
+  const destLon = Number(url.searchParams.get('destLon'));
+  const mode = url.searchParams.get('mode') === 'driving' ? 'driving' : 'foot';
+  if (![originLat, originLon, destLat, destLon].every(Number.isFinite)) {
+    sendJson(response, 400, { error: '현재 위치와 대피소 위치를 확인해 주세요.' });
+    return;
+  }
+  const profile = mode === 'foot' ? 'https://routing.openstreetmap.de/routed-foot/route/v1/foot' : 'https://router.project-osrm.org/route/v1/driving';
+  const routeUrl = `${profile}/${originLon},${originLat};${destLon},${destLat}?overview=full&steps=true&geometries=geojson`;
+  try {
+    const upstream = await fetch(routeUrl, { headers: { 'User-Agent': 'Mozilla/5.0 (compatible; EasyDisasterMap/1.0)' }, signal: AbortSignal.timeout(20000) });
+    const data = await upstream.json();
+    const route = data.routes?.[0];
+    if (!upstream.ok || data.code !== 'Ok' || !route) {
+      sendJson(response, 404, { error: '이 위치 사이의 길을 찾지 못했어요. 다른 대피소를 선택해 주세요.' });
+      return;
+    }
+    const steps = (route.legs || []).flatMap(leg => leg.steps || []).map(step => {
+      const maneuver = step.maneuver || {};
+      const direction = maneuver.modifier === 'left' ? '왼쪽으로' : maneuver.modifier === 'right' ? '오른쪽으로' : maneuver.modifier?.includes('left') ? '왼쪽으로' : maneuver.modifier?.includes('right') ? '오른쪽으로' : '';
+      const instruction = maneuver.type === 'depart' ? '출발하세요' : maneuver.type === 'arrive' ? '목적지에 도착했어요' : maneuver.type === 'turn' ? `${direction || '앞으로'} 가세요` : maneuver.type === 'roundabout' || maneuver.type === 'rotary' ? '회전교차로를 지나가세요' : maneuver.type === 'merge' ? '길에 합류하세요' : maneuver.type === 'fork' ? `${direction || '안내된 방향으로'} 가세요` : maneuver.type === 'continue' ? '계속 곧장 가세요' : '안내된 길을 따라가세요';
+      const name = typeof step.name === 'string' ? step.name.trim() : '';
+      return name ? `${name}에서 ${instruction}` : instruction;
+    }).slice(0, 30);
+    sendJson(response, 200, {
+      distanceMeters: route.distance,
+      durationSeconds: route.duration,
+      coordinates: route.geometry.coordinates,
+      steps,
+      mode,
+    });
+  } catch {
+    sendJson(response, 502, { error: '길 안내를 불러오지 못했어요. 잠시 후 다시 시도해 주세요.' });
+  }
+}
+
+function splitSpeechText(text, limit = 180) {
+  const chunks = [];
+  let remaining = text;
+  while (remaining.length > limit) {
+    let splitAt = Math.max(remaining.lastIndexOf('。', limit), remaining.lastIndexOf('！', limit), remaining.lastIndexOf('？', limit), remaining.lastIndexOf('।', limit), remaining.lastIndexOf(' ', limit));
+    if (splitAt < limit * 0.55) splitAt = limit;
+    chunks.push(remaining.slice(0, splitAt + 1).trim());
+    remaining = remaining.slice(splitAt + 1).trim();
+  }
+  if (remaining) chunks.push(remaining);
+  return chunks;
+}
+
+async function synthesizeSpeech(request, response) {
+  let payload;
+  try {
+    payload = await readJsonBody(request);
+  } catch (error) {
+    sendJson(response, error.message === 'too_large' ? 413 : 400, { error: '읽을 내용을 확인해 주세요.' });
+    return;
+  }
+  const language = payload.language;
+  const text = typeof payload.text === 'string' ? payload.text.replace(/\s+/g, ' ').trim() : '';
+  const voiceLocales = { ja: 'ja', ne: 'ne' };
+  if (!voiceLocales[language] || !text || text.length > 2400) {
+    sendJson(response, 400, { error: '지원하지 않는 음성 언어이거나 읽을 내용이 너무 길어요.' });
+    return;
+  }
+  try {
+  const chunks = splitSpeechText(text);
+    const audioParts = [];
+    for (const chunk of chunks) {
+      const url = new URL('https://translate.google.com/translate_tts');
+      url.searchParams.set('ie', 'UTF-8');
+      url.searchParams.set('client', 'tw-ob');
+      url.searchParams.set('tl', voiceLocales[language]);
+      url.searchParams.set('q', chunk);
+      const upstream = await fetch(url, {
+        headers: { 'User-Agent': 'Mozilla/5.0' },
+        signal: AbortSignal.timeout(15000),
+      });
+      if (!upstream.ok) throw new Error('speech_unavailable');
+      audioParts.push(Buffer.from(await upstream.arrayBuffer()));
+    }
+    const audio = Buffer.concat(audioParts);
+    response.writeHead(200, {
+      'Cache-Control': 'no-store',
+      'Content-Length': audio.length,
+      'Content-Type': 'audio/mpeg',
+      'X-Content-Type-Options': 'nosniff',
+    });
+    response.end(audio);
+  } catch {
+    sendJson(response, 502, { error: '음성을 만들지 못했어요. 다시 눌러 주세요.' });
+  }
+}
+
 async function recordFeedback(request, response) {
   let payload;
   try {
@@ -84,7 +458,7 @@ async function recordFeedback(request, response) {
     return;
   }
 
-  const languages = new Set(['ko', 'en', 'zh-CN', 'vi', 'ne', 'tl', 'th']);
+  const languages = new Set(['ko', 'en', 'zh-CN', 'vi', 'ne', 'tl', 'th', 'ja']);
   const text = typeof payload.text === 'string' ? cleanPreview(payload.text) : '';
   if (!text || !languages.has(payload.language) || !['understood', 'difficult'].includes(payload.vote)) {
     sendJson(response, 400, { error: '피드백 내용을 확인해 주세요.' });
@@ -165,6 +539,26 @@ createServer(async (request, response) => {
     const url = new URL(request.url, `http://${request.headers.host || 'localhost'}`);
     if (request.method === 'POST' && url.pathname === '/api/feedback') {
       await recordFeedback(request, response);
+      return;
+    }
+    if (request.method === 'POST' && url.pathname === '/api/speech') {
+      await synthesizeSpeech(request, response);
+      return;
+    }
+    if (request.method === 'GET' && url.pathname === '/api/disaster-messages') {
+      await getDisasterMessages(url, response);
+      return;
+    }
+    if (request.method === 'GET' && url.pathname === '/api/shelters') {
+      await getNearbyShelters(url, response);
+      return;
+    }
+    if (request.method === 'GET' && url.pathname === '/api/shelter-samples') {
+      await getNearbyShelters(url, response, true);
+      return;
+    }
+    if (request.method === 'GET' && url.pathname === '/api/directions') {
+      await getDirections(url, response);
       return;
     }
     if (request.method === 'GET' && url.pathname === '/api/feedback/summary') {
