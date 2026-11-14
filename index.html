@@ -1098,7 +1098,7 @@
     }).observe(document.body,{childList:true,subtree:true});
     let lastTranslationSource='';
     const uncoveredHardWords=['행정조치','위험지역','출입 금지','대피 권고','대피권고','발효 중','급격히','취약시간대','통제구간','통행 제한','동파','보행자','인명피해','시설물','강우','권고','준수','금지','발령','통제','취약','기온','야외활동'];
-    const difficultWordSuffixes=['주의보','경보','특보','대응체계','비상대응','위기경보','취약계층','행동요령','안전수칙','통제구간','위험지역','급경사지','저지대','시설물','대피소','인명피해','재산피해','화재예방','산불예방','영농부산물','화기소지','기온급강하','기온강하','기상악화','강수량','적설량','수위상승','동파방지','급수중단','통행제한','출입통제','발령','발효','발생','통제','제한','조치','대책','수칙','시설','피해','예방','현황','점검','실시','해제','수위','강하','강우','강설','적설','소지','소각','입산','통행','취약','급수','확보','예찰','진입','산림','인명','보행','준수','유의','요망','당부','폐쇄','가동','결빙','낙상','동파','침수','범람','낙뢰','낙석','인근','관내','기온','기상','정전','누출'];
+    const difficultWordSuffixes=['주의보','경보','특보','대응체계','비상대응','위기경보','취약계층','행동요령','안전수칙','통제구간','위험지역','급경사지','저지대','시설물','대피소','인명피해','재산피해','화재예방','산불예방','영농부산물','화기소지','기온급강하','기온강하','기상악화','강수량','적설량','수위상승','동파방지','급수중단','통행제한','출입통제','침수우려','화재발생','산불발생','주의사항','안전관리','체온유지','수분섭취','안부연락','영하권','특별상황발생','발령','발효','발생','통제','제한','조치','대책','수칙','시설','피해','예방','현황','점검','실시','해제','수위','강하','강우','강설','적설','소지','소각','입산','통행','취약','급수','확보','예찰','진입','산림','인명','보행','준수','유의','요망','당부','폐쇄','가동','결빙','낙상','동파','침수','범람','낙뢰','낙석','인근','관내','기온','기상','정전','누출','주의','상승','하락','급증','급감','저하','지속','중단','중지','자제','운행','대응','방지','확인','예정','가동','신고','지원','요령','전파','확산','강화','냉해','결빙','단수','정전','영하','특보','화기','소지','접근','통행','출입','이용','시설','계획','지침','정보','안내','운영','전문','대응','비상','긴급','절차','변경','조정','관측','연계','사전','현장'];
     const difficultWordParticles=/(?:으로부터|으로|에서|부터|까지|에게|께서|이라면|이라서|이므로|이라고|이라고는|하며|하고|되어|되고|하는|하면|한|은|는|이|가|을|를|에|의|와|과|도|만|로|중|임|됨|된|할|및|등)+$/;
     function findUnknownDifficultWords(line){
       const knownWords=new Set(easyDictionary.map(entry=>entry.hard));const candidates=new Set(uncoveredHardWords.filter(word=>!knownWords.has(word)));
@@ -1127,6 +1127,76 @@
     function applyEasyDictionary(text,sourceText=''){
       let output=String(text);const applied=[];
       const entries=[...easyDictionary].sort((a,b)=>b.hard.length-a.hard.length);
+      const entryFor=hard=>easyDictionary.find(entry=>entry.hard===hard);
+      const replacePhrase=(hard,pattern,makeEasy)=>{
+        const entry=entryFor(hard);if(!entry)return;
+        output=output.replace(pattern,(...args)=>{const easy=makeEasy(...args);applied.push({hard:entry.hard,easy:entry.easy,display:easy});return easy;});
+      };
+      replacePhrase('주의보',/(건조)\s*주의보(?:가)?\s*(?:발효|발령)(?:\s*중)?/g,()=> '공기가 말라 불이 나기 쉬워요');
+      replacePhrase('주의보',/센 바람주의보 발령으로 산불 발생 위험이 높습니다\.?/g,()=> '센 바람이 불어 산불 위험이 커요.');
+      replacePhrase('주의보',/(?:센 바람|많은 비|매우 더운 날씨|매우 추운 날씨|많은 눈)\s*주의보\s*(?:(?:발효|발령)(?:\s*중)?(?:으로)?)?/g,(whole)=>`${whole.replace(/주의보\s*(?:(?:발효|발령)(?:\s*중)?(?:으로)?)?$/,'').trim()} 조심 알림이 나왔어요`);
+      replacePhrase('주의보',/(폭염|한파|강풍|대설|태풍|호우|풍랑)\s*주의보(?:가)?\s*(?:(?:발효|발령)(?:\s*중)?(?:으로)?)?/g,(_,hazard)=>`${hazard} 조심 알림이 내려졌어요`);
+      replacePhrase('경보',/(폭염|한파|강풍|대설|태풍|호우|풍랑)\s*경보(?:가)?\s*(?:(?:발효|발령)(?:\s*중)?(?:으로)?)?/g,(_,hazard)=>`${hazard} 위험 알림이 내려졌어요`);
+      replacePhrase('특보',/(폭염|한파|강풍|대설|태풍|호우)\s*특보(?:가)?\s*(?:(?:발효|발령)(?:\s*중)?(?:으로)?)?/g,(_,hazard)=>`${hazard} 위험 알림이 내려졌어요`);
+      replacePhrase('주의보',/센 바람 조심 알림이 나왔어요\s+산불이 날 위험이 커요\.?/g,()=> '센 바람 조심 알림이 나와 산불 위험이 커요.');
+      replacePhrase('주의보',/주의보(?:가)?\s*(?:발효|발령)(?:\s*중)?/g,()=> '조심 알림이 내려졌어요');
+      replacePhrase('경보',/경보(?:가)?\s*(?:발효|발령)(?:\s*중)?/g,()=> '위험 알림이 내려졌어요');
+      replacePhrase('특보',/특보(?:가)?\s*(?:발효|발령)(?:\s*중)?/g,()=> '위험 날씨 알림이 내려졌어요');
+      replacePhrase('주의보',/비가 많이 올 수 있다는 주의 알림이 내려졌어요(?:\s*중)?/g,()=> '비가 많이 올 수 있으니 조심하세요');
+      replacePhrase('주의보',/센 바람 조심 알림이 내려졌어요으로/g,()=> '센 바람이 불어 산불 위험이 커요');
+      replacePhrase('주의보',/매우 추운 날씨 주의 알림이 내려졌어요/g,()=> '매우 추우니 따뜻하게 입고 조심하세요');
+      replacePhrase('주의보',/매우 더운 날씨 주의 알림이 내려졌어요/g,()=> '매우 더우니 시원한 곳에서 쉬세요');
+      replacePhrase('경보',/(?:조심|위험) 알림이 내려졌어요\s*중/g,match=>match.replace(/\s*중$/,''));
+      replacePhrase('안전수칙',/(?:안전수칙|안전 수칙)\s*(?:준수|지켜주시기 바랍니다|지켜 주시기 바랍니다)/g,()=> '안전 수칙을 지켜주세요');
+      replacePhrase('급격히',/기온이?\s*급격히\s*떨어(?:지니|져|질 것으로 예상됩니다)/g,()=> '날씨가 갑자기 추워져요');
+      replacePhrase('기온 급강하',/기온\s*급강하/g,()=> '날씨가 갑자기 크게 추워짐');
+      replacePhrase('기온 강하',/기온\s*강하/g,()=> '날씨가 추워짐');
+      replacePhrase('영하권',/오늘 저녁부터 기온이 영하로 떨어지는 매우 추운 날씨가 예상됩니다/g,()=> '오늘 저녁부터 영하로 떨어져 매우 추울 거예요');
+      replacePhrase('화재예방',/산불 발생 위험이 높습니다/g,()=> '산불이 날 위험이 커요');
+      replacePhrase('행정조치',/행정조치(?:가)?\s*(?:시행|실시)(?:됩니다|합니다|중)?/g,()=> '기관에서 정한 일을 시작해요');
+      replacePhrase('재난대응체계',/재난이 났을 때 움직이는 방법이 가동됩니다/g,()=> '재난이 나면 이렇게 행동해요');
+      replacePhrase('비상대응체계',/비상대응체계가\s*가동됩니다/g,()=> '위험할 때 움직이는 방법을 시작해요');
+      replacePhrase('비상대응체계',/위험할 때 움직이는 방법 살펴보기/g,()=> '위험할 때 움직이는 방법을 살펴봐요');
+      replacePhrase('시설물 방호 필요',/시설물\s*방호\s*필요/g,()=> '건물과 물건을 지켜야 해요');
+      replacePhrase('특별상황발생',/특별상황발생으로/g,()=> '큰 위험이 생겨');
+      replacePhrase('특별상황발생',/특별상황발생/g,()=> '큰 위험이 생겼어요');
+      replacePhrase('행정조치',/행정조치가?\s*(?:시행|실시)됩니다/g,()=> '기관에서 정한 일을 해요');
+      replacePhrase('동파',/수도 계량기 수도관이나 물이 얼어 터지는 일예방에 유의 바랍니다/g,()=> '수도관이 얼어 터지지 않게 해주세요');
+      replacePhrase('안전관리',/안전관리\s*강화/g,()=> '안전을 더 잘 살펴요');
+      replacePhrase('시설물 방호 필요',/건물과 물건을 지켜야 해요 그리고 안전을 더 잘 살펴요\.?/g,()=> '건물과 물건을 지키고 안전을 더 잘 살펴요.');
+      replacePhrase('침수',/침수\s*우려(?:가)?(?:\s*(?:있으니|됩니다|돼요))?/g,()=> '물이 찰 수 있어요');
+      replacePhrase('침수',/(?:저지대|낮은 곳)(?:에)?\s*침수(?:가)?\s*우려(?:되니|됩니다|돼요)?/g,()=> '낮은 곳에 물이 찰 수 있어요');
+      replacePhrase('수위 상승',/하천 범람 우려 및 지하차도 침수 위험/g,()=> '강물이 넘치고 지하차도에 물이 찰 수 있어요');
+      replacePhrase('수위 상승',/하천\s*범람\s*우려/g,()=> '강물이 넘칠 수 있어요');
+      replacePhrase('침수',/강가\s*및\s*낮은 곳에 물이 차오름\s*우려/g,()=> '강가나 낮은 곳에 물이 찰 수 있어요');
+      replacePhrase('화기소지',/입산\s*시\s*화기\s*소지\s*금지/g,()=> '산에 들어갈 때 불을 피우는 도구를 가져가지 마세요');
+      replacePhrase('영농부산물',/영농부산물\s*소각(?:행위)?(?:를)?\s*(?:일체)?\s*금지/g,()=> '농사 뒤 남은 풀과 줄기를 태우지 마세요');
+      replacePhrase('영농부산물 소각 금지',/농사 뒤 남은 풀과 줄기\s*소각\s*일체\s*금지/g,()=> '농사 뒤 남은 풀과 줄기를 모두 태우지 마세요');
+      replacePhrase('인명피해',/인명피해(?:가)?\s*(?:발생|우려)(?:했습니다|합니다|됩니다)?/g,()=> '사람이 다치거나 목숨을 잃을 수 있어요');
+      replacePhrase('취약계층',/도움이 더 필요한 (?:사람|분)/g,()=> '더 도와야 하는 사람');
+      replacePhrase('인근 주민',/가까운 곳에 사는 주민/g,()=> '가까운 곳에 사는 사람');
+      replacePhrase('인근 주민',/가까운 곳에 사는 주민\s+(?=안전한 곳으로)/g,()=> '가까운 곳에 사는 사람은 ');
+      replacePhrase('인근 주민',/가까운 곳에 사는 사람\s+(?=안전한 곳으로)/g,()=> '가까운 곳에 사는 사람은 ');
+      replacePhrase('안전거리 확보',/앞차와 거리를 넉넉히 두세요 후 속도를 줄여 운전\.?/g,()=> '앞차와 거리를 넉넉히 두고 차 속도를 줄여 운전하세요');
+      replacePhrase('안전거리 확보',/안전거리 확보\s*후\s*감속운전/g,()=> '앞차와 거리를 넉넉히 두고 차 속도를 줄여 운전하세요');
+      replacePhrase('mm',/(\d+(?:\.\d+)?)\s*mm\b/gi,(_,value)=>`${Number(value)/10}cm`);
+      replacePhrase('km',/(\d+(?:\.\d+)?)\s*km\b/gi,(_,value)=>`${Number(value)*1000}m`);
+      replacePhrase('이상',/(\d+)\s*이상/g,(_,value)=>`${value} 넘게`);
+      replacePhrase('관련',/([가-힣]+)\s*관련/g,(_,topic)=>`${topic}에 대한`);
+      replacePhrase('가능',/(이용|진입|통행|출입)\s*가능/g,(_,action)=>({이용:'이용할 수 있어요',진입:'들어갈 수 있어요',통행:'다닐 수 있어요',출입:'들어갈 수 있어요'})[action]);
+      replacePhrase('난방 유지',/난방\s*유지/g,()=> '집을 따뜻하게 하기');
+      replacePhrase('동파',/수도\s*계량기가 얼어 터지지 않게/g,()=> '수도관이 얼어 터지지 않게');
+      replacePhrase('동파',/수도관\s*동파(?:예방|방지)?/g,()=> '수도관이 얼어 터지지 않게');
+      replacePhrase('주민',/가까운 곳에 사는 주민/g,()=> '가까운 곳에 사는 사람');
+      replacePhrase('대비',/금일\s*계속되는\s*강설(?:\([^)]*\))?와?\s*야간\s*기온강하/g,()=> '오늘 눈이 계속 내려 밤에 날씨가 추워져요');
+      replacePhrase('대비',/계량기\s*동파(?:에)?\s*유의/g,()=> '수도관이 얼어 터지지 않게 조심');
+      replacePhrase('기온 강하',/기온이\s*(?:많이|큰 폭으로)\s*내려가니/g,()=> '날씨가 많이 추워지니');
+      replacePhrase('기온',/기온이\s*많이\s*내려가니/g,()=> '날씨가 많이 추워지니');
+      output=output.replace(/(알림이 내려졌어요|알림이 나왔어요)\s*중/g,'$1');
+      replacePhrase('안전거리 확보',/안전거리 확보(?:하시기 바랍니다| 바랍니다|하세요)?/g,()=> '앞차와 거리를 넉넉히 두세요');
+      replacePhrase('감속운전',/(?:차량|차)\s*운행(?:시|할 때)?\s*감속운전/g,()=> '차 속도를 줄여 운전하세요');
+      replacePhrase('위험지역',/위험지역(?:에)?\s*접근을?\s*자제하고/g,()=> '위험한 곳에 가지 말고');
+      replacePhrase('인근 주민',/인근\s*주민/g,()=> '가까운 곳에 사는 사람');
       entries.forEach(entry=>{
         const replace=(pattern,easy)=>{const globalPattern=new RegExp(pattern.source,pattern.flags.includes('g')?pattern.flags:`${pattern.flags}g`);output=output.replace(globalPattern,()=>{applied.push({hard:entry.hard,easy:entry.easy,display:easy});return easy;});};
         if(entry.hard==='대피'){
@@ -1188,6 +1258,72 @@
           replace(/접근을 삼가하시기 바랍니다/g,'가지 마세요');
           replace(/접근을 삼가해 주세요/g,'가지 마세요');
           replace(/접근 삼가 바랍니다/g,'가지 마세요');
+        }else if(entry.hard==='주민'){
+          replace(/가까운 곳에 사는 주민/g,'가까운 곳에 사는 사람');
+        }else if(entry.hard==='기온'){
+          replace(/기온이 많이 내려가니/g,'날씨가 많이 추워지니');
+          replace(/기온이 떨어지니/g,'날씨가 추워지니');
+          replace(/기온이 떨어져/g,'날씨가 추워져');
+          replace(/기온이/g,'날씨가');
+          replace(/기온은/g,'날씨는');
+        }else if(entry.hard==='필요'){
+          replace(/도움이 더 필요한/g,'더 도와야 하는');
+          replace(/필요합니다/g,'꼭 있어야 해요');
+          replace(/필요해요/g,'꼭 있어야 해요');
+          replace(/필요한/g,'꼭 있어야 하는');
+          replace(/필요하면/g,'꼭 있어야 하면');
+        }else if(entry.hard==='및'){
+          replace(/및/g,'그리고');
+        }else if(entry.hard==='발효'){
+          replace(/발효 중/g,'내려져 있어요');
+          replace(/발효/g,'내려졌어요');
+        }else if(entry.hard==='재난대응체계'){
+          replace(/재난대응체계가 가동됩니다/g,'재난이 나면 이렇게 행동해요');
+          replace(/재난대응체계가 가동 중/g,'재난이 나면 이렇게 움직이고 있어요');
+        }else if(entry.hard==='비상대응체계'){
+          replace(/비상대응체계가 가동됩니다/g,'위험할 때 움직이는 방법을 시작해요');
+          replace(/비상대응체계/g,'위험할 때 움직이는 방법');
+        }else if(entry.hard==='수위급증'||entry.hard==='수위 급증'){
+          replace(/수위급증으로/g,'물이 갑자기 많이 불어나');
+          replace(/수위 급증으로/g,'물이 갑자기 많이 불어나');
+          replace(/수위급증/g,'물이 갑자기 많이 불어남');
+          replace(/수위 급증/g,'물이 갑자기 많이 불어남');
+        }else if(entry.hard==='지정'){
+          replace(/지정된/g,'정해 둔');
+          replace(/지정되어/g,'정해져');
+          replace(/지정 장소/g,'정해 둔 곳');
+          replace(/지정 대피소/g,'정해 둔 대피소');
+        }else if(entry.hard==='준수'){
+          replace(/준수하시기 바랍니다/g,'잘 지켜주세요');
+          replace(/준수 바랍니다/g,'잘 지켜주세요');
+          replace(/준수하세요/g,'잘 지켜주세요');
+        }else if(entry.hard==='점검'){
+          replace(/점검하시기 바랍니다/g,'살펴봐 주세요');
+          replace(/점검 바랍니다/g,'살펴봐 주세요');
+          replace(/점검하세요/g,'살펴보세요');
+          replace(/점검하고/g,'살펴보고');
+        }else if(entry.hard==='실시'){
+          replace(/실시됩니다/g,'해요');
+          replace(/실시합니다/g,'해요');
+          replace(/실시 중/g,'하고 있어요');
+        }else if(entry.hard==='확보'){
+          replace(/확보하시기 바랍니다/g,'미리 마련해 주세요');
+          replace(/확보 바랍니다/g,'미리 마련해 주세요');
+          replace(/확보하세요/g,'미리 마련하세요');
+        }else if(entry.hard==='발령'){
+          replace(/발령되었습니다/g,'나왔어요');
+          replace(/발령됐습니다/g,'나왔어요');
+          replace(/발령 중/g,'내려져 있어요');
+          replace(/발령으로/g,'알림이 나와');
+          replace(/발령/g,'알림이 나옴');
+        }else if(entry.hard==='폐쇄'){
+          replace(/폐쇄되었습니다/g,'닫혔어요');
+          replace(/폐쇄 중/g,'닫혀 있어요');
+        }else if(entry.hard==='지속'){
+          replace(/지속되고 있습니다/g,'계속되고 있어요');
+          replace(/지속되고/g,'계속되고');
+          replace(/지속되어/g,'계속되어');
+          replace(/지속될/g,'계속될');
         }else if(entry.hard==='유의'){
           replace(/유의하시기 바랍니다/g,'조심하세요');
           replace(/유의하시고/g,'조심하시고');
@@ -1197,6 +1333,7 @@
         const pattern=new RegExp(escapeRegExp(entry.hard),'g');
         output=output.replace(pattern,()=>{applied.push({hard:entry.hard,easy:entry.easy,display:entry.easy});return entry.easy;});
       });
+      output=output.replace(/안전한 곳으로\s+안전한 곳으로/g,'안전한 곳으로').replace(/수도\s+수도관/g,'수도관').replace(/\.{2,}/g,'.');
       const applyContextualRule=(hard,pattern,replacement)=>{
         if(!sourceText.includes(hard))return;
         const entry=easyDictionary.find(item=>item.hard===hard);if(!entry)return;
@@ -1442,7 +1579,7 @@
     }
     function matchDifficultWords(text){return difficultWordMatchers.filter(item=>item.test.test(text)).map(item=>item.entry);}
     function applyStatisticsWordList(text){
-      return applyEasyDictionary(text,text).text;
+      return applyEasyDictionary(simplifyDisasterMessage(text,'general'),text).text;
     }
     function renderStatisticsChart(category=activeStatisticsCategory){
       if(!statisticsResult)return;
