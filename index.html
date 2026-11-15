@@ -1178,7 +1178,7 @@
     function applyEasyDictionary(text,sourceText=''){
       let output=String(text);const applied=[];
       const entries=[...easyDictionary].sort((a,b)=>b.hard.length-a.hard.length);
-      const contextOnlyTerms=new Set(['이상','미만','이하','초과','이내','미달','필요','외출 자제','접근 자제','야외활동 자제','활동 자제','이동 자제','낙뢰','낙상','안전거리','안전거리 확보','계량기','주민','우려','통행 제한','교통통제','귀소','대피 종료','안전조치 완료']);
+      const contextOnlyTerms=new Set(['이상','미만','이하','초과','이내','미달','필요','외출 자제','접근 자제','야외활동 자제','활동 자제','이동 자제','낙뢰','낙상','안전거리','안전거리 확보','계량기','주민','우려','통행 제한','교통통제','귀소','대피 종료','안전조치 완료','mm','km']);
       const entryFor=hard=>easyDictionary.find(entry=>entry.hard===hard);
       const replacePhrase=(hard,pattern,makeEasy)=>{
         const entry=entryFor(hard);if(!entry)return;
@@ -1457,8 +1457,6 @@
       replacePhrase('우려',/(붕괴|산사태|낙석|침수|인명피해)\s*우려/g,(_,hazard)=>({붕괴:'무너질 수 있음',산사태:'산의 흙이 무너질 수 있음',낙석:'돌이 떨어질 수 있음',침수:'물이 찰 수 있음',인명피해:'사람이 다치거나 목숨을 잃을 수 있음'})[hazard]);
       replacePhrase('계량기',/수돗물 쓴 양을 재는 기계가 얼어 터질 수 있어요/g,()=> '수도 계량기가 얼어 터질 수 있어요');
       replacePhrase('이상',/30명 또는 그보다 많은 사람 몸을 피할 곳/g,()=> '30명 이상을 수용하는 대피소');
-      replacePhrase('mm',/(\d+(?:\.\d+)?)\s*mm\b/gi,(_,value)=>`${Number(value)/10}cm`);
-      replacePhrase('km',/(\d+(?:\.\d+)?)\s*km\b/gi,(_,value)=>`${Number(value)*1000}m`);
       replacePhrase('이상',/(\d+)\s*명\s*이상/g,(_,value)=>`${value}명 또는 그보다 많은 사람`);
       replacePhrase('우려',/(침수|붕괴|산사태|낙석|화재|정전|동파)\s*우려/g,(_,hazard)=>({침수:'물이 찰 수 있음',붕괴:'무너질 수 있음',산사태:'산의 흙이 무너질 수 있음',낙석:'돌이 떨어질 수 있음',화재:'불이 날 수 있음',정전:'전기가 끊길 수 있음',동파:'수도관이 얼어 터질 수 있음'})[hazard]);
       replacePhrase('관련',/([가-힣]+)\s*관련/g,(_,topic)=>`${topic}에 대한`);
@@ -1790,7 +1788,14 @@
        if(shelterCapacity)output=output.replace(new RegExp(`${shelterCapacity[1]}명 또는 그보다 많은 사람을 수용하는 몸을 피할 곳를`, 'g'),`${shelterCapacity[1]}명 또는 그보다 많은 사람이 들어갈 수 있는 안전한 곳을`);
        if(/(?:주민대피\s*(?:해제|종료)|대피\s*종료)/.test(source)&&!/귀소|귀가|귀환|돌아가/.test(source))output=output.replace(/(?:안전한 곳으로 가기\s*)?(?:주민에게 내린\s*)?(?:대피\s*)?(?:조치|안내)(?:가|는)?\s*끝(?:남|났어요|났습니다)/g,'대피 조치가 끝났어요');
        output=output.replace(/\b0명/g,'0명').replace(/\.{2,}/g,'.');
-      return {text:output,applied};
+       const spellLengthUnits=value=>value.replace(/(\d[\d,]*(?:\.\d+)?)\s*(mm|km|m)\b/gi,(_,number,unit)=>{const key=unit.toLowerCase();const entry=entryFor(key);if(entry)applied.push({hard:entry.hard,easy:entry.easy,display:entry.easy});return `${number}${({mm:'밀리미터',km:'킬로미터',m:'미터'})[key]}`;});
+       output=spellLengthUnits(output);
+       const numericValues=value=>[...String(value).matchAll(/\d+(?:,\d{3})*(?:\.\d+)?/g)].map(([number])=>number.replace(/,/g,''));
+       const sourceNumbers=numericValues(source);const outputNumbers=numericValues(output);
+       let numbersPreserved=sourceNumbers.length===outputNumbers.length&&sourceNumbers.every((number,index)=>number===outputNumbers[index]);
+       const numberFallback=!numbersPreserved;
+       if(numberFallback){output=spellLengthUnits(source);applied.length=0;const restoredNumbers=numericValues(output);numbersPreserved=sourceNumbers.length===restoredNumbers.length&&sourceNumbers.every((number,index)=>number===restoredNumbers[index]);}
+       return {text:output,applied,numbersPreserved,numberFallback};
     }
     function renderEasyLines(element,text,dictionaryMarks=[]){
       const normalized=String(text).replace(/([.!?])\s+(?=[^\d\s])/g,'$1\n');
