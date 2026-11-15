@@ -25,6 +25,9 @@ const mimeTypes = {
 
 let feedbackRecords = null;
 let saveQueue = Promise.resolve();
+let translationQueue = Promise.resolve();
+let cloudTranslationUnavailable = false;
+const siteTranslationMemory = new Map();
 const knownRegions = new Set();
 const civilShelterCache = new Map();
 
@@ -64,7 +67,7 @@ function readJsonBody(request) {
     let body = '';
     request.on('data', chunk => {
       body += chunk;
-      if (body.length > 12000) {
+      if (body.length > 50000) {
         reject(new Error('too_large'));
         request.destroy();
       }
@@ -415,7 +418,7 @@ async function synthesizeSpeech(request, response) {
   }
   const language = payload.language;
   const text = typeof payload.text === 'string' ? payload.text.replace(/\s+/g, ' ').trim() : '';
-  const voiceLocales = { ja: 'ja', ne: 'ne' };
+  const voiceLocales = { ko: 'ko', en: 'en', 'zh-CN': 'zh-CN', vi: 'vi', ne: 'ne', tl: 'fil', th: 'th', ja: 'ja' };
   if (!voiceLocales[language] || !text || text.length > 2400) {
     sendJson(response, 400, { error: '지원하지 않는 음성 언어이거나 읽을 내용이 너무 길어요.' });
     return;
@@ -446,6 +449,119 @@ async function synthesizeSpeech(request, response) {
     response.end(audio);
   } catch {
     sendJson(response, 502, { error: '음성을 만들지 못했어요. 다시 눌러 주세요.' });
+  }
+}
+
+async function translateWithMyMemory(text, source, target) {
+  if (text.length > 480) { const error = new Error('fallback_text_too_long'); error.status = 413; throw error; }
+  const url = new URL('https://api.mymemory.translated.net/get');
+  url.searchParams.set('q', text);
+  url.searchParams.set('langpair', `${source}|${target}`);
+  const upstream = await fetch(url, { headers: { 'User-Agent': 'Mozilla/5.0' }, signal: AbortSignal.timeout(15000) });
+  if (!upstream.ok) { const error = new Error(`fallback_upstream_${upstream.status}`); error.status = upstream.status; throw error; }
+  const data = await upstream.json();
+  const translated = data.responseData?.translatedText;
+  if (data.responseStatus === 429 || data.quotaFinished === true || /QUERY LENGTH LIMIT|MYMEMORY WARNING/i.test(translated || '')) { const error = new Error('fallback_quota'); error.status = 429; throw error; }
+  if (data.responseStatus !== 200 || !translated) throw new Error('fallback_translation_error');
+  return translated.replace(/&quot;/g, '"').replace(/&#39;|&apos;/g, "'").replace(/&amp;/g, '&').replace(/&lt;/g, '<').replace(/&gt;/g, '>');
+}
+
+async function translateWithMyMemoryMarkers(text, source, target) {
+  if (text.length <= 450) return translateWithMyMemory(text, source, target);
+  const markerPattern = /(ZZI18N\d+XQ)/gi;
+  const parts = text.split(markerPattern);
+  const groups = [];
+  let group = '';
+  for (const part of parts) {
+    if (!part) continue;
+    if (/^ZZI18N\d+XQ$/i.test(part)) {
+      if (group.length + part.length > 450 && group) { groups.push(group); group = ''; }
+      group += part;
+      continue;
+    }
+    let remaining = part;
+    while (remaining.length > 430) {
+      if (group) { groups.push(group); group = ''; }
+      let splitAt = Math.max(remaining.lastIndexOf(' ', 430), remaining.lastIndexOf('.', 430), remaining.lastIndexOf('。', 430), remaining.lastIndexOf('?', 430), remaining.lastIndexOf('!', 430));
+      if (splitAt < 215) splitAt = 430;
+      const segment = remaining.slice(0, splitAt + (remaining[splitAt] === ' ' ? 0 : 1));
+      groups.push(segment);
+      remaining = remaining.slice(segment.length);
+    }
+    if (group.length + remaining.length > 450 && group) { groups.push(group); group = ''; }
+    group += remaining;
+  }
+  if (group) groups.push(group);
+  let translated = '';
+  for (const part of groups) translated += await translateWithMyMemory(part, source, target);
+  return translated;
+}
+
+async function translateText(request, response) {
+  let payload;
+  try {
+    payload = await readJsonBody(request);
+  } catch (error) {
+    sendJson(response, error.message === 'too_large' ? 413 : 400, { error: '번역할 내용을 확인해 주세요.' });
+    return;
+  }
+  const languages = new Set(['ko', 'en', 'zh-CN', 'vi', 'ne', 'tl', 'th', 'ja']);
+  const text = typeof payload.text === 'string' ? payload.text : '';
+  const source = payload.source || 'ko';
+  const target = payload.target;
+  const cacheable = payload.cacheable === true;
+  if (!text.trim() || text.length > 5000 || !languages.has(source) || !languages.has(target)) {
+    sendJson(response, 400, { error: '번역할 내용이나 언어를 확인해 주세요.' });
+    return;
+  }
+  try {
+    const cacheKey = `${source}\0${target}\0${text}`;
+    if (cacheable && siteTranslationMemory.has(cacheKey)) {
+      const cached = siteTranslationMemory.get(cacheKey);
+      response.writeHead(200, { 'Cache-Control': 'no-store', 'Content-Type': 'application/json; charset=utf-8', 'X-Content-Type-Options': 'nosniff' });
+      response.end(JSON.stringify([[[cached, text, null, null]]]));
+      return;
+    }
+    const apiKey = process.env.GOOGLE_TRANSLATE_API_KEY;
+    if (apiKey && !cloudTranslationUnavailable) {
+      const url = new URL('https://translation.googleapis.com/language/translate/v2');
+      url.searchParams.set('key', apiKey);
+      const upstream = await fetch(url, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ q: text, source, target, format: 'text' }),
+        signal: AbortSignal.timeout(20000),
+      });
+      if (upstream.ok) {
+        const result = await upstream.json();
+        const translatedText = result?.data?.translations?.[0]?.translatedText;
+        if (translatedText) {
+          response.writeHead(200, { 'Cache-Control': 'no-store', 'Content-Type': 'application/json; charset=utf-8', 'X-Content-Type-Options': 'nosniff' });
+          if (cacheable) {
+            siteTranslationMemory.set(cacheKey, translatedText);
+            while (siteTranslationMemory.size > 6000) siteTranslationMemory.delete(siteTranslationMemory.keys().next().value);
+          }
+          response.end(JSON.stringify([[[translatedText, text, null, null]]]));
+          return;
+        }
+      }
+      cloudTranslationUnavailable = true;
+    }
+    const task = translationQueue.catch(() => {}).then(async () => {
+      const translatedText = await translateWithMyMemoryMarkers(text, source, target);
+      return [[[translatedText, text, null, null]]];
+    });
+    translationQueue = task.then(() => {}, () => {});
+    const translated = await task;
+    response.writeHead(200, { 'Cache-Control': 'no-store', 'Content-Type': 'application/json; charset=utf-8', 'X-Content-Type-Options': 'nosniff' });
+    const translatedText = translated?.[0]?.map(part => part?.[0] || '').join('') || '';
+    if (cacheable && translatedText) {
+      siteTranslationMemory.set(cacheKey, translatedText);
+      while (siteTranslationMemory.size > 6000) siteTranslationMemory.delete(siteTranslationMemory.keys().next().value);
+    }
+    response.end(JSON.stringify(translated));
+  } catch (error) {
+    sendJson(response, error.status === 429 ? 429 : 502, { error: error.status === 429 ? '무료 번역 요청량을 다 썼어요. 나중에 다시 시도해 주세요.' : '번역 서비스를 사용할 수 없어요.' });
   }
 }
 
@@ -543,6 +659,10 @@ createServer(async (request, response) => {
     }
     if (request.method === 'POST' && url.pathname === '/api/speech') {
       await synthesizeSpeech(request, response);
+      return;
+    }
+    if (request.method === 'POST' && url.pathname === '/api/translate') {
+      await translateText(request, response);
       return;
     }
     if (request.method === 'GET' && url.pathname === '/api/disaster-messages') {

@@ -311,7 +311,7 @@
         <div class="section-head"><div><h2>문자 순화</h2></div></div>
         <div class="alert-grid">
           <div class="panel"><label class="panel-label" for="message">재난문자 <span class="field-hint">개인정보 제외</span></label><textarea class="textarea" id="message" placeholder="재난문자 붙여넣기"></textarea><div class="message-image-tools"><button class="message-image-button" id="messageImageButton" type="button">이미지에서 문자 읽기</button><input id="messageImageInput" type="file" accept="image/*" capture="environment" hidden><img class="message-image-preview" id="messageImagePreview" alt="선택한 재난문자 이미지" hidden><span class="message-image-status" id="imageOcrStatus" role="status" aria-live="polite">사진·스크린샷 · 이 기기에서 처리</span></div><div class="panel-label" style="margin:13px 0 7px">언어</div><div class="language-row" role="group" aria-label="안내 언어"><button class="lang-chip active" lang="ko" data-lang="ko" data-name="한국어">한국어</button><button class="lang-chip" lang="en" data-lang="en" data-name="English">English</button><button class="lang-chip" lang="zh-CN" data-lang="zh-CN" data-name="中文">中文</button><button class="lang-chip" lang="vi" data-lang="vi" data-name="Tiếng Việt">Tiếng Việt</button><button class="lang-chip" lang="ne" data-lang="ne" data-name="नेपाली">नेपाली</button><button class="lang-chip" lang="tl" data-lang="tl" data-name="Filipino">Filipino</button><button class="lang-chip" lang="th" data-lang="th" data-name="ไทย">ไทย</button><button class="lang-chip" lang="ja" data-lang="ja" data-name="日本語">日本語</button></div><div class="controls"><button class="btn btn-lime" id="translateBtn">재난문자 순화 <span aria-hidden="true">→</span></button></div><div class="status-line" id="translateStatus" role="status" aria-live="polite">문자 입력 대기</div></div>
-          <article class="result-panel" aria-live="polite"><div class="result-kicker">안내 / <span id="resultLang">한국어</span><span class="result-region" id="resultRegion" hidden></span></div><h3 id="easyTitle">입력 대기</h3><div class="speech-label-row"><span class="result-original-label">원문</span><button class="speech-button" id="speakOriginalButton" type="button" disabled><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 10v4h4l5 4V6l-5 4H4Z"/><path d="M17 9a5 5 0 0 1 0 6m3-9a9 9 0 0 1 0 12"/></svg><span>원문 듣기</span></button></div><div class="result-original" id="easyText">—</div><div class="speech-label-row"><span class="result-original-label">쉬운 말</span></div><p class="dictionary-legend">📖 팀이 정한 사전 규칙</p><div class="result-translation" id="translatedText">—</div><div class="easy-feedback" id="easyFeedback" hidden><span class="easy-feedback-question">이 쉬운 말이 이해하기 쉬웠나요?</span><div class="easy-feedback-buttons" role="group" aria-label="쉬운 말 이해 여부"><button class="easy-feedback-button" type="button" data-feedback="understood" aria-pressed="false">이해했어요</button><button class="easy-feedback-button" type="button" data-feedback="difficult" aria-pressed="false">아직 어려워요</button></div><p class="easy-feedback-status" id="easyFeedbackStatus" role="status" aria-live="polite"></p><small>응답을 누르면 순화문에서 대괄호 안내와 숫자를 뺀 문구, 선택 언어, 응답이 익명 집계 서버에 저장돼요. 원문·계정·기기 ID·IP는 앱에 저장하지 않아요. 개인정보가 든 문자는 응답하지 마세요. 집계는 앱 링크에서 볼 수 있어요.</small></div><div class="speech-controls"><button class="speech-button" id="speakEasyButton" type="button" disabled><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 10v4h4l5 4V6l-5 4H4Z"/><path d="M17 9a5 5 0 0 1 0 6m3-9a9 9 0 0 1 0 12"/></svg><span>순화문 듣기</span></button><button class="speech-button speech-button-stop" id="stopSpeechButton" type="button" disabled>읽기 멈춤</button></div><p class="speech-status" id="speechStatus" role="status" aria-live="polite"></p><div class="result-steps" hidden><strong id="actionTitle">지금 할 일</strong><ol id="actionSteps"></ol></div><button class="recommend-shelter-button" id="recommendShelterBtn" type="button" hidden>주변 대피 안내</button></article>
+          <article class="result-panel" aria-live="polite"><div class="result-kicker">안내 / <span id="resultLang">한국어</span><span class="result-region" id="resultRegion" hidden></span></div><h3 id="easyTitle">입력 대기</h3><div class="speech-label-row"><span class="result-original-label">원문</span><button class="speech-button" id="speakOriginalButton" type="button" disabled><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 10v4h4l5 4V6l-5 4H4Z"/><path d="M17 9a5 5 0 0 1 0 6m3-9a9 9 0 0 1 0 12"/></svg><span>원문 듣기</span></button></div><div class="result-original" id="easyText">—</div><div class="speech-label-row"><span class="result-original-label">쉬운 말</span></div><p class="dictionary-legend">📖 팀이 정한 사전 규칙</p><div class="result-translation" id="translatedText">—</div><div class="easy-feedback" id="easyFeedback" hidden><span class="easy-feedback-question">이 쉬운 말이 이해하기 쉬웠나요?</span><div class="easy-feedback-buttons" role="group" aria-label="쉬운 말 이해 여부"><button class="easy-feedback-button" type="button" data-feedback="understood" aria-pressed="false">이해했어요</button><button class="easy-feedback-button" type="button" data-feedback="difficult" aria-pressed="false">아직 어려워요</button></div><p class="easy-feedback-status" id="easyFeedbackStatus" role="status" aria-live="polite"></p><small>응답을 누르면 순화문에서 대괄호 안내와 숫자를 뺀 문구, 선택 언어, 응답이 익명 집계 서버에 저장돼요. 원문·계정·기기 ID·IP는 앱에 저장하지 않아요. 개인정보가 든 문자는 응답하지 마세요. 집계는 앱 링크에서 볼 수 있어요.</small></div><div class="speech-controls"><button class="speech-button" id="speakEasyButton" type="button" disabled><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 10v4h4l5 4V6l-5 4H4Z"/><path d="M17 9a5 5 0 0 1 0 6m3-9a9 9 0 0 1 0 12"/></svg><span>순화문 듣기</span></button><button class="speech-button speech-button-stop" id="stopSpeechButton" type="button" disabled>읽기 멈춤</button></div><p class="speech-status" id="speechStatus" role="status" aria-live="polite"></p><small class="speech-data-note">기기에 선택한 언어 음성이 없으면 읽을 문장을 음성 서비스로 보내 소리를 만들어요.</small><div class="result-steps" hidden><strong id="actionTitle">지금 할 일</strong><ol id="actionSteps"></ol></div><button class="recommend-shelter-button" id="recommendShelterBtn" type="button" hidden>주변 대피 안내</button></article>
         </div>
       </div>
     </section>
@@ -453,6 +453,7 @@
     };
     const supportedLanguages=['ko','en','zh-CN','vi','ne','tl','th','ja'];
     const speechLanguageCodes={ko:'ko-KR',en:'en-US','zh-CN':'zh-CN',vi:'vi-VN',ne:'ne-NP',tl:'fil-PH',th:'th-TH',ja:'ja-JP'};
+    const remoteSpeechLanguages=new Set(supportedLanguages);
     let speechRequestId=0;
     let speechUtterance=null;
     let activeSpeechKind='';
@@ -467,12 +468,14 @@
     const stopSpeechButton=document.getElementById('stopSpeechButton');
     const speechStatus=document.getElementById('speechStatus');
     function updateSpeechButtons(speaking=false){
-      speakOriginalButton.disabled=!speechSupported||!originalSpeechText;
-      speakEasyButton.disabled=!speechSupported||!easySpeechText;
-      stopSpeechButton.disabled=!speechSupported||!speaking;
+      const canSpeak=speechSupported||remoteSpeechLanguages.size>0;
+      speakOriginalButton.disabled=!canSpeak||!originalSpeechText;
+      speakEasyButton.disabled=!canSpeak||!easySpeechText;
+      stopSpeechButton.disabled=!canSpeak||!speaking;
       speakOriginalButton.classList.toggle('is-speaking',speaking&&activeSpeechKind==='original');
       speakEasyButton.classList.toggle('is-speaking',speaking&&activeSpeechKind==='easy');
-      if(!speechSupported){speechStatus.textContent='이 브라우저에서는 음성 읽기를 지원하지 않아요.';}
+      if(!speechSupported&&canSpeak){speechStatus.textContent='기기 음성이 없어 온라인 음성으로 읽어요.';}
+      else if(!speechSupported){speechStatus.textContent='이 브라우저에서는 음성 읽기를 지원하지 않아요.';}
     }
     function stopSpeech(message='읽기를 멈췄어요.'){
       speechRequestId+=1;speechUtterance=null;
@@ -500,20 +503,20 @@
     function startSpeech(text,kind,language){
       const cleanText=String(text||'').replace(/\[[^\]]+\]/g,' ').replace(/[•📖]/g,' ').replace(/\s+/g,' ').trim();
       if(!cleanText){speechStatus.textContent='읽을 문자가 없어요.';return;}
-      if(!speechSupported){speechStatus.textContent='이 브라우저에서는 음성 읽기를 지원하지 않아요.';return;}
-      window.speechSynthesis.cancel();
+      if(!speechSupported&&!remoteSpeechLanguages.has(language)){speechStatus.textContent='이 브라우저에서는 음성 읽기를 지원하지 않아요.';return;}
+      if(speechSupported)window.speechSynthesis.cancel();
       if(remoteSpeechAudio){remoteSpeechAudio.pause();remoteSpeechAudio.removeAttribute('src');remoteSpeechAudio.load();remoteSpeechAudio=null;}
       if(remoteSpeechObjectUrl){URL.revokeObjectURL(remoteSpeechObjectUrl);remoteSpeechObjectUrl='';}
       const requestId=++speechRequestId;
-      const utterance=new SpeechSynthesisUtterance(cleanText);const locale=speechLanguageCodes[language]||'ko-KR';
-      utterance.lang=locale;utterance.rate=0.94;utterance.pitch=1;
-      const voices=window.speechSynthesis.getVoices();const voice=voices.find(item=>item.lang.toLowerCase()===locale.toLowerCase())||voices.find(item=>item.lang.toLowerCase().startsWith(locale.split('-')[0].toLowerCase()));
-      if(language==='ne'||(language==='ja'&&!voice)){activeSpeechKind=kind;updateSpeechButtons(true);speechStatus.textContent=`${document.querySelector(`.lang-chip[data-lang="${language}"]`)?.dataset.name||language} 음성을 만드는 중이에요. 순화문이 음성 서비스로 전달돼요.`;startRemoteSpeech(cleanText,language,requestId);return;}
+      const locale=speechLanguageCodes[language]||'ko-KR';
+      const voices=speechSupported?window.speechSynthesis.getVoices():[];const voice=voices.find(item=>item.lang.toLowerCase()===locale.toLowerCase())||voices.find(item=>item.lang.toLowerCase().startsWith(locale.split('-')[0].toLowerCase()));
+      if(language==='ne'||!voice){activeSpeechKind=kind;updateSpeechButtons(true);speechStatus.textContent=`${document.querySelector(`.lang-chip[data-lang="${language}"]`)?.dataset.name||language} 음성을 만드는 중이에요. 읽을 문장이 음성 서비스로 전달돼요.`;startRemoteSpeech(cleanText,language,requestId);return;}
+      const utterance=new SpeechSynthesisUtterance(cleanText);utterance.lang=locale;utterance.rate=0.94;utterance.pitch=1;
       if(voice)utterance.voice=voice;
       speechUtterance=utterance;activeSpeechKind=kind;updateSpeechButtons(true);
       speechStatus.textContent=`${kind==='original'?'원문':'순화문'}을 읽고 있어요 · ${document.querySelector(`.lang-chip[data-lang="${language}"]`)?.dataset.name||language}`;
       utterance.onend=()=>{if(requestId!==speechRequestId)return;speechUtterance=null;activeSpeechKind='';updateSpeechButtons(false);speechStatus.textContent='읽기를 마쳤어요.';};
-      utterance.onerror=event=>{if(requestId!==speechRequestId)return;if((language==='ne'||language==='ja')&&event.error==='voice-unavailable'){speechUtterance=null;activeSpeechKind=kind;speechStatus.textContent='기기 음성이 없어 대체 음성으로 바꾸고 있어요. 순화문이 음성 서비스로 전달돼요.';startRemoteSpeech(cleanText,language,requestId);return;}speechUtterance=null;activeSpeechKind='';updateSpeechButtons(false);speechStatus.textContent=event.error==='canceled'?'읽기를 멈췄어요.':'음성 읽기를 시작하지 못했어요. 브라우저의 음성 기능을 확인해 주세요.';};
+      utterance.onerror=event=>{if(requestId!==speechRequestId)return;if(event.error==='voice-unavailable'&&remoteSpeechLanguages.has(language)){speechUtterance=null;activeSpeechKind=kind;speechStatus.textContent='기기 음성이 없어 대체 음성으로 바꾸고 있어요. 읽을 문장이 음성 서비스로 전달돼요.';startRemoteSpeech(cleanText,language,requestId);return;}speechUtterance=null;activeSpeechKind='';updateSpeechButtons(false);speechStatus.textContent=event.error==='canceled'?'읽기를 멈췄어요.':'음성 읽기를 시작하지 못했어요. 브라우저의 음성 기능을 확인해 주세요.';};
       window.speechSynthesis.speak(utterance);
     }
     speakOriginalButton.addEventListener('click',()=>startSpeech(originalSpeechText,'original','ko'));
@@ -630,11 +633,12 @@
       const index=appSlideSections.findIndex(slide=>slide.id===id);if(index<0)return;
       appSlideSections[index].scrollTo({top:0,behavior});appSlides.scrollTo({left:index*appSlides.clientWidth,behavior});
       setActiveSlide(id);history.replaceState(null,'',`#${id}`);
+      if(typeof siteLanguage!=='undefined'&&siteLanguage!=='ko')translateVisibleSlide(id,siteTranslationVersion);
     }
     bottomTabs.querySelectorAll('[data-slide-target]').forEach(button=>button.addEventListener('click',()=>goToSlide(button.dataset.slideTarget)));
     document.addEventListener('click',event=>{const link=event.target.closest('a[href^="#"]');if(!link)return;const id=link.getAttribute('href').slice(1);if(appSlideSections.some(slide=>slide.id===id)){event.preventDefault();goToSlide(id);}});
     let slideScrollFrame=0;
-    appSlides.addEventListener('scroll',()=>{if(slideScrollFrame)return;slideScrollFrame=requestAnimationFrame(()=>{slideScrollFrame=0;const index=Math.min(appSlideSections.length-1,Math.max(0,Math.round(appSlides.scrollLeft/appSlides.clientWidth)));const id=appSlideSections[index]?.id;if(id&&id!==activeSlideId){setActiveSlide(id);history.replaceState(null,'',`#${id}`);}});},{passive:true});
+    appSlides.addEventListener('scroll',()=>{if(slideScrollFrame)return;slideScrollFrame=requestAnimationFrame(()=>{slideScrollFrame=0;const index=Math.min(appSlideSections.length-1,Math.max(0,Math.round(appSlides.scrollLeft/appSlides.clientWidth)));const id=appSlideSections[index]?.id;if(id&&id!==activeSlideId){setActiveSlide(id);history.replaceState(null,'',`#${id}`);if(typeof siteLanguage!=='undefined'&&siteLanguage!=='ko')translateVisibleSlide(id,siteTranslationVersion);}});},{passive:true});
     window.addEventListener('resize',()=>{const index=appSlideSections.findIndex(slide=>slide.id===activeSlideId);if(index>=0)appSlides.scrollTo({left:index*appSlides.clientWidth,behavior:'auto'});});
     if('scrollRestoration'in history)history.scrollRestoration='manual';
     const initialSlide=appSlideSections.some(slide=>slide.id===location.hash.slice(1))?location.hash.slice(1):'home';
@@ -746,7 +750,7 @@
     document.getElementById('fontDecrease').addEventListener('click',()=>saveTextScale(Math.max(0.8,Math.round((currentTextScale-0.05)*100)/100)));
     document.getElementById('fontIncrease').addEventListener('click',()=>saveTextScale(Math.min(1.6,Math.round((currentTextScale+0.05)*100)/100)));
     document.getElementById('fontReset').addEventListener('click',()=>saveTextScale(1));
-    const themeLabels={ko:{dark:'다크 모드',light:'라이트 모드로 전환'},en:{dark:'Dark mode',light:'Switch to light mode'},'zh-CN':{dark:'深色模式',light:'切换到浅色模式'},vi:{dark:'Chế độ tối',light:'Chuyển sang chế độ sáng'},ne:{dark:'डार्क मोड',light:'लाइट मोडमा बदल्नुहोस्'},tl:{dark:'Dark mode',light:'Lumipat sa light mode'},th:{dark:'โหมดมืด',light:'เปลี่ยนเป็นโหมดสว่าง'}};
+    const themeLabels={ko:{dark:'다크 모드',light:'라이트 모드로 전환'},en:{dark:'Dark mode',light:'Switch to light mode'},'zh-CN':{dark:'深色模式',light:'切换到浅色模式'},vi:{dark:'Chế độ tối',light:'Chuyển sang chế độ sáng'},ne:{dark:'डार्क मोड',light:'लाइट मोडमा बदल्नुहोस्'},tl:{dark:'Dark mode',light:'Lumipat sa light mode'},th:{dark:'โหมดมืด',light:'เปลี่ยนเป็นโหมดสว่าง'},ja:{dark:'ダークモード',light:'ライトモードに切り替え'}};
     const themeToggleButton=document.getElementById('themeToggle');
     function updateThemeButton(){const dark=document.documentElement.dataset.theme==='dark';const labels=themeLabels[siteLanguage]||themeLabels.en;const label=dark?labels.light:labels.dark;themeToggleButton.setAttribute('aria-pressed',String(dark));themeToggleButton.setAttribute('aria-label',label);themeToggleButton.title=label;document.getElementById('themeToggleLabel').textContent=label;}
     function setColorTheme(theme){const dark=theme==='dark';document.documentElement.dataset.theme=dark?'dark':'light';try{localStorage.setItem('disaster-guide-theme',dark?'dark':'light');}catch(error){}document.querySelector('meta[name="theme-color"]').content=dark?'#101714':'#f4efe6';updateThemeButton();}
@@ -909,13 +913,18 @@
       }
       return actions[actionType];
     }
-    async function translateText(text,lang,source='ko'){
-      const params=new URLSearchParams({client:'gtx',sl:source,tl:lang,dt:'t',q:text});
-      const response=await fetch(`https://translate.googleapis.com/translate_a/single?${params}`,{signal:AbortSignal.timeout(15000)});
-      if(!response.ok){const error=new Error('translation unavailable');error.status=response.status;throw error;}
-      const data=await response.json();const result=Array.isArray(data?.[0])?data[0].map(part=>part?.[0]||'').join(''):'';
-      if(!result)throw new Error('translation unavailable');
-      return result;
+    async function translateText(text,lang,source='ko',cacheable=false){
+      let lastError;
+      for(let attempt=0;attempt<2;attempt++){
+        try{
+          const response=await fetch(localApiUrl('/api/translate'),{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({text,source,target:lang,cacheable}),signal:AbortSignal.timeout(25000)});
+          if(!response.ok){const error=new Error('translation unavailable');error.status=response.status;throw error;}
+          const data=await response.json();const result=Array.isArray(data?.[0])?data[0].map(part=>part?.[0]||'').join(''):'';
+          if(!result)throw new Error('translation unavailable');
+          return result;
+        }catch(error){lastError=error;if(error.status===429)break;if(attempt===0)await new Promise(resolve=>setTimeout(resolve,200));}
+      }
+      throw lastError||new Error('translation unavailable');
     }
     const originalSiteText=new WeakMap();
     const originalSiteBlocks=new WeakMap();
@@ -924,20 +933,26 @@
     const originalSiteAttributes=new WeakMap();
     const siteAttributeElements=new Set();
     const siteTranslationCache=new Map();
-    const siteTranslationStorageKey='ansimgil-site-translations-v2';
+    const siteTranslationStorageKey='ansimgil-site-translations-v3';
     const originalDocumentTitle=document.title;
     try{
       const savedTranslations=JSON.parse(localStorage.getItem(siteTranslationStorageKey)||'[]');
       if(Array.isArray(savedTranslations))savedTranslations.forEach(([key,value])=>{if(typeof key==='string'&&typeof value==='string')siteTranslationCache.set(key,value);});
     }catch(error){}
     function persistSiteTranslations(){
-      while(siteTranslationCache.size>1200)siteTranslationCache.delete(siteTranslationCache.keys().next().value);
+      while(siteTranslationCache.size>6000)siteTranslationCache.delete(siteTranslationCache.keys().next().value);
       try{localStorage.setItem(siteTranslationStorageKey,JSON.stringify([...siteTranslationCache]));}catch(error){}
     }
-    const siteSkipSelector='script,style,noscript,svg,.brand,.lang-chip,.library-lang,.side-language-option,#languageStartSelect,.geochang-audience-language,.geochang-easy-output,.dictionary-content,.statistics-word,#translatedText,[data-no-site-translate],#libraryOriginal,#resultLang,#libraryActionTitle,#libraryTitle,#libraryTime,.library-original';
+    const siteSkipSelector='script,style,noscript,svg,.lang-chip,.side-language-option,.geochang-easy-output,.geochang-message,#translatedText,.result-original,[data-no-site-translate],#libraryOriginal,#resultLang,.library-original';
     let siteTranslationVersion=0;
     function sourceLanguage(text){
       if(/[가-힣]/.test(text))return 'ko';
+      if(/[\u0900-\u097F]/.test(text))return 'ne';
+      if(/[\u0E00-\u0E7F]/.test(text))return 'th';
+      if(/[\u3040-\u30FF]/.test(text))return 'ja';
+      if(/[\u4E00-\u9FFF]/.test(text))return 'zh-CN';
+      if(/[ăâđêôơưĂÂĐÊÔƠƯàáạảãầấậẩẫằắặẳẵèéẹẻẽềếệểễìíịỉĩòóọỏõồốộổỗờớợởỡùúụủũừứựửữỳýỵỷỹ]/.test(text))return 'vi';
+      if(/\b(?:paalala|babala|lindol|bagyo|baha|sunog|lumikas|mag-ingat|abiso|malakas na ulan)\b/i.test(text))return 'tl';
       if(/^[\x00-\x7F]+$/.test(text)&&/[a-z]/i.test(text))return 'en';
       return null;
     }
@@ -1012,16 +1027,20 @@
         const cacheKey=`${entry.source}|${language}|${entry.original}`;
         if(entry.source===language){applySiteTranslation(entry,entry.original,version);continue;}
         if(siteTranslationCache.has(cacheKey)){applySiteTranslation(entry,siteTranslationCache.get(cacheKey),version);continue;}
-        const group=unique.get(cacheKey)||{cacheKey,source:entry.source,text:entry.original,targets:[]};group.targets.push(entry);unique.set(cacheKey,group);
+        const element=entry.kind==='text'?entry.node.parentElement:entry.element;
+        const currentSlide=element?.closest('section');
+        const priority=currentSlide?.id===activeSlideId?0:element?.closest('.dictionary-entry,.statistics-word')?4:element?.closest('.statistics-section')?3:1;
+        const group=unique.get(cacheKey)||{cacheKey,source:entry.source,text:entry.original,targets:[],priority};group.priority=Math.min(group.priority,priority);group.targets.push(entry);unique.set(cacheKey,group);
       }
       const queues=new Map();
       unique.forEach(item=>{if(!queues.has(item.source))queues.set(item.source,[]);queues.get(item.source).push(item);});
       const chunks=[];
       queues.forEach((items,source)=>{
+        items.sort((a,b)=>a.priority-b.priority);
         let chunk=[];let size=0;
         items.forEach(item=>{
           const cost=item.text.length+16;
-          if(chunk.length&&size+cost>380){chunks.push({source,items:chunk});chunk=[];size=0;}
+           if(chunk.length&&size+cost>1500){chunks.push({source,items:chunk});chunk=[];size=0;}
           chunk.push(item);size+=cost;
         });
         if(chunk.length)chunks.push({source,items:chunk});
@@ -1033,7 +1052,7 @@
           const payload=chunk.items.map((item,index)=>`${item.text} ZZI18N${index}XQ`).join(' ');
           let translations;let batchSucceeded=false;
           try{
-            const result=await translateText(payload,language,chunk.source);batchSucceeded=true;const parts=[];let cursor=0;
+             const result=await translateText(payload,language,chunk.source,true);batchSucceeded=true;const parts=[];let cursor=0;
             for(const match of result.matchAll(/ZZI18N(\d+)XQ/gi)){parts[Number(match[1])]=result.slice(cursor,match.index).trim();cursor=match.index+match[0].length;}
             if(parts.length===chunk.items.length&&parts.every(Boolean))translations=parts;
           }catch(error){}
@@ -1041,7 +1060,7 @@
             if(!batchSucceeded){failures+=chunk.items.length;continue;}
             translations=[];
             for(const item of chunk.items){
-              try{translations.push(await translateText(item.text,language,chunk.source));}
+               try{translations.push(await translateText(item.text,language,chunk.source,true));}
               catch(error){translations.push(item.text);failures+=1;}
             }
           }
@@ -1054,6 +1073,10 @@
       }
       await Promise.all(Array.from({length:Math.min(3,chunks.length)},worker));
       return failures;
+    }
+    function translateVisibleSlide(slideId=activeSlideId,version=siteTranslationVersion){
+      if(siteLanguage==='ko')return Promise.resolve(0);
+      return translateSiteEntries([document.body],siteLanguage,version);
     }
     function restoreSiteLanguage(){
       siteBlockElements.forEach(element=>{const original=originalSiteBlocks.get(element);if(element.isConnected&&original){translatedSiteBlocks.delete(element);element.innerHTML=original.html;element.classList.remove('site-translated-title');}});
@@ -1098,6 +1121,7 @@
     }
     function setSiteLanguage(language){
       if(!supportedLanguages.includes(language))return;
+      if(language!==siteLanguage)restoreSiteLanguage();
       siteLanguage=language;if(!translationLanguageChosen)selectedLang=language;const version=++siteTranslationVersion;
       document.documentElement.lang=language;syncLanguageButtons(language);updateThemeButton();
       try{localStorage.setItem('ansimgil-site-language',language);}catch(error){}
@@ -1119,10 +1143,10 @@
         details.querySelector('.geochang-language-label').hidden=false;
         renderGeochangEasy(details.dataset.originalMessage,details);
       });
-      translateSiteEntries([document.body],language,version).then(async failures=>{
+      translateVisibleSlide(activeSlideId,version).then(async failures=>{
         if(version!==siteTranslationVersion)return;
         try{document.title=language==='ja'?'災害メッセージをやさしく':await translateText(originalDocumentTitle,language,'ko');}catch(error){}
-        if(version===siteTranslationVersion){applyGlobalCopy(language);toast(failures?'일부 번역 실패':'언어 변경 완료');}
+        if(version===siteTranslationVersion){applyGlobalCopy(language);toast(failures?'무료 번역 한도에 도달해 일부 문구는 한국어로 남았어요':'언어 변경 완료');}
       });
     }
     function setTranslationLanguage(language){
@@ -2499,7 +2523,7 @@
       languageStartDialog.showModal();
     }else if(siteLanguage!=='ko'){
       const version=++siteTranslationVersion;
-      translateSiteEntries([document.body],siteLanguage,version).then(async()=>{
+      translateVisibleSlide(activeSlideId,version).then(async()=>{
         if(version!==siteTranslationVersion)return;
         try{document.title=await translateText(originalDocumentTitle,siteLanguage,'ko');}catch(error){}
         if(version===siteTranslationVersion)applyGlobalCopy(siteLanguage);
