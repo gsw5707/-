@@ -2030,15 +2030,33 @@
       if(!tesseractWorkerPromise)tesseractWorkerPromise=window.Tesseract.createWorker('kor+eng',1,{logger:progress=>{if(progress.status==='recognizing text')imageOcrStatus.textContent=`글자 읽는 중 ${Math.round(progress.progress*100)}%`;else if(progress.status==='loading language traineddata')imageOcrStatus.textContent='문자 인식 준비 중…';}}).catch(error=>{tesseractWorkerPromise=null;throw error;});
       return tesseractWorkerPromise;
     }
+    function extractDisasterMessageFromOcr(ocr){
+      const uiLine=/^(?:재난문자 순화|문자 순화|쉬운 말 사전|어려운 말 통계|행동 안내|대피소|재난문자|안전안내문자|긴급재난문자|알림|알림 설정|알림 기록|메시지|문자 메시지|메시지 입력|답장|전송|전달|삭제|복사|더 보기|닫기|취소|설정|검색|전체|오늘|어제|방금|지금|확인|홈|뒤로|받은 편지함|모두 지우기|모두 읽음|개인정보 제외|이미지에서 문자 읽기|글자 크기|안내 언어|언어 선택|한국어|English|中文|Tiếng Việt|नेपाली|Filipino|ไทย|日本語|notifications?|messages?|emergency alerts?|reply|send|settings?|close|cancel|search|home|back|done|clear all|mark all as read|LTE|5G|Wi.?Fi|배터리)$/i;
+      const alertSignal=/(?:재난문자|안전안내문자|긴급재난문자|호우|폭우|홍수|침수|범람|하천|계곡|산사태|산불|화재|지진|해일|태풍|강풍|폭염|한파|대설|폭설|결빙|낙뢰|대피|출입금지|통제구간|통행금지|대피소|주의보|경보|재난안전)/;
+      const actionSignal=/(?:대피|이동|피하|금지|통제|주의|조심|유의|바랍니다|하세요|주시기|접근|출입|우회|자제|확인하시|삼가|멀리|벗어나|신고|문의)/;
+      const blockedLine=/^(?:\d{1,2}:\d{2}(?:\s*(?:AM|PM))?|(?:오전|오후)\s*\d{1,2}:\d{2}|\d{1,2}%$|\d+개의? 알림|알림 \d+개|방금 전|\d+분 전|\d+시간 전|오늘\s*\d{1,2}:\d{2}$|\d{4}년\s*\d{1,2}월\s*\d{1,2}일|(?:\d{1,2}:\d{2}\s+)?(?:[\d:%]+\s+)*(?:5G|LTE|Wi.?Fi|배터리|Battery)(?:\s|$).+|[←→↻⋮…⌕♡☆★]+)$/i;
+      const lines=Array.isArray(ocr?.lines)?ocr.lines.map(line=>({text:String(line.text||'').replace(/\s+/g,' ').trim(),confidence:Number(line.confidence)})).filter(line=>line.text&&(!Number.isFinite(line.confidence)||line.confidence>=18)&&!uiLine.test(line.text)&&!blockedLine.test(line.text)):
+        String(ocr?.text||ocr||'').split(/\r?\n/).map(text=>({text:text.replace(/\s+/g,' ').trim(),confidence:100})).filter(line=>line.text&&!uiLine.test(line.text)&&!blockedLine.test(line.text));
+      const anchors=lines.map((line,index)=>({index,score:(alertSignal.test(line.text)?2:0)+(actionSignal.test(line.text)?1:0)+(/\d/.test(line.text)?0.25:0)})).filter(item=>item.score>=2);
+      if(!anchors.length)return {text:'',confidence:'none'};
+      let start=anchors[0].index;let end=anchors.at(-1).index;
+      const looksLikeMessageLine=line=>/[가-힣]/.test(line.text)&&line.text.length>=5&&!uiLine.test(line.text)&&!blockedLine.test(line.text);
+      for(let step=0;step<2&&start>0;step++){if(!looksLikeMessageLine(lines[start-1]))break;start--;}
+      for(let step=0;step<2&&end<lines.length-1;step++){if(!looksLikeMessageLine(lines[end+1]))break;end++;}
+      const selected=lines.slice(start,end+1).map(line=>line.text).filter(text=>!uiLine.test(text)&&!blockedLine.test(text));
+      const body=selected.filter(text=>!/^(?:재난문자|안전안내문자|긴급재난문자)$/.test(text));
+      const text=body.join('\n').trim();
+      return text?{text,confidence:anchors.length>1?'matched':'single-signal'}:{text:'',confidence:'none'};
+    }
     messageImageInput.addEventListener('change',async event=>{
       const file=event.currentTarget.files?.[0];if(!file)return;
       if(messageImageObjectUrl)URL.revokeObjectURL(messageImageObjectUrl);messageImageObjectUrl='';messageImagePreview.removeAttribute('src');messageImagePreview.hidden=true;
       if(file.size>12*1024*1024){imageOcrStatus.textContent='이미지가 너무 커요 · 12MB 이하 선택';messageImageInput.value='';return;}
       messageImageObjectUrl=URL.createObjectURL(file);messageImagePreview.src=messageImageObjectUrl;messageImagePreview.hidden=false;messageImageButton.disabled=true;imageOcrStatus.textContent='이미지에서 글자 읽는 중…';
       try{
-        const worker=await getTesseractWorker();const result=await worker.recognize(file);const text=String(result.data?.text||'').trim();
-        if(!text){imageOcrStatus.textContent='글자를 찾지 못했어요 · 더 선명한 이미지 선택';return;}
-        const message=document.getElementById('message');message.value=text;lastTranslationSource='';imageOcrStatus.textContent='문자 인식 완료 · 순화 중…';message.dispatchEvent(new Event('input',{bubbles:true}));await renderTranslation();imageOcrStatus.textContent='문자 인식 완료';
+        const worker=await getTesseractWorker();const result=await worker.recognize(file);const extracted=extractDisasterMessageFromOcr(result.data);
+        if(!extracted.text){imageOcrStatus.textContent='재난문자 본문을 찾지 못했어요 · 재난문자 부분만 잘라 다시 올려 주세요';return;}
+        const message=document.getElementById('message');message.value=extracted.text;lastTranslationSource='';imageOcrStatus.textContent='재난문자 본문만 읽었어요 · 내용 확인 중…';message.dispatchEvent(new Event('input',{bubbles:true}));await renderTranslation();imageOcrStatus.textContent='재난문자 본문만 넣었어요 · 원문이 맞는지 확인해 주세요';
       }catch(error){imageOcrStatus.textContent='이미지 읽기 실패 · 다시 선택';}
       finally{messageImageButton.disabled=false;messageImageInput.value='';}
     });
