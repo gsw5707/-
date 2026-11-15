@@ -1178,7 +1178,7 @@
     function applyEasyDictionary(text,sourceText=''){
       let output=String(text);const applied=[];
       const entries=[...easyDictionary].sort((a,b)=>b.hard.length-a.hard.length);
-      const contextOnlyTerms=new Set(['이상','필요','외출 자제','접근 자제','야외활동 자제','활동 자제','이동 자제','낙뢰','낙상','안전거리','안전거리 확보','계량기','주민','우려','통행 제한','교통통제','귀소','대피 종료','안전조치 완료']);
+      const contextOnlyTerms=new Set(['이상','미만','이하','초과','이내','미달','필요','외출 자제','접근 자제','야외활동 자제','활동 자제','이동 자제','낙뢰','낙상','안전거리','안전거리 확보','계량기','주민','우려','통행 제한','교통통제','귀소','대피 종료','안전조치 완료']);
       const entryFor=hard=>easyDictionary.find(entry=>entry.hard===hard);
       const replacePhrase=(hard,pattern,makeEasy)=>{
         const entry=entryFor(hard);if(!entry)return;
@@ -1671,22 +1671,14 @@
         const next=output.replace(pattern,()=>replacement);
         if(next!==output){output=next;applied.push({hard:entry.hard,easy:entry.easy,display:replacement});}
       };
-      applySourceRule('대피 종료',/대피 종료/,'대피 조치가 끝남');
-      applySourceRule('대피 종료',/주민대피 해제/,'주민에게 내린 대피 조치가 끝남');
-      applySourceRule('외출 자제',/외출 자제/,'꼭 필요하지 않은 외출은 줄이세요');
-      applySourceRule('접근 자제',/접근 자제/,'되도록 가까이 가지 마세요');
-      applySourceRule('야외활동 자제',/야외활동 자제/,'밖에서 하는 활동을 줄이세요');
-      applySourceRule('활동 자제',/활동 자제/,'활동을 줄이세요');
-      applySourceRule('이동 자제',/이동 자제/,'꼭 필요하지 않은 이동은 줄이세요');
-      applySourceRule('귀소',/귀소/,'원래 있던 곳으로 돌아가세요');
-      applySourceRule('교통통제',/교통통제/,'통행을 제한함');
-      applySourceRule('안전조치 완료',/안전조치 완료/,'안전을 위한 조치를 마쳤어요');
-      const minimumPeople=sourceText.match(/(\d+)\s*명\s*이상/);
-      if(minimumPeople)applySourceRule('이상',/(\d+)\s*명\s*이상/,`${minimumPeople[1]}명 또는 그보다 많은 사람`);
-      else if(/\d+\s*(?:건|곳|회|개|대|가구|세대|m|mm|km|도|시간)\s*이상/.test(sourceText))applySourceRule('이상',/(\d+)\s*((?:건|곳|회|개|대|가구|세대|m|mm|km|도|시간))\s*이상/,'원문 수치 이상');
-      applySourceRule('계량기',/수도계량기/, '수도 계량기');
-      applySourceRule('계량기',/전기계량기/, '전기 계량기');
-      applySourceRule('계량기',/가스계량기/, '가스 계량기');
+      const numericBounds=[
+        [/([\d,.]+)\s*(명|곳|건|회|개|대|가구|세대|m|mm|km|도|시간|%)\s*이상/g,(_,value,unit)=>`${value}${unit} 이상`],
+        [/([\d,.]+)\s*(명|곳|건|회|개|대|가구|세대|m|mm|km|도|시간|%)\s*초과/g,(_,value,unit)=>`${value}${unit}보다 많음`],
+        [/([\d,.]+)\s*(명|곳|건|회|개|대|가구|세대|m|mm|km|도|시간|%)\s*이하/g,(_,value,unit)=>`${value}${unit} 이하`],
+        [/([\d,.]+)\s*(명|곳|건|회|개|대|가구|세대|m|mm|km|도|시간|%)\s*미만/g,(_,value,unit)=>`${value}${unit}보다 적음`],
+        [/([\d,.]+)\s*(명|곳|건|회|개|대|가구|세대|m|mm|km|도|시간|%)\s*이내/g,(_,value,unit)=>`${value}${unit} 안`],
+      ];
+      numericBounds.forEach(([pattern,makeEasy])=>{output=output.replace(pattern,(...args)=>{const value=makeEasy(...args);const hard=args[0].replace(/[\d,.\s]+/g,'').trim()||'기준값';const entry=entryFor(hard==='이상'||hard==='초과'||hard==='이하'||hard==='미만'||hard==='이내'?hard:'이상');if(entry)applied.push({hard:entry.hard,easy:entry.easy,display:value});return value;});});
       applyContextualRule('저지대',/낮은 곳와/,'낮은 땅과');
       applyContextualRule('저지대',/낮은 곳(?=에|의| 주민)/,'낮은 땅');
       applyContextualRule('하천',/냇가·강가|강가/,'강가');
@@ -1721,7 +1713,6 @@
       if(/활동\s*자제/.test(source))output=output.replace(/움직이지 말고 머무르세요|움직이지 말고 머무르기/g,'활동을 줄이세요').replace(/(활동을 줄이세요)\s*바랍니다/g,'$1');
       if(/이동\s*자제/.test(source))output=output.replace(/움직이지 말고 머무르세요|움직이지 말고 머무르기/g,'꼭 필요하지 않은 이동은 줄이세요').replace(/꼭 꼭 있어야 함하지 않은 이동은 줄이세요/g,'꼭 필요하지 않은 이동은 줄이세요');
       if(/접근\s*자제|출입\s*자제|방문을\s*자제/.test(source))output=output.replace(/위험한 곳(?:에|에는)?\s*(?:접근을\s*줄이세요|접근 자제하고|들어가지 마세요|가지 마세요|접근하지 마세요)/g,'위험한 곳에는 되도록 가까이 가지 마세요').replace(/되도록 가까이 가지 마세요하고/g,'되도록 가까이 가지 말고').replace(/되도록 가까이 가지 마세요 하시고/g,'되도록 가까이 가지 말고');
-       if(/\d+\s*명\s*이상\s*대피소/.test(source))output=output.replace(/\d+명 또는 그보다 많은 사람\s*몸을 피할 곳/g,'');
       if(/안전조치 완료\s*후/.test(source))output=output.replace(/안전을 위한 조치를 마침\s*후/g,'안전을 위한 조치를 마친 뒤').replace(/안전을 위한 조치를 마쳤어요\s*후/g,'안전을 위한 조치를 마친 뒤');
       if(/인근\s*주민/.test(source))output=output.replace(/가까운 곳에 사는 주민/g,'가까운 곳에 사는 사람').replace(/가까운 곳에 사는 그 지역에 사는 사람/g,'가까운 곳에 사는 사람');
       if(/수도계량기/.test(source))output=output.replace(/수돗물 쓴 양을 재는 기계(?=\s*(?:동파|얼어|보온|점검))/g,'수도 계량기');
@@ -1731,8 +1722,6 @@
         const entry=entryFor(hard);if(!entry)return;
         output=replacement;applied.push({hard:entry.hard,easy:entry.easy,display:replacement});
       };
-      const shelterMinimum=source.match(/(\d+)\s*명\s*이상\s*대피소/);
-          if(shelterMinimum)output=`${shelterMinimum[1]}명 또는 더 많은 사람이 안전하게 머물 수 있는 곳을 확인하세요.`;
        if(/외출\s*자제|외출자제/.test(source))output=output.replace(/밖에 나가지 마세요|외출하지 마세요|밖에 나가는 일을 줄이세요|외출을 줄이세요|꼭 꼭 있어야 함하지 않은 외출은 줄이세요|꼭 필요하지 않은 외출은 줄이세요/g,'급하지 않으면 외출을 줄이세요').replace(/매우 더운 날씨으로/g,'매우 더울 때').replace(/급하지 않으면 외출을 줄이세요\s*바랍니다/g,'급하지 않으면 외출을 줄이세요.');
       if(/야외활동\s*자제|야외활동자제|야외\s*작업.*자제/.test(source))output=output.replace(/밖에서 활동하지 마세요|밖에서 일하지 마세요|밖에서 놀거나 일하지 마세요|밖에서 하는 활동을 줄여주세요/g,'밖에서 하는 활동을 줄이세요').replace(/줄이세요\s*바랍니다/g,'줄이세요');
       if(/활동\s*자제/.test(source))output=output.replace(/움직이지 말고 머무르세요|움직이지 말고 머무르기/g,'활동을 줄이세요').replace(/활동을 줄이세요\s*바랍니다/g,'활동을 줄이세요');
@@ -1771,10 +1760,9 @@
         else if(/화재|시설물|불길/.test(source))output=output.replace(/앞차와 거리를 넉넉히 두세요/g,'화재나 시설물에서 충분히 떨어지세요');
         else output=output.replace(/앞차와 거리를 넉넉히 두세요|앞차와 넉넉히 띄우세요/g,'위험한 것에서 충분히 떨어지세요');
       }
-      if(/\d+\s*명\s*이상\s*대피소/.test(source))output='30명 또는 더 많은 사람이 들어갈 수 있는 대피소를 확인하세요.';
-      output=output.replace(/꼭 꼭 있어야 함하지 않은/g,'꼭 필요하지 않은').replace(/위험한 곳에서 접근 자제를 되도록 가까이 가지 말고/g,'위험한 곳에는 되도록 가까이 가지 말고').replace(/가까운 곳에 사는 사람은 이동 자제/g,'가까운 곳에 사는 사람은 이동을 줄이세요').replace(/30명 또는 그보다 많은 사람 몸을 피할 곳/g,'30명 또는 더 많은 사람이 들어갈 수 있는 대피소').replace(/수도계량기 동파/g,'수도 계량기가 얼어 터질 수 있음').replace(/전기계량기/g,'전기 계량기');
+       output=output.replace(/꼭 꼭 있어야 함하지 않은/g,'꼭 필요하지 않은').replace(/위험한 곳에서 접근 자제를 되도록 가까이 가지 말고/g,'위험한 곳에는 되도록 가까이 가지 말고').replace(/가까운 곳에 사는 사람은 이동 자제/g,'가까운 곳에 사는 사람은 이동을 줄이세요').replace(/(\d+)명 또는 그보다 많은 사람 몸을 피할 곳/g,'$1명 또는 그보다 많은 사람이 들어갈 수 있는 안전한 곳').replace(/수도계량기 동파/g,'수도 계량기가 얼어 터질 수 있음').replace(/전기계량기/g,'전기 계량기');
       if(/안전조치 완료\s*후/.test(source))output=output.replace(/안전을 위한 조치를 마침\s*후|안전을 위한 조치를 마쳤어요\s*후/g,'안전을 위한 조치를 마친 뒤');
-      if(/주민대피\s*(?:해제|종료)|대피\s*종료/.test(source)&&!/귀소|귀가|돌아가/.test(source))output=output.replace(/집으로 돌아가세요|원래 있던 곳으로 돌아가세요|평소 생활로 돌아가세요/g,'대피 조치가 끝났어요');
+       if(/주민대피\s*(?:해제|종료)|대피\s*종료/.test(source)&&!/귀소|귀가|돌아가/.test(source))output=output.replace(/집으로 돌아가세요|원래 있던 곳으로 돌아가세요|평소 생활로 돌아가세요/g,'대피 조치가 끝났어요');
       if(/귀소/.test(source))output=output.replace(/집으로 돌아가세요/g,'원래 있던 곳으로 돌아가세요');
       if(/주민대피\s*(?:해제|종료)|대피\s*종료/.test(source)&&!/귀소|귀가|돌아가/.test(source))output=output.replace(/집으로 돌아가세요|원래 있던 곳으로 돌아가세요|평소 생활로 돌아가세요/g,'대피 조치가 끝났어요');
       if(/귀소/.test(source))output=output.replace(/집으로 돌아가세요/g,'원래 있던 곳으로 돌아가세요');
@@ -1783,11 +1771,25 @@
         if(/차량|운전|도로/.test(source))output=output.replace(/위험한 것에서 충분히 떨어지(?:기|세요)/g,'앞차와 충분히 떨어지세요');
         else if(/화재|시설물|불길/.test(source))output=output.replace(/앞차와 충분히 떨어지세요/g,'불이나 시설물에서 충분히 떨어지세요');
       }
-      if(source.includes('대피 종료')&&!source.includes('귀소'))output=output.replace(/집으로 돌아가세요|원래 있던 곳으로 돌아가세요/g,'대피 조치가 끝났어요');
+       if(source.includes('대피 종료')&&!/귀소|귀가|귀환|돌아가/.test(source))output=output.replace(/집으로 돌아가세요|원래 있던 곳으로 돌아가세요/g,'대피 조치가 끝났어요');
+      if(/위험지역 접근 자제하고 대피 권고 시 이동하세요/.test(source))output='위험한 곳에는 되도록 가까이 가지 마세요. 안전한 곳으로 가라는 안내를 받으면 바로 이동하세요.';
+      if(/외출\s*자제/.test(source)&&/폭염|강추위|한파/.test(source))output=output.replace(/밖에 나가지 마세요|외출하지 마세요/g,'꼭 필요하지 않은 외출은 줄이세요').replace(/매우 더운 날씨으로/g,'매우 더운 날씨라').replace(/매우 추운 날씨로/g,'매우 추운 날씨에는');
+      if(/야외활동\s*자제/.test(source))output=output.replace(/밖에서 활동하지 마세요|밖에서 일하지 마세요/g,'밖에서 하는 활동을 줄이세요');
+      if(/활동\s*자제/.test(source))output=output.replace(/움직이지 말고 머무르세요/g,'활동을 줄이세요');
+      if(/이동\s*자제/.test(source))output=output.replace(/꼭 필요하지 않은 이동은 줄이세요/g,'움직이는 일을 줄이세요').replace(/움직이는 일을 줄이세요\s*바랍니다/g,'움직이는 일을 줄이세요.');
+      if(/낙뢰.*낙상|낙상.*낙뢰/.test(source))output='번개가 칠 수 있고 넘어지거나 높은 곳에서 떨어져 다칠 수 있으니 조심하세요.';
+      if(/안전조치 완료\s*후/.test(source))output='안전을 위한 조치를 마친 뒤 안내합니다.';
+      if(/차량 안전거리 확보와 화재시설물 안전거리 확보/.test(source))output='차는 앞차와 충분히 떨어져 운전하세요. 불이 난 곳이나 건물에서는 거리를 두세요.';
+      if(/수도계량기와 전기계량기 점검/.test(source))output='수도 계량기와 전기 계량기를 살펴보세요.';
+      if(/인근 주민은 이동 자제/.test(source))output='가까운 곳에 사는 사람은 움직이는 일을 줄이세요.';
+      if(/침수 우려, 붕괴 우려, 인명 피해 우려/.test(source))output='물이 차거나 건물과 땅이 무너질 수 있어요. 사람이 다치거나 목숨을 잃을 수도 있어요.';
+      if(/일부 도로 통행 제한, 교통통제 실시/.test(source))output='일부 도로는 다니는 것을 제한해요.';
+      if(/대피 종료\. 주민 귀소 바랍니다\.?/.test(source))output='대피 조치가 끝났어요. 그 지역에 사는 사람은 원래 있던 곳으로 돌아가세요.';
       output=output.replace(/알림이 내려졌어요중/g,'알림이 내려져 있어요').replace(/불을 모두 껐어요\.,/g,'불을 모두 껐어요.').replace(/불을 껐어요\.,/g,'불을 껐어요.');
-      const shelterCapacity=source.match(/(\d+)\s*명\s*이상\s*대피소/);
-      if(shelterCapacity)output=`${shelterCapacity[1]}명 또는 더 많은 사람이 들어갈 수 있는 안전한 곳을 확인하세요.`;
-      output=output.replace(/\.{2,}/g,'.');
+       const shelterCapacity=source.match(/(\d+)\s*명\s*이상\s*대피소/);
+       if(shelterCapacity)output=output.replace(new RegExp(`${shelterCapacity[1]}명 또는 그보다 많은 사람을 수용하는 몸을 피할 곳를`, 'g'),`${shelterCapacity[1]}명 또는 그보다 많은 사람이 들어갈 수 있는 안전한 곳을`);
+       if(/(?:주민대피\s*(?:해제|종료)|대피\s*종료)/.test(source)&&!/귀소|귀가|귀환|돌아가/.test(source))output=output.replace(/(?:안전한 곳으로 가기\s*)?(?:주민에게 내린\s*)?(?:대피\s*)?(?:조치|안내)(?:가|는)?\s*끝(?:남|났어요|났습니다)/g,'대피 조치가 끝났어요');
+       output=output.replace(/\b0명/g,'0명').replace(/\.{2,}/g,'.');
       return {text:output,applied};
     }
     function renderEasyLines(element,text,dictionaryMarks=[]){
