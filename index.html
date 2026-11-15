@@ -212,7 +212,8 @@
     @media(max-width:390px){.action-grid:not(.is-filtered) .guide-visual{height:124px!important}.action-grid.is-filtered .guide-visual{height:220px!important}.action-pictogram-grid li{min-height:128px}.action-pictogram-grid svg{width:54px;height:54px}}
     :root[data-theme="dark"] .action-pictogram-grid li{background:#242b26;color:var(--ink);border-color:var(--line)}:root[data-theme="dark"] .action-pictogram-grid svg{color:#d6ded8}
     .language-row .lang-chip,.result-translation,.geochang-easy-output{font-family:system-ui,sans-serif}.language-row .lang-chip{font-size:15px;font-weight:600;line-height:1.35;letter-spacing:normal;text-rendering:optimizeLegibility;color:#26342c!important;opacity:1!important;filter:none;text-shadow:none;background:#fffdf8;border-color:#aeb7ad}
-    .language-row .lang-chip.active{background:#303934;border-color:#303934;color:#fff!important}
+     .language-row .lang-chip.active{background:#303934;border-color:#303934;color:#fff!important}
+     .result-translation{display:block!important}.easy-line{display:inline!important}.easy-line-marker{display:none!important}.easy-line-text{white-space:normal}
     :root[data-theme="dark"]{--paper:#151916;--white:#1e2520;--mint:#252c27;--line:#3c433e}:root[data-theme="dark"] .topbar{background:#151916f5}:root[data-theme="dark"] .bottom-tabs{background:#1a201cf5}:root[data-theme="dark"] .result-panel{background:#202722}:root[data-theme="dark"] .language-row .lang-chip{background:#202722;border-color:#68736b;color:#f0f2f0!important}:root[data-theme="dark"] .language-row .lang-chip.active{background:#39423c;border-color:#879389;color:#fff!important}
     @media(max-width:760px){.guide-visual{height:80px!important}}
     @media(max-width:390px){.action-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.guide-visual{height:90px!important}}
@@ -1899,28 +1900,8 @@
        return {text:output,applied,numbersPreserved,numberFallback};
     }
     function renderEasyLines(element,text,dictionaryMarks=[]){
-      const normalized=String(text).replace(/([.!?])\s+(?=[^\d\s])/g,'$1\n');
-      const lines=normalized.split(/\n+/).map(line=>line.replace(/^[\s•\-]+/,'').trim()).filter(Boolean);
-      const rows=lines.map(line=>{
-        const row=document.createElement('div');row.className='easy-line';const marker=document.createElement('span');marker.className='easy-line-marker';marker.setAttribute('aria-hidden','true');marker.textContent='•';const content=document.createElement('span');content.className='easy-line-text';
-         if(selectedLang!=='ko'){
-          content.textContent=line;
-        }else{
-          const matches=[];
-          dictionaryMarks.forEach(item=>{if(!item.display)return;let index=0;while((index=line.indexOf(item.display,index))!==-1){const suffix=line.slice(index+item.display.length).match(/^(?:에서|으로|부터|까지|은|는|이|가|을|를|에|로|의|와|과|도|만)/)?.[0]||'';matches.push({start:index,end:index+item.display.length+suffix.length,kind:'dictionary',item});index+=item.display.length;}});
-          matches.sort((a,b)=>a.start-b.start||(b.end-b.start)-(a.end-a.start)||(a.kind==='dictionary'?-1:1));
-          let cursor=0;
-          matches.forEach(match=>{
-            if(match.start<cursor)return;
-            content.append(document.createTextNode(line.slice(cursor,match.start)));
-            content.append(document.createTextNode(line.slice(match.start,match.end)));
-            cursor=match.end;
-          });
-          content.append(document.createTextNode(line.slice(cursor)));
-        }
-        row.append(marker,content);return row;
-      });
-      element.replaceChildren(...rows);
+      const normalized=String(text).replace(/\s*▲\s*/g,'. ').replace(/[\r\n]+\s*[•\-]?\s*/g,'. ').replace(/\s+/g,' ').replace(/\s+([,.;!?。！？])/g,'$1').replace(/([.!?。！？]){2,}/g,'$1').trim();
+      element.textContent=normalized;
     }
     function clearTranslationResult(statusText){
       resetEasyFeedback();
@@ -1944,7 +1925,7 @@
       lastTranslationSource=text;
       if(speechUtterance)stopSpeech('읽기를 멈췄어요.');
       status.textContent='쉬운 말로 바꾸고 있어요…';await dictionaryLoadPromise;if(requestId!==translationRequestId)return;
-      const summary=easySummary(text);const dictionaryResult=applyEasyDictionary(summary.easy,text);summary.easy=dictionaryResult.text;summary.dictionary=dictionaryResult.applied;summary.changed=summary.easy!==text.trim().replace(/\s*\[[^\]]+\]\s*$/,'');resetEasyFeedback();updateShelterRecommendationButton(text);updateActionGuideView();document.getElementById('easyText').dataset.noSiteTranslate='true';document.getElementById('easyText').textContent=text;
+       const summary=easySummary(text);const dictionaryResult=applyEasyDictionary(summary.easy,text);summary.easy=refineNationwideMessage(text,dictionaryResult.text,'child');summary.dictionary=dictionaryResult.applied;summary.changed=summary.easy!==text.trim().replace(/\s*\[[^\]]+\]\s*$/,'');resetEasyFeedback();updateShelterRecommendationButton(text);updateActionGuideView();document.getElementById('easyText').dataset.noSiteTranslate='true';document.getElementById('easyText').textContent=text;
       originalSpeechText=text;easySpeechText='';easySpeechLanguage=selectedLang;updateSpeechButtons(false);
       const labels=resultLabels[selectedLang];
       document.getElementById('resultLang').lang=selectedLang;document.getElementById('translatedText').lang=selectedLang;
@@ -2240,7 +2221,17 @@
       let simple=String(translated).replace(/\s+/g,' ').trim();
       const numbers=text=>[...text.matchAll(/\d+(?:,\d{3})*(?:\.\d+)?/g)].map(([value])=>value.replace(/,/g,''));
       const spellUnits=text=>String(text).replace(/(\d[\d,]*(?:\.\d+)?)\s*(mm|km|cm|m)\b/gi,(_,value,unit)=>`${value}${({mm:'밀리미터',km:'킬로미터',cm:'센티미터',m:'미터'})[unit.toLowerCase()]}`);
-      const preserveNumbers=result=>{const before=numbers(source);const after=numbers(result);return spellUnits(before.length===after.length&&before.every((value,index)=>value===after[index])?result:simple);};
+      const oneParagraph=value=>String(value).replace(/\s*(?:▲|\n\s*[•\-])\s*/g,'. ').replace(/[\r\n]+/g,' ').replace(/\s+/g,' ').replace(/\s+([,.;!?。！？])/g,'$1').replace(/([,;:])(?=\S)/g,'$1 ').replace(/([.!?。！？]){2,}/g,'$1').trim();
+      const preserveNumbers=result=>{const before=numbers(source);const after=numbers(result);return spellUnits(oneParagraph(before.length===after.length&&before.every((value,index)=>value===after[index])?result:simple));};
+
+      if(/산불\s*예방은?.*관심과 실천에서 시작됩니다/.test(source)&&/(?:소각 금지|태우지|화기 금지)/.test(source)){
+        const lines=['산불을 막으려면 시민 여러분의 관심과 실천이 필요해요.'];
+        if(/영농부산물|농업부산물|농사 뒤/.test(source))lines.push(/쓰레기/.test(source)?'농사 뒤 남은 풀과 쓰레기를 태우지 마세요.':'농사 뒤 남은 풀과 줄기를 태우지 마세요.');
+        else if(/쓰레기/.test(source))lines.push('쓰레기를 태우지 마세요.');
+        if(/산행|입산/.test(source))lines.push('산에 들어갈 때 불을 피우는 도구를 가져가거나 쓰지 마세요.');
+        else if(/화기/.test(source))lines.push('불을 피우는 도구를 사용하지 마세요.');
+        return preserveNumbers(lines.join(' '));
+      }
 
       if(/실종/.test(source)&&/찾습니다|찾고 있습니다/.test(source))return preserveNumbers(source.replace(/(.+?)에서 실종된\s*(.+?)을 찾습니다[.。]?/,'$1에서 $2을 찾고 있어요.').replace(/검은색계열/g,'검은색').replace(/,(?=[^\s])/g,', '));
       if(/안전한국훈련/.test(source))return preserveNumbers(source.replace(/에서 실시하는 안전한국훈련/g,'에서 하는 안전한국훈련').replace(/안전한국훈련으로 인해 다수의 소방차 출동 등 연기와 소음이 발생할 수 있습니다/g,'안전한국훈련으로 소방차가 다니고 연기와 소음이 날 수 있어요').replace(/실제상황이 아닌 훈련상황이오니/g,'실제 재난이 아니라 연습이니').replace(/실제상황이 아닌 훈련상황/g,'실제 재난이 아닌 연습 상황').replace(/인근 주민께서는/g,'가까이 사는 주민은').replace(/소음 발생과 교통 일부 통제에 양해 부탁드립니다/g,'소음이 나고 차가 일부 막힐 수 있어요. 이해해 주세요.').replace(/금일/g,'오늘').replace(/\.{2,}/g,'.'));
