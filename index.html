@@ -107,7 +107,7 @@
     @media(max-width:760px){.notice-test-controls{grid-template-columns:1fr}.recommend-shelter-button{width:100%}}
   </style>
   <style>
-    body.app-mode{overflow:hidden;padding-bottom:0}.app-mode .topbar{position:fixed;top:0;left:0;right:0}.app-main{position:fixed;z-index:1;top:74px;right:0;bottom:calc(78px + env(safe-area-inset-bottom));left:0;overflow:hidden}.app-slides{position:relative;display:flex;width:100%;height:100%;overflow-x:auto;overflow-y:hidden;scroll-snap-type:x mandatory;scrollbar-width:none;overscroll-behavior-x:contain;touch-action:pan-x pan-y}.app-slides::-webkit-scrollbar{display:none}.app-slides>section{flex:0 0 100%;width:100%;height:100%;min-height:0;overflow-x:hidden;overflow-y:auto;overscroll-behavior:contain;scroll-snap-align:start;scroll-snap-stop:always}.bottom-tabs{position:fixed;z-index:1300;right:0;bottom:0;left:0;display:grid;grid-template-columns:repeat(7,minmax(0,1fr));height:calc(78px + env(safe-area-inset-bottom));padding:4px max(8px,calc((100vw - 780px)/2)) env(safe-area-inset-bottom);border-top:1px solid var(--line);background:#fffffffa;backdrop-filter:blur(12px)}.bottom-tab{display:flex;min-width:0;min-height:68px;flex-direction:column;align-items:center;justify-content:center;gap:3px;padding:3px 2px;border:0;border-top:2px solid transparent;background:transparent;color:#67756c;font-size:12px;font-weight:700;line-height:1.25;white-space:normal;overflow-wrap:anywhere}.bottom-tab svg{width:22px;height:22px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}.bottom-tab.active{border-top-color:#177f84;background:#eaf3ef;color:#12696e}
+     body.app-mode{overflow:hidden;padding-bottom:0}.app-mode .topbar{position:fixed;top:0;left:0;right:0}.app-main{position:fixed;z-index:1;top:74px;right:0;bottom:calc(78px + env(safe-area-inset-bottom));left:0;overflow:hidden}.app-slides{position:relative;display:flex;width:100%;height:100%;overflow-x:auto;overflow-y:hidden;scroll-snap-type:x mandatory;scrollbar-width:none;overscroll-behavior-x:contain;touch-action:pan-x pan-y}.app-slides::-webkit-scrollbar{display:none}.app-slides>section{flex:0 0 100%;width:100%;height:100%;min-height:0;overflow-x:hidden;overflow-y:auto;overscroll-behavior:contain;scroll-snap-align:start;scroll-snap-stop:always}.bottom-tabs{position:fixed;z-index:1300;right:0;bottom:0;left:0;display:grid;grid-template-columns:repeat(8,minmax(0,1fr));height:calc(78px + env(safe-area-inset-bottom));padding:4px max(8px,calc((100vw - 900px)/2)) env(safe-area-inset-bottom);border-top:1px solid var(--line);background:#fffffffa;backdrop-filter:blur(12px)}.bottom-tab{display:flex;min-width:0;min-height:68px;flex-direction:column;align-items:center;justify-content:center;gap:3px;padding:3px 2px;border:0;border-top:2px solid transparent;background:transparent;color:#67756c;font-size:12px;font-weight:700;line-height:1.25;white-space:normal;overflow-wrap:anywhere}.bottom-tab svg{width:22px;height:22px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}.bottom-tab.active{border-top-color:#177f84;background:#eaf3ef;color:#12696e}
     @media(max-width:760px){.app-main{top:64px;bottom:calc(164px + env(safe-area-inset-bottom))}.bottom-tabs{height:calc(64px + env(safe-area-inset-bottom));padding-right:4px;padding-left:4px}.bottom-tab{gap:1px;padding:0 2px;font-size:9px;line-height:1.15;text-align:center;white-space:normal}.bottom-tab span{max-width:100%;overflow-wrap:anywhere}.bottom-tab svg{width:18px;height:18px;flex:none}.accessibility-rail{bottom:calc(64px + env(safe-area-inset-bottom))}}
     @media(prefers-reduced-motion:reduce){.app-slides{scroll-behavior:auto}}
   </style>
@@ -256,7 +256,9 @@
      @media(min-width:761px) and (max-width:1359px){.hero h1.site-translated-title{font-size:clamp(32px,4.5vw,52px);max-width:560px}}
      @media(max-width:760px){.hero h1.site-translated-title{font-size:clamp(25px,7.1vw,34px);line-height:1.12;letter-spacing:-.025em;max-width:100%;word-break:normal;overflow-wrap:anywhere}}
     :root[data-theme="dark"] .bottom-tab.active{background:#342321;color:#ff9a8e;border-top-color:#ff8275}:root[data-theme="dark"] .action-guide-group{border-color:#58403b}:root[data-theme="dark"] .result-steps strong{color:#ffca91}
-    button,input,select,textarea,dialog,.brand-mark,.btn,.btn-lime,.message-card,.message-image-tools,.message-image-button,.panel,.result-panel,.guide-card,.guide-visual,.action-guide-detail,.action-pictogram-grid li,.library-browser,.geochang-panel,.library-item,.library-filter,.library-lang,.notice-card,.notice-button,.notice-button-secondary,.nav-tool-button,.side-language-option,.side-font-button,.side-font-reset,.map-side,.map-pill,.geochang-reload,.geochang-controls select,.disaster-search input,.disaster-search button,.settings-dialog,.help-dialog,.language-start-dialog,.language-start-dialog select,.font-option,.accessibility-rail,.geochang-source,.message-hazard-visual{border-radius:2px!important}
+     button,input,select,textarea,dialog,.brand-mark,.btn,.btn-lime,.message-card,.message-image-tools,.message-image-button,.panel,.result-panel,.guide-card,.guide-visual,.action-guide-detail,.action-pictogram-grid li,.library-browser,.geochang-panel,.library-item,.library-filter,.library-lang,.notice-card,.notice-button,.notice-button-secondary,.nav-tool-button,.side-language-option,.side-font-button,.side-font-reset,.map-side,.map-pill,.geochang-reload,.geochang-controls select,.disaster-search input,.disaster-search button,.settings-dialog,.help-dialog,.language-start-dialog,.language-start-dialog select,.font-option,.accessibility-rail,.geochang-source,.message-hazard-visual{border-radius:2px!important}
+     .review-section{background:#f2eee5}.review-intro{max-width:850px;margin:0 0 20px;color:var(--muted);font-size:15px;line-height:1.7}.review-toolbar{display:flex;flex-wrap:wrap;align-items:end;gap:9px;padding:16px;background:#fffdf8;border:1px solid var(--line)}.review-toolbar label{display:grid;gap:5px;color:var(--muted);font-size:12px;font-weight:700}.review-toolbar select{min-height:42px;padding:0 30px 0 10px;border:1px solid var(--line);background:#fffdf8;color:var(--ink)}.review-toolbar button{min-height:42px}.review-status{min-height:24px;margin:11px 0;color:var(--muted);font-size:13px}.review-metrics{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px;margin:12px 0}.review-metric{min-width:0;padding:12px;background:#fffdf8;border:1px solid var(--line)}.review-metric strong{display:block;font-size:22px;font-variant-numeric:tabular-nums}.review-metric span{display:block;color:var(--muted);font-size:11px;line-height:1.4}.review-ratios{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:7px;margin:8px 0 16px}.review-ratio{padding:9px 11px;background:#fffdf8;border:1px solid var(--line);font-size:12px}.review-ratio strong{display:block;font-size:16px;font-variant-numeric:tabular-nums}.review-list{display:grid;gap:8px}.review-empty{padding:26px 16px;border:1px dashed #aeb7ae;color:var(--muted);text-align:center;line-height:1.6}.review-item{background:#fffdf8;border:1px solid var(--line)}.review-item summary{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:14px 16px;cursor:pointer;font-size:14px;font-weight:750;list-style:none}.review-item summary::-webkit-details-marker{display:none}.review-item summary:after{content:'+';font:20px var(--mono);color:var(--muted)}.review-item[open] summary:after{content:'−'}.review-item-title{min-width:0}.review-item-title small{display:block;margin-top:3px;color:var(--muted);font-size:11px;font-weight:500}.review-item-body{display:grid;gap:13px;padding:0 16px 16px}.review-pair{display:grid;grid-template-columns:1fr 1fr;gap:9px}.review-copy{min-width:0;padding:12px;background:#f3f4f1;border:1px solid #e0e4df}.review-copy h4,.review-auto h4{margin:0 0 6px;font-size:12px}.review-copy p{margin:0;font-size:14px;line-height:1.6;white-space:pre-wrap;overflow-wrap:anywhere}.review-auto{padding:10px 12px;background:#edf3ee;border-left:3px solid #567a5e;color:#28372d;font-size:12px;line-height:1.55}.review-auto p{margin:0}.review-auto-warn{background:#fff1e6;border-left-color:#cf6b35}.review-status-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px}.review-status-field,.review-notes label{display:grid;gap:5px;min-width:0;color:var(--muted);font-size:12px;font-weight:700}.review-status-field select,.review-notes input,.review-notes textarea{width:100%;min-width:0;min-height:42px;padding:8px 9px;border:1px solid var(--line);background:#fff;color:var(--ink);font:500 13px/1.5 var(--sans)}.review-notes{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:9px}.review-notes textarea{min-height:68px;resize:vertical}.review-notes .review-wide{grid-column:1/-1}.review-note{margin:0;color:var(--muted);font-size:11px;line-height:1.5}.review-ratio-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:6px}.review-ratio-card{padding:8px;background:#f3f4f1;border:1px solid #e0e4df}.review-ratio-card span{display:block;color:var(--muted);font-size:11px}.review-ratio-card strong{font-size:14px;font-variant-numeric:tabular-nums}.review-important{display:grid;grid-template-columns:minmax(0,1fr) minmax(150px,.35fr);align-items:center;gap:10px;padding-top:10px;border-top:1px solid var(--line)}.review-important label{color:var(--ink);font-size:13px;font-weight:800}.review-important select{min-height:42px;padding:0 10px;border:1px solid var(--line);background:#fff;color:var(--ink)}.review-toolbar .review-danger{margin-left:auto;background:transparent;color:#9b3d33;border-color:#bf8b84}.review-foot{margin:12px 0 0;color:var(--muted);font-size:11px;line-height:1.6}:root[data-theme="dark"] .review-section{background:#151916}:root[data-theme="dark"] .review-toolbar,:root[data-theme="dark"] .review-metric,:root[data-theme="dark"] .review-ratio,:root[data-theme="dark"] .review-item{background:#1e2520;border-color:var(--line)}:root[data-theme="dark"] .review-toolbar select,:root[data-theme="dark"] .review-status-field select,:root[data-theme="dark"] .review-notes input,:root[data-theme="dark"] .review-notes textarea,:root[data-theme="dark"] .review-important select{background:#202722;color:var(--ink);border-color:var(--line)}:root[data-theme="dark"] .review-copy,:root[data-theme="dark"] .review-ratio-card{background:#242b26;border-color:var(--line)}:root[data-theme="dark"] .review-copy p,:root[data-theme="dark"] .review-important label{color:var(--ink)}:root[data-theme="dark"] .review-auto{background:#233328;color:var(--ink)}:root[data-theme="dark"] .review-auto-warn{background:#392a21}:root[data-theme="dark"] .review-empty{border-color:#69756c}
+     @media(max-width:760px){.review-toolbar{align-items:stretch}.review-toolbar label{flex:1 1 130px}.review-toolbar button{flex:1 1 130px}.review-toolbar .review-danger{margin-left:0}.review-metrics{grid-template-columns:repeat(2,minmax(0,1fr))}.review-ratios{grid-template-columns:repeat(2,minmax(0,1fr))}.review-pair,.review-notes{grid-template-columns:1fr}.review-status-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.review-ratio-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.review-important{grid-template-columns:1fr}.review-item summary{padding:12px}.review-item-body{padding:0 12px 12px}.bottom-tabs{grid-template-columns:repeat(8,minmax(0,1fr))}.bottom-tab{font-size:9px}.bottom-tab svg{width:17px;height:17px}}
   </style>
 </head>
 <body class="app-mode">
@@ -430,6 +432,27 @@
         <div class="geochang-panel"><div class="geochang-panel-head"><div><p id="disasterDateRange">최근 1년</p></div><div class="geochang-controls"><label for="disasterDays">기간</label><select id="disasterDays"><option value="30">30일</option><option value="90">90일</option><option value="365" selected>1년</option></select><button class="geochang-reload" id="disasterReload" type="button">새로고침</button></div></div><div class="disaster-search"><label class="sr-only" for="disasterRegion">발신 지역별 보기</label><select id="disasterRegion" aria-label="발신 지역별 보기"><option value="">전체 지역</option></select><label class="sr-only" for="disasterSearch">지역 또는 문자 검색</label><input id="disasterSearch" type="search" placeholder="지역·기관·문자 검색 (예: 가평, 산불)" aria-label="지역 또는 문자 검색"><button id="disasterSearchBtn" type="button">검색</button></div><div class="geochang-status" id="disasterStatus" role="status" aria-live="polite">불러오는 중</div><div class="geochang-list" id="disasterList"></div><div class="disaster-pagination" id="disasterPagination" hidden><button id="disasterPrevious" type="button">이전</button><span id="disasterPageInfo"></span><button id="disasterNext" type="button">다음</button></div><p class="geochang-source">자료 범위: 지역별 상이 · 반복 발령 포함 · 원문 보존</p></div>
       </div>
     </section>
+    <section class="section review-section" id="team-review" data-no-site-translate="true">
+      <div class="wrap">
+        <div class="section-head"><div><h2>팀 내부 원문 대조 검증표</h2></div></div>
+        <p class="review-intro">공식 목록에서 실제 재난문자 30건 또는 50건을 불러와 현재 순화 결과와 나란히 검토합니다. 자동 숫자 비교와 사람의 판정은 따로 기록하며, 검토 전 판정 칸은 비워 둡니다. 실제로 확인하지 않은 정확도나 판정은 만들지 않습니다.</p>
+        <div class="review-toolbar">
+          <label for="reviewCount">불러올 문자 수<select id="reviewCount"><option value="30">30건</option><option value="50">50건</option></select></label>
+          <label for="reviewDays">조회 기간<select id="reviewDays"><option value="30">최근 30일</option><option value="90">최근 90일</option><option value="365">최근 1년</option></select></label>
+          <label for="reviewRegion">지역<select id="reviewRegion"><option value="">전체 지역</option></select></label>
+          <button class="statistics-category-button" id="reviewLoad" type="button">실제 재난문자 불러오기</button>
+          <button class="statistics-category-button" id="reviewExport" type="button" disabled>CSV 내려받기</button>
+          <button class="statistics-category-button review-danger" id="reviewClear" type="button">새 검토표</button>
+        </div>
+        <p class="review-status" id="reviewStatus" role="status" aria-live="polite">아직 검토 자료가 없습니다. 실제 재난문자를 불러오면 판정은 모두 빈 상태로 시작합니다.</p>
+        <div class="review-metrics" id="reviewMetrics" aria-label="사람 검토 집계"></div>
+        <h3>항목별 유지 비율</h3>
+        <p class="review-note">유지 비율은 사람이 ‘유지’ 또는 ‘오류’로 판정한 항목만 계산합니다. ‘해당 없음’과 ‘확인 필요’, 빈 칸은 분모에서 빼며, 판정이 없으면 숫자 대신 ‘—’를 표시합니다.</p>
+        <div class="review-ratios" id="reviewRatios"></div>
+        <div class="review-list" id="reviewList" aria-live="polite"><div class="review-empty">실제 문자를 불러오면 이곳에 검증 카드가 생깁니다. 예시 문장은 실제 자료인 것처럼 넣지 않습니다.</div></div>
+        <p class="review-foot">자동 검사: 원문과 순화문에 들어 있는 숫자를 순서대로 비교합니다. 숫자가 같아도 의미가 유지됐다는 뜻은 아닙니다. 대상·장소·시간·위험 단계·해야 할 행동·금지 행동·예외 조건은 사람이 원문과 대조해야 합니다. 기록은 이 브라우저에만 저장됩니다. 공유할 때는 CSV를 내려받아 팀에 전달하세요.</p>
+      </div>
+    </section>
   </div></main>
   <nav class="bottom-tabs" id="bottomTabs" aria-label="화면 바로가기">
     <button class="bottom-tab active" type="button" data-slide-target="home" aria-current="page"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m3 10 9-7 9 7v10a1 1 0 0 1-1 1h-5v-7H9v7H4a1 1 0 0 1-1-1V10Z"/></svg><span>홈</span></button>
@@ -439,6 +462,7 @@
     <button class="bottom-tab" type="button" data-slide-target="action-guide"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3 4.5 6v5c0 5 3.2 8 7.5 10 4.3-2 7.5-5 7.5-10V6L12 3Z"/><path d="m9 12 2 2 4-4"/></svg><span>행동 안내</span></button>
     <button class="bottom-tab" type="button" data-slide-target="map-section"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m3 6 6-3 6 3 6-3v15l-6 3-6-3-6 3V6Z"/><path d="M9 3v15m6-12v15"/></svg><span>대피소</span></button>
     <button class="bottom-tab" type="button" data-slide-target="library"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 4h14v16H5zM8 8h8m-8 4h8m-8 4h5"/></svg><span>재난문자</span></button>
+    <button class="bottom-tab" type="button" data-slide-target="team-review"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 4h14v16H5zM8 8h8M8 12h4m-4 4h3"/><path d="m14 15 2 2 4-5"/></svg><span>검증표</span></button>
   </nav>
   <div class="toast" id="toast" role="status" aria-live="polite"></div>
 
@@ -2726,6 +2750,93 @@
         status.textContent='번역 실패 · 쉬운 한국어와 원문 확인';
       }
     }
+
+    const reviewStorageKey='disaster-team-review-v1';
+    const reviewFields=[['target','대상'],['place','장소'],['time','시간'],['numbers','숫자'],['level','위험 단계'],['actions','해야 할 행동'],['prohibitions','금지 행동'],['exceptions','예외 조건']];
+    const reviewVerdicts=[['kept','유지'],['error','오류'],['na','해당 없음'],['check','확인 필요']];
+    const reviewEmptyHuman=()=>({target:'',place:'',time:'',numbers:'',level:'',actions:'',prohibitions:'',exceptions:'',importantError:'',errorText:'',correction:'',recheckStatus:'',recheckText:'',reviewer:'',reviewDate:''});
+    let reviewRows=[];
+    try{const saved=JSON.parse(localStorage.getItem(reviewStorageKey)||'[]');if(Array.isArray(saved))reviewRows=saved.filter(row=>row&&typeof row.source==='string'&&typeof row.result==='string').map(row=>({...row,human:{...reviewEmptyHuman(),...(row.human||{})}}));}catch(error){reviewRows=[];}
+    const reviewList=document.getElementById('reviewList');
+    const reviewStatus=document.getElementById('reviewStatus');
+    function saveReviewRows(){
+      try{localStorage.setItem(reviewStorageKey,JSON.stringify(reviewRows));return true;}
+      catch(error){reviewStatus.textContent='이 브라우저에 저장하지 못했어요. CSV를 내려받아 검토 기록을 보관해 주세요.';return false;}
+    }
+    function getReviewNumbers(value){return [...String(value).matchAll(/\d+(?:,\d{3})*(?:\.\d+)?/g)].map(([number])=>number.replace(/,/g,''));}
+    function reviewNumberCheck(row){
+      const sourceNumbers=getReviewNumbers(row.source);const resultNumbers=getReviewNumbers(row.result);
+      if(!sourceNumbers.length&&!resultNumbers.length)return {state:'none',label:'비교할 숫자 없음',sourceNumbers,resultNumbers};
+      const matches=sourceNumbers.length===resultNumbers.length&&sourceNumbers.every((number,index)=>number===resultNumbers[index]);
+      return {state:matches?'match':'mismatch',label:matches?'숫자 비교: 일치':'숫자 비교: 불일치',sourceNumbers,resultNumbers};
+    }
+    function reviewCell(tag,className,text){const node=document.createElement(tag);if(className)node.className=className;if(text!==undefined)node.textContent=text;return node;}
+    function renderReviewSummary(){
+      const reviewed=reviewRows.filter(row=>reviewFields.every(([key])=>['kept','error','na'].includes(row.human[key]))).length;
+      const important=reviewRows.filter(row=>row.human.importantError==='yes').length;
+      const importantUndecided=reviewRows.filter(row=>!row.human.importantError).length;
+      const numberMismatches=reviewRows.filter(row=>reviewNumberCheck(row).state==='mismatch').length;
+      const metrics=[['실제 문자',`${reviewRows.length}건`,'현재 검토표에 불러온 원문'],['8항목 판정 완료',`${reviewed}건`,'확인 필요·빈 칸은 미완료'],['중요 오류 있음',`${important}건`,'사람이 “예”로 표시한 문자'],['중요 오류 미판정',`${importantUndecided}건`,'빈 칸은 오류 없음으로 세지 않음'],['자동 숫자 불일치',`${numberMismatches}건`,'사람 판정과 별도인 참고 검사']];
+      document.getElementById('reviewMetrics').replaceChildren(...metrics.map(([label,value,note])=>{const card=reviewCell('article','review-metric');card.append(reviewCell('span','',label),reviewCell('strong','',value),reviewCell('span','',note));return card;}));
+      document.getElementById('reviewRatios').replaceChildren(...reviewFields.map(([key,label])=>{
+        const applicable=reviewRows.filter(row=>row.human[key]==='kept'||row.human[key]==='error');
+        const kept=applicable.filter(row=>row.human[key]==='kept').length;
+        const ratio=applicable.length?`${Math.round(kept/applicable.length*100)}%`:'—';
+        const card=reviewCell('div','review-ratio');card.append(reviewCell('span','',label),reviewCell('strong','',`${ratio} · ${kept}/${applicable.length}건`));return card;
+      }));
+      document.getElementById('reviewExport').disabled=!reviewRows.length;
+    }
+    function renderReviewRows(){
+      if(!reviewRows.length){reviewList.replaceChildren(reviewCell('div','review-empty','실제 문자를 불러오면 이곳에 검증 카드가 생깁니다. 예시 문장은 실제 자료인 것처럼 넣지 않습니다.'));renderReviewSummary();return;}
+      reviewList.replaceChildren(...reviewRows.map((row,index)=>{
+        const details=reviewCell('details','review-item');details.dataset.reviewId=row.id;
+        const summary=reviewCell('summary');const title=reviewCell('span','review-item-title',`${String(index+1).padStart(2,'0')} · ${row.region||'지역 미상'}`);title.append(reviewCell('small','',`${row.createdAt||'발령 시각 없음'} · 원문 ${row.id}`));summary.append(title);details.append(summary);
+        const body=reviewCell('div','review-item-body');const pair=reviewCell('div','review-pair');
+        for(const [label,value] of [['원문',row.source],['실제 순화 결과',row.result]]){const box=reviewCell('section','review-copy');box.append(reviewCell('h4','',label),reviewCell('p','',value));pair.append(box);}body.append(pair);
+        const check=reviewNumberCheck(row);const auto=reviewCell('section',`review-auto${check.state==='mismatch'?' review-auto-warn':''}`);auto.append(reviewCell('h4','',`자동 검사 · ${check.label}`),reviewCell('p','',`원문 숫자: ${check.sourceNumbers.join(', ')||'없음'} · 순화문 숫자: ${check.resultNumbers.join(', ')||'없음'} · 참고용이며 사람이 확인해야 합니다.`));body.append(auto);
+        const statusGrid=reviewCell('div','review-status-grid');
+        reviewFields.forEach(([key,label])=>{const field=reviewCell('label','review-status-field',label);const select=document.createElement('select');select.dataset.human=key;select.setAttribute('aria-label',`${label} 사람 판정`);select.add(new Option('판정 선택',''));reviewVerdicts.forEach(([value,text])=>select.add(new Option(text,value)));select.value=row.human[key]||'';field.append(select);statusGrid.append(field);});body.append(statusGrid);
+        const notes=reviewCell('div','review-notes');
+        const addTextarea=(key,label,wide=false)=>{const field=reviewCell('label',wide?'review-wide':'',label);const textarea=document.createElement('textarea');textarea.dataset.human=key;textarea.value=row.human[key]||'';textarea.setAttribute('aria-label',label);field.append(textarea);notes.append(field);};
+        addTextarea('errorText','오류 내용');addTextarea('correction','수정 내용');
+        const recheck=reviewCell('label','','수정 후 재확인 판정');const recheckSelect=document.createElement('select');recheckSelect.dataset.human='recheckStatus';recheckSelect.setAttribute('aria-label','수정 후 재확인 판정');recheckSelect.add(new Option('판정 선택',''));reviewVerdicts.forEach(([value,text])=>recheckSelect.add(new Option(text,value)));recheckSelect.value=row.human.recheckStatus||'';recheck.append(recheckSelect);notes.append(recheck);
+        const reviewer=reviewCell('label','','검토자');const reviewerInput=document.createElement('input');reviewerInput.type='text';reviewerInput.dataset.human='reviewer';reviewerInput.value=row.human.reviewer||'';reviewerInput.setAttribute('aria-label','검토자');reviewer.append(reviewerInput);notes.append(reviewer);
+        const date=reviewCell('label','','검토 날짜');const dateInput=document.createElement('input');dateInput.type='date';dateInput.dataset.human='reviewDate';dateInput.value=row.human.reviewDate||'';dateInput.setAttribute('aria-label','검토 날짜');date.append(dateInput);notes.append(date);
+        addTextarea('recheckText','수정 후 재확인 결과',true);body.append(notes);
+        const important=reviewCell('div','review-important');important.append(reviewCell('label','','중요한 오류가 하나라도 있나요?'));const importantSelect=document.createElement('select');importantSelect.dataset.human='importantError';importantSelect.setAttribute('aria-label','중요한 오류 여부');importantSelect.add(new Option('판정 선택',''));importantSelect.add(new Option('예','yes'));importantSelect.add(new Option('아니요','no'));importantSelect.value=row.human.importantError||'';important.append(importantSelect);body.append(important);
+        body.append(reviewCell('p','review-note','사람의 판정은 직접 선택해야 집계됩니다. 자동 숫자 비교는 판정을 대신하지 않습니다.'));details.append(body);
+        details.addEventListener('input',event=>{const key=event.target.dataset.human;if(!key)return;row.human[key]=event.target.value;saveReviewRows();renderReviewSummary();});
+        details.addEventListener('change',event=>{const key=event.target.dataset.human;if(!key)return;row.human[key]=event.target.value;saveReviewRows();renderReviewSummary();});
+        return details;
+      }));renderReviewSummary();
+    }
+    async function loadReviewBatch(){
+      const button=document.getElementById('reviewLoad');button.disabled=true;
+      try{
+        const target=Number(document.getElementById('reviewCount').value);const days=document.getElementById('reviewDays').value;const region=document.getElementById('reviewRegion').value;
+        const params=new URLSearchParams({days,keyword:'',region,page:'1',pageSize:'50'});reviewStatus.textContent='공식 재난문자 목록에서 실제 원문을 불러오는 중…';
+        const response=await fetch(localApiUrl(`/api/disaster-messages?${params}`),{cache:'no-store'});const data=await response.json();if(!response.ok)throw new Error(data.error||'공식 재난문자를 불러오지 못했어요.');
+        await dictionaryLoadPromise;
+        const seen=new Set(reviewRows.map(row=>row.id));const additions=[];
+        for(const item of data.items||[]){if(reviewRows.length+additions.length>=target)break;const source=String(item.message||'').trim();if(!source)continue;const id=String(item.id||`${item.createdAt||''}|${item.region||''}|${source}`);if(seen.has(id))continue;seen.add(id);const base=simplifyDisasterMessage(source,'child');const result=applyEasyDictionary(base,source).text;additions.push({id,region:String(item.region||item.agency||''),createdAt:String(item.createdAt||''),sourceUrl:String(item.sourceUrl||''),source,result,human:reviewEmptyHuman()});}
+        reviewRows=[...reviewRows,...additions];saveReviewRows();renderReviewRows();
+        const regionSelect=document.getElementById('reviewRegion');const selected=regionSelect.value;const regions=data.regions||[];if(JSON.stringify([...regionSelect.options].slice(1).map(option=>option.value))!==JSON.stringify(regions)){regionSelect.replaceChildren(new Option('전체 지역',''),...regions.map(value=>new Option(value,value)));regionSelect.value=selected;}
+        const sourceCount=(data.items||[]).length;reviewStatus.textContent=`공식 목록 ${data.startDate||''}~${data.endDate||''}에서 ${additions.length}건 추가했어요. 전체 ${reviewRows.length}건 · 판정은 모두 직접 기록해 주세요.${sourceCount<target?' 요청한 수보다 실제 자료가 적어 가능한 건만 불러왔습니다.':''}${reviewRows.length>=50?' 검토표는 최대 50건입니다.':''}`;
+      }catch(error){reviewStatus.textContent=`실제 재난문자를 불러오지 못했어요. 검토 판정은 추가되지 않았습니다. ${error.message||''}`;}
+      finally{button.disabled=false;}
+    }
+    function csvEscape(value){let cell=String(value??'');if(/^[=+@\-\t\r]/.test(cell))cell=`'${cell}`;return `"${cell.replace(/"/g,'""')}"`;}
+    function downloadReviewCsv(){
+      if(!reviewRows.length)return;
+      const headers=['문자 ID','발령 시각','지역','원문','실제 순화 결과','자동 숫자 검사','자동 검사 숫자 비교 상세',...reviewFields.map(([,label])=>`${label} 사람 판정`),'오류 내용','수정 내용','수정 후 재확인 판정','수정 후 재확인 결과','검토자','검토 날짜','중요 오류 여부','공식 원문 주소'];
+      const rows=reviewRows.map(row=>{const check=reviewNumberCheck(row);return [row.id,row.createdAt,row.region,row.source,row.result,check.label,`원문: ${check.sourceNumbers.join(' ')||'없음'} / 순화문: ${check.resultNumbers.join(' ')||'없음'}`,...reviewFields.map(([key])=>row.human[key]),row.human.errorText,row.human.correction,row.human.recheckStatus,row.human.recheckText,row.human.reviewer,row.human.reviewDate,row.human.importantError,row.sourceUrl];});
+      const csv='\uFEFF'+[headers,...rows].map(row=>row.map(csvEscape).join(',')).join('\r\n');const url=URL.createObjectURL(new Blob([csv],{type:'text/csv;charset=utf-8'}));const link=document.createElement('a');link.href=url;link.download=`재난문자-원문대조-검토표-${new Date().toISOString().slice(0,10)}.csv`;document.body.append(link);link.click();link.remove();URL.revokeObjectURL(url);reviewStatus.textContent=`CSV 내려받기를 시작했어요 · ${reviewRows.length}건 · 사람 판정의 빈 칸도 빈 상태로 내보냅니다.`;
+    }
+    document.getElementById('reviewLoad').addEventListener('click',loadReviewBatch);
+    document.getElementById('reviewExport').addEventListener('click',downloadReviewCsv);
+    document.getElementById('reviewClear').addEventListener('click',()=>{if(!reviewRows.length)return;if(!confirm('이 브라우저의 검토표와 사람 판정을 모두 지울까요? 먼저 CSV를 내려받아 보관할 수 있어요.'))return;reviewRows=[];saveReviewRows();renderReviewRows();reviewStatus.textContent='검토표를 비웠어요. 다음에 불러오는 문자는 사람 판정이 빈 상태로 시작합니다.';});
+    renderReviewRows();
+    if(reviewRows.length)reviewStatus.textContent=`이 브라우저에 저장된 실제 문자 ${reviewRows.length}건을 불러왔어요. 사람 판정은 저장된 기록만 표시합니다.`;
 
     const translationLanguageLabel=document.querySelector('.language-row')?.previousElementSibling;if(translationLanguageLabel)translationLanguageLabel.textContent='안내 언어';
     syncLanguageButtons(siteLanguage);document.documentElement.lang=siteLanguage;updateThemeButton();
