@@ -282,7 +282,20 @@
     </section>
     <button class="help-done" id="helpDone" type="button">닫기</button>
   </dialog>
+  <dialog class="language-start-dialog" id="languageStartDialog" aria-labelledby="languageStartTitle">
+    <div class="language-start-kicker" id="languageStartKicker">언어 설정</div>
+    <h2 id="languageStartTitle">사용할 언어를 선택하세요</h2>
+    <p class="start-subtitle" id="languageStartSubtitle">표시 언어</p>
+    <label id="languageStartLabel" for="languageStartSelect">언어</label>
+    <select id="languageStartSelect" aria-label="시작 언어 선택"><option value="ko">🇰🇷 한국어</option><option value="en">🇺🇸 English</option><option value="zh-CN">🇨🇳 中文</option><option value="vi">🇻🇳 Tiếng Việt</option><option value="ne">🇳🇵 नेपाली</option><option value="tl">🇵🇭 Filipino</option><option value="th">🇹🇭 ไทย</option><option value="ja">🇯🇵 日本語</option></select>
+    <button class="language-start-continue" id="languageStartContinue" type="button">시작하기</button>
+    <p class="language-start-note" id="languageStartNote">나중에 안내 언어에서 변경할 수 있어요</p>
+  </dialog>
   <aside class="accessibility-rail" aria-label="빠른 설정">
+    <span class="rail-title" id="railTitle">언어 선택</span>
+    <div class="side-language-list" role="group" aria-label="사이트 언어">
+      <button class="side-language-option" type="button" data-side-language="ko" aria-pressed="false">🇰🇷 한국어</button><button class="side-language-option" type="button" data-side-language="en" aria-pressed="false">🇺🇸 English</button><button class="side-language-option" type="button" data-side-language="zh-CN" aria-pressed="false">🇨🇳 中文</button><button class="side-language-option" type="button" data-side-language="vi" aria-pressed="false">🇻🇳 Tiếng Việt</button><button class="side-language-option" type="button" data-side-language="ne" aria-pressed="false">🇳🇵 नेपाली</button><button class="side-language-option" type="button" data-side-language="tl" aria-pressed="false">🇵🇭 Filipino</button><button class="side-language-option" type="button" data-side-language="th" aria-pressed="false">🇹🇭 ไทย</button><button class="side-language-option" type="button" data-side-language="ja" aria-pressed="false">🇯🇵 日本語</button>
+    </div>
     <div class="side-font-section"><span class="side-font-title" id="sideFontTitle">글자 크기</span><div class="side-font-controls" role="group" aria-label="글자 크기"><button class="side-font-button" id="fontDecrease" type="button" aria-label="글자 줄이기">A−</button><output class="font-scale-value" id="fontScaleValue">100%</output><button class="side-font-button" id="fontIncrease" type="button" aria-label="글자 키우기">A+</button></div><button class="side-font-reset" id="fontReset" type="button">초기화</button><p class="font-status" id="fontStatus">80~160% · 5% 단위</p></div>
   </aside>
 
@@ -637,12 +650,35 @@
     document.getElementById('helpClose').addEventListener('click',()=>helpDialog.close());
     document.getElementById('helpDone').addEventListener('click',()=>helpDialog.close());
     helpDialog.addEventListener('click',event=>{const rect=helpDialog.getBoundingClientRect();if(event.clientX<rect.left||event.clientX>rect.right||event.clientY<rect.top||event.clientY>rect.bottom)helpDialog.close();});
+    let languageChoiceConfirmed=false;
     let preferredSiteLanguage='ko';
-    try{const savedLanguage=localStorage.getItem('ansimgil-site-language');if(supportedLanguages.includes(savedLanguage))preferredSiteLanguage=savedLanguage;}catch(error){}
-    let siteLanguage=preferredSiteLanguage;
+    try{
+      languageChoiceConfirmed=localStorage.getItem('ansimgil-language-confirmed')==='true';
+      const savedLanguage=localStorage.getItem('ansimgil-site-language');if(supportedLanguages.includes(savedLanguage))preferredSiteLanguage=savedLanguage;
+    }catch(error){}
+    if(preferredSiteLanguage==='ko'){
+      for(const candidate of (navigator.languages||[navigator.language||'ko'])){
+        const tag=candidate.toLowerCase();
+        if(tag.startsWith('zh')){preferredSiteLanguage='zh-CN';break;}
+        if(tag.startsWith('fil')){preferredSiteLanguage='tl';break;}
+        const match=supportedLanguages.find(language=>language!=='zh-CN'&&(tag===language||tag.startsWith(`${language}-`)));
+        if(match){preferredSiteLanguage=match;break;}
+      }
+    }
+    let siteLanguage=languageChoiceConfirmed?preferredSiteLanguage:'ko';
     let selectedLang=siteLanguage;
     let translationLanguageChosen=true;
     try{localStorage.setItem('ansimgil-translation-language',siteLanguage);}catch(error){}
+    const startLanguageCopy={
+      ko:{kicker:'언어 설정',title:'언어를 선택하세요',subtitle:'사이트와 안내에 함께 적용돼요',label:'언어',continue:'시작하기',note:'나중에 문자 순화 화면에서 바꿀 수 있어요'},
+      en:{kicker:'LANGUAGE',title:'Choose a language',subtitle:'Used for the whole site and guides',label:'Language',continue:'Start',note:'You can change it by the message language buttons'},
+      'zh-CN':{kicker:'语言设置',title:'请选择语言',subtitle:'网站和指南将使用此语言',label:'语言',continue:'开始',note:'之后可在短信指南的语言按钮中更改'},
+      vi:{kicker:'NGÔN NGỮ',title:'Chọn ngôn ngữ',subtitle:'Dùng cho toàn bộ trang và hướng dẫn',label:'Ngôn ngữ',continue:'Bắt đầu',note:'Có thể đổi bằng nút ngôn ngữ ở phần tin nhắn'},
+      ne:{kicker:'भाषा',title:'भाषा छान्नुहोस्',subtitle:'पूरै साइट र जानकारीमा यही भाषा प्रयोग हुन्छ',label:'भाषा',continue:'सुरु गर्नुहोस्',note:'सन्देशको भाषा बटनबाट पछि बदल्न सक्नुहुन्छ'},
+      tl:{kicker:'WIKA',title:'Pumili ng wika',subtitle:'Gagamitin sa buong site at mga gabay',label:'Wika',continue:'Simulan',note:'Maaari itong palitan sa mga pindutan ng wika sa mensahe'},
+      th:{kicker:'ภาษา',title:'เลือกภาษา',subtitle:'ใช้กับทั้งเว็บไซต์และคำแนะนำ',label:'ภาษา',continue:'เริ่มต้น',note:'เปลี่ยนได้ที่ปุ่มภาษาในหน้าข้อความ'},
+      ja:{kicker:'言語設定',title:'言語を選んでください',subtitle:'サイト全体と案内に適用します',label:'言語',continue:'開始',note:'メッセージ画面の言語ボタンから変更できます'}
+    };
     let translationRequestId = 0;
     const resultLabels = {
       ko:{title:'쉬운 안내',action:'지금 할 일',loading:'정리 중…',error:'안내 실패 · 원문·공식 안내 확인'},
@@ -688,6 +724,27 @@
     new MutationObserver(()=>applyTextScale()).observe(document.body,{childList:true,subtree:true});
     let textScaleResizeTimer;
     window.addEventListener('resize',()=>{clearTimeout(textScaleResizeTimer);textScaleResizeTimer=setTimeout(()=>applyTextScale(),100);});
+    const languageStartDialog=document.getElementById('languageStartDialog');
+    const languageStartSelect=document.getElementById('languageStartSelect');
+    languageStartSelect.value=preferredSiteLanguage;
+    function localizeStartDialog(language){
+      const copy=startLanguageCopy[language]||startLanguageCopy.en;
+      document.getElementById('languageStartKicker').textContent=copy.kicker;
+      document.getElementById('languageStartTitle').textContent=copy.title;
+      document.getElementById('languageStartSubtitle').textContent=copy.subtitle;
+      document.getElementById('languageStartLabel').textContent=copy.label;
+      document.getElementById('languageStartContinue').textContent=copy.continue;
+      document.getElementById('languageStartNote').textContent=copy.note;
+      languageStartDialog.lang=language;
+    }
+    localizeStartDialog(preferredSiteLanguage);
+    languageStartSelect.addEventListener('change',()=>localizeStartDialog(languageStartSelect.value));
+    languageStartDialog.addEventListener('cancel',event=>event.preventDefault());
+    document.getElementById('languageStartContinue').addEventListener('click',()=>{
+      languageChoiceConfirmed=true;
+      try{localStorage.setItem('ansimgil-language-confirmed','true');}catch(error){}
+      languageStartDialog.close();setSiteLanguage(languageStartSelect.value);startTrackingIfAllowed();
+    });
     function saveTextScale(scale){applyTextScale(scale);try{localStorage.setItem('ansimgil-font-scale',String(scale));}catch(error){}}
     document.getElementById('fontDecrease').addEventListener('click',()=>saveTextScale(Math.max(0.8,Math.round((currentTextScale-0.05)*100)/100)));
     document.getElementById('fontIncrease').addEventListener('click',()=>saveTextScale(Math.min(1.6,Math.round((currentTextScale+0.05)*100)/100)));
@@ -1019,6 +1076,7 @@
     }
     function syncLanguageButtons(language){
       document.querySelectorAll('.lang-chip').forEach(button=>{const active=button.dataset.lang===selectedLang;button.classList.toggle('active',active);button.setAttribute('aria-pressed',String(active));});
+      document.querySelectorAll('.side-language-option').forEach(button=>{const active=button.dataset.sideLanguage===siteLanguage;button.classList.toggle('active',active);button.setAttribute('aria-pressed',String(active));});
       const button=document.querySelector(`.lang-chip[data-lang="${selectedLang}"]`);
       if(button){const resultLanguage=document.getElementById('resultLang');resultLanguage.textContent=uiTranslationCatalog[language]?.[button.dataset.name]||button.dataset.name;resultLanguage.lang=selectedLang;document.getElementById('translatedText').lang=selectedLang;}
     }
@@ -1682,6 +1740,7 @@
       }
     }
     document.querySelectorAll('.lang-chip').forEach(button=>button.addEventListener('click',()=>setTranslationLanguage(button.dataset.lang)));
+    document.querySelectorAll('.side-language-option').forEach(button=>button.addEventListener('click',()=>setSiteLanguage(button.dataset.sideLanguage)));
     document.getElementById('message').addEventListener('input',event=>{
       const text=event.currentTarget.value.trim();
       if(text===lastTranslationSource)return;
@@ -2441,14 +2500,16 @@
 
     const translationLanguageLabel=document.querySelector('.language-row')?.previousElementSibling;if(translationLanguageLabel)translationLanguageLabel.textContent='안내 언어';
     syncLanguageButtons(siteLanguage);document.documentElement.lang=siteLanguage;updateThemeButton();
-    try{localStorage.setItem('ansimgil-language-confirmed','true');localStorage.setItem('ansimgil-translation-language',siteLanguage);}catch(error){}
-    if(siteLanguage!=='ko'){
+    try{localStorage.setItem('ansimgil-translation-language',siteLanguage);}catch(error){}
+    if(!languageChoiceConfirmed){localizeStartDialog(preferredSiteLanguage);languageStartDialog.showModal();}
+    else if(siteLanguage!=='ko'){
       const version=++siteTranslationVersion;
       translateVisibleSlide(activeSlideId,version).then(async()=>{
         if(version!==siteTranslationVersion)return;
         document.title=uiTranslationCatalog[siteLanguage]?.[originalDocumentTitle]||originalDocumentTitle;
       });
     }
+    if(languageChoiceConfirmed)startTrackingIfAllowed();
     const start=[36.35,127.85];
     let map;
     let shelterLayer;
