@@ -224,7 +224,7 @@
   </style>
   <style>
     @media(min-width:1360px){.accessibility-rail{width:144px;padding:9px;gap:8px;border-radius:12px;background:#fffdf8;border-color:#ddd6c9;box-shadow:0 6px 18px #443c2a16}.accessibility-rail .side-language-list{gap:4px}.accessibility-rail .side-language-option{min-height:36px;padding:4px 5px;border-radius:7px;background:#f7f2e8;color:#38453a;font-size:11px}.accessibility-rail .side-language-option[aria-pressed="true"]{background:#566c53;border-color:#566c53;color:#fff}.accessibility-rail .side-font-section{gap:6px;padding-top:8px}.accessibility-rail .side-font-controls{grid-template-columns:34px minmax(0,1fr) 34px;gap:4px}.accessibility-rail .side-font-button{width:34px;min-height:34px;border-radius:7px;background:#f5f0e6;font-size:14px}.accessibility-rail .side-font-controls .font-scale-value{font-size:11px}.accessibility-rail .side-font-reset{min-height:30px;border:1px solid #ddd6c9;border-radius:7px;background:#fffdf8}}
-    @media(max-width:1359px){.accessibility-rail{grid-template-columns:minmax(0,1fr) auto;align-items:center;gap:8px;padding:6px 8px;border-radius:11px;background:#fffdf8;border-color:#ddd6c9;box-shadow:0 6px 20px #443c2a20}.accessibility-rail .side-language-list{grid-column:1;min-width:0;gap:4px;padding:0;white-space:nowrap;scrollbar-width:none}.accessibility-rail .side-language-list::-webkit-scrollbar{display:none}.accessibility-rail .side-language-option{min-height:34px;padding:0 9px;border-radius:7px;background:#f7f2e8;color:#38453a;border-color:#ded6c8;font-size:11px}.accessibility-rail .side-language-option[aria-pressed="true"]{background:#566c53;border-color:#566c53;color:#fff}.accessibility-rail .side-font-section{grid-column:2;grid-row:1;display:flex;align-items:center;gap:4px;padding:0 0 0 8px;border-left:1px solid #ddd6c9}.accessibility-rail .side-font-controls{display:flex;gap:3px}.accessibility-rail .side-font-button{width:32px;min-height:32px;border-radius:7px;background:#f5f0e6;font-size:14px}.accessibility-rail .side-font-controls .font-scale-value{min-width:32px;font-size:10px}.accessibility-rail .side-font-reset{min-height:32px;padding:0 7px;border:1px solid #ddd6c9;border-radius:7px;background:#fffdf8}}
+     @media(max-width:1359px){.accessibility-rail{grid-template-columns:minmax(0,1fr) auto;align-items:center;gap:8px;padding:6px 8px;border-radius:11px;background:#fffdf8;border-color:#ddd6c9;box-shadow:0 6px 20px #443c2a20}.accessibility-rail .side-language-list{grid-column:1;min-width:0;gap:4px;padding:0;white-space:nowrap;scrollbar-width:none}.accessibility-rail .side-language-list::-webkit-scrollbar{display:none}.accessibility-rail .side-language-option{min-height:34px;padding:0 9px;border-radius:7px;background:#f7f2e8;color:#38453a;border-color:#ded6c8;font-size:11px}.accessibility-rail .side-language-option[aria-pressed="true"]{background:#566c53;border-color:#566c53;color:#fff}.accessibility-rail .side-font-section{grid-column:1/-1;grid-row:auto;display:flex;align-items:center;justify-content:flex-end;gap:4px;padding:0;border:0}.accessibility-rail .side-font-controls{display:flex;gap:3px}.accessibility-rail .side-font-button{width:32px;min-height:32px;border-radius:7px;background:#f5f0e6;font-size:14px}.accessibility-rail .side-font-controls .font-scale-value{min-width:32px;font-size:10px}.accessibility-rail .side-font-reset{min-height:32px;padding:0 7px;border:1px solid #ddd6c9;border-radius:7px;background:#fffdf8}}
     @media(max-width:760px){.app-main{bottom:calc(126px + env(safe-area-inset-bottom))}.accessibility-rail{max-height:54px;overflow:hidden}}
     :root[data-theme="dark"] .accessibility-rail{background:#1e2520;border-color:#3c433e}:root[data-theme="dark"] .accessibility-rail .side-language-option{background:#252d27;color:#e5e9e6;border-color:#4d5a50}:root[data-theme="dark"] .accessibility-rail .side-language-option[aria-pressed="true"]{background:#647b5d;border-color:#647b5d;color:#fff}:root[data-theme="dark"] .accessibility-rail .side-font-button,:root[data-theme="dark"] .accessibility-rail .side-font-reset{background:#252d27;color:#e5e9e6;border-color:#4d5a50}
   </style>
@@ -282,20 +282,7 @@
     </section>
     <button class="help-done" id="helpDone" type="button">닫기</button>
   </dialog>
-  <dialog class="language-start-dialog" id="languageStartDialog" aria-labelledby="languageStartTitle">
-    <div class="language-start-kicker" id="languageStartKicker">언어 설정</div>
-    <h2 id="languageStartTitle">사용할 언어를 선택하세요</h2>
-    <p class="start-subtitle" id="languageStartSubtitle">사이트 표시 언어</p>
-    <label id="languageStartLabel" for="languageStartSelect">사이트 언어</label>
-    <select id="languageStartSelect" aria-label="시작 언어 선택"><option value="ko">한국어</option><option value="en">English</option><option value="zh-CN">中文</option><option value="vi">Tiếng Việt</option><option value="ne">नेपाली</option><option value="tl">Filipino</option><option value="th">ไทย</option><option value="ja">日本語</option></select>
-    <button class="language-start-continue" id="languageStartContinue" type="button">시작하기</button>
-    <p class="language-start-note" id="languageStartNote">나중에 변경 가능</p>
-  </dialog>
   <aside class="accessibility-rail" aria-label="빠른 설정">
-    <span class="rail-title" id="railTitle">언어 선택</span>
-    <div class="side-language-list" role="group" aria-label="사이트 언어">
-      <button class="side-language-option active" type="button" data-side-language="ko" aria-pressed="true">한국어</button><button class="side-language-option" type="button" data-side-language="en" aria-pressed="false">English</button><button class="side-language-option" type="button" data-side-language="zh-CN" aria-pressed="false">中文</button><button class="side-language-option" type="button" data-side-language="vi" aria-pressed="false">Tiếng Việt</button><button class="side-language-option" type="button" data-side-language="ne" aria-pressed="false">नेपाली</button><button class="side-language-option" type="button" data-side-language="tl" aria-pressed="false">Filipino</button><button class="side-language-option" type="button" data-side-language="th" aria-pressed="false">ไทย</button><button class="side-language-option" type="button" data-side-language="ja" aria-pressed="false">日本語</button>
-    </div>
     <div class="side-font-section"><span class="side-font-title" id="sideFontTitle">글자 크기</span><div class="side-font-controls" role="group" aria-label="글자 크기"><button class="side-font-button" id="fontDecrease" type="button" aria-label="글자 줄이기">A−</button><output class="font-scale-value" id="fontScaleValue">100%</output><button class="side-font-button" id="fontIncrease" type="button" aria-label="글자 키우기">A+</button></div><button class="side-font-reset" id="fontReset" type="button">초기화</button><p class="font-status" id="fontStatus">80~160% · 5% 단위</p></div>
   </aside>
 
@@ -650,37 +637,12 @@
     document.getElementById('helpClose').addEventListener('click',()=>helpDialog.close());
     document.getElementById('helpDone').addEventListener('click',()=>helpDialog.close());
     helpDialog.addEventListener('click',event=>{const rect=helpDialog.getBoundingClientRect();if(event.clientX<rect.left||event.clientX>rect.right||event.clientY<rect.top||event.clientY>rect.bottom)helpDialog.close();});
-    const startLanguageCopy={
-      ko:{kicker:'언어 설정',title:'언어 선택',subtitle:'표시 언어',label:'사이트 언어',continue:'시작',note:'나중에 변경 가능'},
-      en:{kicker:'LANGUAGE',title:'Choose language',subtitle:'Display language',label:'Site language',continue:'Start',note:'Change anytime'},
-      'zh-CN':{kicker:'语言设置',title:'选择语言',subtitle:'显示语言',label:'网站语言',continue:'开始',note:'之后可更改'},
-      vi:{kicker:'NGÔN NGỮ',title:'Chọn ngôn ngữ',subtitle:'Ngôn ngữ hiển thị',label:'Ngôn ngữ trang web',continue:'Bắt đầu',note:'Có thể đổi sau'},
-      ne:{kicker:'भाषा',title:'भाषा छान्नुहोस्',subtitle:'देखाउने भाषा',label:'वेबसाइटको भाषा',continue:'सुरु',note:'पछि बदल्न सकिन्छ'},
-      tl:{kicker:'WIKA',title:'Pumili ng wika',subtitle:'Wika sa screen',label:'Wika ng site',continue:'Simula',note:'Maaari pang baguhin'},
-      th:{kicker:'ภาษา',title:'เลือกภาษา',subtitle:'ภาษาที่แสดง',label:'ภาษาเว็บไซต์',continue:'เริ่ม',note:'เปลี่ยนได้ภายหลัง'},
-      ja:{kicker:'言語設定',title:'言語を選択してください',subtitle:'表示言語',label:'サイトの言語',continue:'開始',note:'あとで変更できます'}
-    };
-    let languageChoiceConfirmed=false;
     let preferredSiteLanguage='ko';
-    let hasSavedLanguage=false;
-    try{
-      languageChoiceConfirmed=localStorage.getItem('ansimgil-language-confirmed')==='true';
-      const savedLanguage=localStorage.getItem('ansimgil-site-language');
-      if(supportedLanguages.includes(savedLanguage)){preferredSiteLanguage=savedLanguage;hasSavedLanguage=true;}
-    }catch(error){}
-    if(!hasSavedLanguage){
-      for(const candidate of (navigator.languages||[navigator.language||'ko'])){
-        const tag=candidate.toLowerCase();
-        if(tag.startsWith('zh')){preferredSiteLanguage='zh-CN';break;}
-        if(tag.startsWith('fil')){preferredSiteLanguage='tl';break;}
-        const match=supportedLanguages.find(language=>language!=='zh-CN'&&(tag===language||tag.startsWith(`${language}-`)));
-        if(match){preferredSiteLanguage=match;break;}
-      }
-    }
-    let siteLanguage=languageChoiceConfirmed?preferredSiteLanguage:'ko';
+    try{const savedLanguage=localStorage.getItem('ansimgil-site-language');if(supportedLanguages.includes(savedLanguage))preferredSiteLanguage=savedLanguage;}catch(error){}
+    let siteLanguage=preferredSiteLanguage;
     let selectedLang=siteLanguage;
-    let translationLanguageChosen=false;
-    try{const savedTranslationLanguage=localStorage.getItem('ansimgil-translation-language');if(supportedLanguages.includes(savedTranslationLanguage)){selectedLang=savedTranslationLanguage;translationLanguageChosen=true;}}catch(error){}
+    let translationLanguageChosen=true;
+    try{localStorage.setItem('ansimgil-translation-language',siteLanguage);}catch(error){}
     let translationRequestId = 0;
     const resultLabels = {
       ko:{title:'쉬운 안내',action:'지금 할 일',loading:'정리 중…',error:'안내 실패 · 원문·공식 안내 확인'},
@@ -726,27 +688,6 @@
     new MutationObserver(()=>applyTextScale()).observe(document.body,{childList:true,subtree:true});
     let textScaleResizeTimer;
     window.addEventListener('resize',()=>{clearTimeout(textScaleResizeTimer);textScaleResizeTimer=setTimeout(()=>applyTextScale(),100);});
-    const languageStartDialog=document.getElementById('languageStartDialog');
-    const languageStartSelect=document.getElementById('languageStartSelect');
-    languageStartSelect.value=preferredSiteLanguage;
-    function localizeStartDialog(language){
-      const copy=startLanguageCopy[language]||startLanguageCopy.en;
-      document.getElementById('languageStartKicker').textContent=copy.kicker;
-      document.getElementById('languageStartTitle').textContent=copy.title;
-      document.getElementById('languageStartSubtitle').textContent=copy.subtitle;
-      document.getElementById('languageStartLabel').textContent=copy.label;
-      document.getElementById('languageStartContinue').textContent=copy.continue;
-      document.getElementById('languageStartNote').textContent=copy.note;
-      languageStartDialog.lang=language;
-    }
-    localizeStartDialog(preferredSiteLanguage);
-    languageStartSelect.addEventListener('change',()=>localizeStartDialog(languageStartSelect.value));
-    languageStartDialog.addEventListener('cancel',event=>event.preventDefault());
-    document.getElementById('languageStartContinue').addEventListener('click',()=>{
-      languageChoiceConfirmed=true;
-      try{localStorage.setItem('ansimgil-language-confirmed','true');}catch(error){}
-      languageStartDialog.close();setSiteLanguage(languageStartSelect.value);startTrackingIfAllowed();
-    });
     function saveTextScale(scale){applyTextScale(scale);try{localStorage.setItem('ansimgil-font-scale',String(scale));}catch(error){}}
     document.getElementById('fontDecrease').addEventListener('click',()=>saveTextScale(Math.max(0.8,Math.round((currentTextScale-0.05)*100)/100)));
     document.getElementById('fontIncrease').addEventListener('click',()=>saveTextScale(Math.min(1.6,Math.round((currentTextScale+0.05)*100)/100)));
@@ -1078,7 +1019,6 @@
     }
     function syncLanguageButtons(language){
       document.querySelectorAll('.lang-chip').forEach(button=>{const active=button.dataset.lang===selectedLang;button.classList.toggle('active',active);button.setAttribute('aria-pressed',String(active));});
-      document.querySelectorAll('.side-language-option').forEach(button=>{const active=button.dataset.sideLanguage===language;button.classList.toggle('active',active);button.setAttribute('aria-pressed',String(active));});
       const button=document.querySelector(`.lang-chip[data-lang="${selectedLang}"]`);
       if(button){const resultLanguage=document.getElementById('resultLang');resultLanguage.textContent=uiTranslationCatalog[language]?.[button.dataset.name]||button.dataset.name;resultLanguage.lang=selectedLang;document.getElementById('translatedText').lang=selectedLang;}
     }
@@ -1117,9 +1057,6 @@
       if(language==='ko'){
         restoreSiteLanguage();renderTranslation();
         document.querySelectorAll('.geochang-easy[open]').forEach(details=>{
-          const audience=details.querySelector('.geochang-audience');
-          if(audience.value==='foreign')audience.value='general';
-          details.querySelector('.geochang-language-label').hidden=audience.value!=='foreign';
           renderGeochangEasy(details.dataset.originalMessage,details);
         });
         return;
@@ -1127,9 +1064,6 @@
       toast('언어 적용 중…');
       renderTranslation();
       document.querySelectorAll('.geochang-easy[open]').forEach(details=>{
-        const audience=details.querySelector('.geochang-audience');audience.value='foreign';
-        const languageSelect=details.querySelector('.geochang-audience-language');languageSelect.value=language;
-        details.querySelector('.geochang-language-label').hidden=false;
         renderGeochangEasy(details.dataset.originalMessage,details);
       });
       translateVisibleSlide(activeSlideId,version).then(async failures=>{
@@ -1748,7 +1682,6 @@
       }
     }
     document.querySelectorAll('.lang-chip').forEach(button=>button.addEventListener('click',()=>setTranslationLanguage(button.dataset.lang)));
-    document.querySelectorAll('[data-side-language]').forEach(button=>button.addEventListener('click',()=>setSiteLanguage(button.dataset.sideLanguage)));
     document.getElementById('message').addEventListener('input',event=>{
       const text=event.currentTarget.value.trim();
       if(text===lastTranslationSource)return;
@@ -1831,14 +1764,11 @@
           const main=document.createElement('div');main.className='geochang-item-main';const message=document.createElement('p');message.className='geochang-message';message.textContent=item.message;
           const actions=document.createElement('div');actions.className='geochang-item-actions';const details=document.createElement('details');details.className='geochang-easy';details.dataset.originalMessage=item.message;const summary=document.createElement('summary');summary.textContent='쉬운 말 보기';
           const detailBody=document.createElement('div');detailBody.className='geochang-easy-body';const controls=document.createElement('div');controls.className='geochang-easy-controls';
-          const audienceLabel=document.createElement('label');audienceLabel.textContent='안내 대상';const audience=document.createElement('select');audience.className='geochang-audience';
-           [['child','초1 수준'],['general','쉬운 한국어'],['senior','어르신(65세 이상)'],['foreign','외국인']].forEach(([value,label])=>{const option=document.createElement('option');option.value=value;option.textContent=label;audience.append(option);});audienceLabel.append(audience);
-          const languageLabel=document.createElement('label');languageLabel.className='geochang-language-label';languageLabel.hidden=true;languageLabel.append(document.createTextNode('언어 '));const language=document.createElement('select');language.className='geochang-audience-language';
-           [['en','English'],['zh-CN','中文'],['vi','Tiếng Việt'],['ne','नेपाली'],['tl','Filipino'],['th','ไทย'],['ja','日本語']].forEach(([value,label])=>{const option=document.createElement('option');option.value=value;option.textContent=label;language.append(option);});languageLabel.append(language);
-          controls.append(audienceLabel,languageLabel);const output=document.createElement('p');output.className='geochang-easy-output';output.dataset.noSiteTranslate='true';const easyStatus=document.createElement('p');easyStatus.className='geochang-easy-status';easyStatus.textContent='원문 보존 · 쉬운 표현 참고용';detailBody.append(controls,easyStatus,output);details.append(summary,detailBody);
+       const audienceLabel=document.createElement('label');audienceLabel.textContent='안내 대상';const audience=document.createElement('select');audience.className='geochang-audience';
+        [['child','초1 수준'],['general','쉬운 한국어'],['senior','어르신(65세 이상)']].forEach(([value,label])=>{const option=document.createElement('option');option.value=value;option.textContent=label;audience.append(option);});audienceLabel.append(audience);
+       controls.append(audienceLabel);const output=document.createElement('p');output.className='geochang-easy-output';output.dataset.noSiteTranslate='true';const easyStatus=document.createElement('p');easyStatus.className='geochang-easy-status';easyStatus.textContent='원문 보존 · 쉬운 표현 참고용';detailBody.append(controls,easyStatus,output);details.append(summary,detailBody);
           details.addEventListener('toggle',()=>{if(!details.open)return;document.querySelectorAll('.geochang-easy[open]').forEach(other=>{if(other!==details)other.open=false;});renderGeochangEasy(item.message,details);});
           audience.addEventListener('change',()=>{languageLabel.hidden=audience.value!=='foreign';if(details.open)renderGeochangEasy(item.message,details);});
-          language.addEventListener('change',()=>setSiteLanguage(language.value));
           const source=document.createElement('a');source.className='geochang-source-link';source.href=item.sourceUrl;source.target='_blank';source.rel='noreferrer';source.textContent='공식 원문';actions.append(details,source);main.append(message,actions);row.append(meta,main);list.append(row);
         });
       }catch(error){
@@ -2480,7 +2410,7 @@
     }
     async function renderGeochangEasy(message,details){
       const audience=details.querySelector('.geochang-audience').value;
-      const language=details.querySelector('.geochang-audience-language').value;
+      const language=siteLanguage==='ko'?(audience==='foreign'?selectedLang:'ko'):siteLanguage;
       const output=details.querySelector('.geochang-easy-output');const status=details.querySelector('.geochang-easy-status');
       details.classList.toggle('audience-child',audience==='child');details.classList.toggle('audience-senior',audience==='senior');
       const requestId=Number(details.dataset.requestId||0)+1;details.dataset.requestId=String(requestId);
@@ -2490,7 +2420,7 @@
       if(details.dataset.requestId!==String(requestId)||!details.open)return;
       const dictionaryResult=applyEasyDictionary(base,message);
       const simple=dictionaryResult.text;
-      if(audience!=='foreign'){
+      if(language==='ko'){
         output.textContent=simple;
         const audienceName=audience==='child'?'초1 수준':audience==='senior'?'어르신용 큰 글자':'쉬운 한국어';
         status.textContent=dictionaryResult.applied.length?`${audienceName} · 팀 사전 ${dictionaryResult.applied.length}개 적용 · 원문은 그대로예요`: `${audienceName} · 쉬운 말 규칙 적용 · 원문은 그대로예요`;
@@ -2510,11 +2440,9 @@
     }
 
     const translationLanguageLabel=document.querySelector('.language-row')?.previousElementSibling;if(translationLanguageLabel)translationLanguageLabel.textContent='안내 언어';
-    syncLanguageButtons(siteLanguage);document.documentElement.lang=siteLanguage;
-    languageStartSelect.value=preferredSiteLanguage;
-    if(!languageChoiceConfirmed){
-      languageStartDialog.showModal();
-    }else if(siteLanguage!=='ko'){
+    syncLanguageButtons(siteLanguage);document.documentElement.lang=siteLanguage;updateThemeButton();
+    try{localStorage.setItem('ansimgil-language-confirmed','true');localStorage.setItem('ansimgil-translation-language',siteLanguage);}catch(error){}
+    if(siteLanguage!=='ko'){
       const version=++siteTranslationVersion;
       translateVisibleSlide(activeSlideId,version).then(async()=>{
         if(version!==siteTranslationVersion)return;
@@ -2606,7 +2534,7 @@
       }catch(error){stopLocationTracking('실시간 위치를 시작하지 못했어요. 위치 권한을 확인해 주세요.');}
     }
     function startTrackingIfAllowed(){
-      if(!languageChoiceConfirmed||!navigator.permissions?.query)return;
+      if(!navigator.permissions?.query)return;
       navigator.permissions.query({name:'geolocation'}).then(permission=>{if(permission.state==='granted')startLocationTracking();}).catch(()=>{});
     }
     document.getElementById('followLocationBtn').addEventListener('click',()=>locationWatchId===null?startLocationTracking():stopLocationTracking());
