@@ -1787,7 +1787,22 @@
        const shelterCapacity=source.match(/(\d+)\s*명\s*이상\s*대피소/);
        if(shelterCapacity)output=output.replace(new RegExp(`${shelterCapacity[1]}명 또는 그보다 많은 사람을 수용하는 몸을 피할 곳를`, 'g'),`${shelterCapacity[1]}명 또는 그보다 많은 사람이 들어갈 수 있는 안전한 곳을`);
        if(/(?:주민대피\s*(?:해제|종료)|대피\s*종료)/.test(source)&&!/귀소|귀가|귀환|돌아가/.test(source))output=output.replace(/(?:안전한 곳으로 가기\s*)?(?:주민에게 내린\s*)?(?:대피\s*)?(?:조치|안내)(?:가|는)?\s*끝(?:남|났어요|났습니다)/g,'대피 조치가 끝났어요');
-       const compactSource=source.replace(/\s+/g,'');
+        const compactSource=source.replace(/\s+/g,'');
+        if(/저지대\s*침수\s*우려/.test(source))output=output.replace(/낮은 (?:땅|곳)(?:에)?\s*물(?:이)?\s*(?:차오름|에 잠김|이 차서 잠김)\s*우려/g,'낮은 곳에 물이 찰 수 있어요');
+        if(/하천.*범람\s*우려.*지하차도.*침수\s*위험/.test(source))output='강이나 냇가의 물이 넘칠 수 있어요. 땅 아래로 난 차길에 물이 찰 수 있어요.';
+        if(/낙뢰.*발생\s*우려/.test(source))output=output.replace(/번개 발생 우려/g,'번개가 칠 수 있어요');
+        if(/급경사지.*산사태.*발생\s*위험/.test(source))output='가파른 비탈에서 흙과 돌이 무너져 내릴 수 있어요.';
+        if(/취약계층.*안부 확인.*수분 섭취/.test(source))output='도움이 더 필요한 분이 잘 지내는지 살피고, 물을 마셔요.';
+        if(/대중교통.*정상운행.*통제구간.*우회/.test(source))output='버스나 기차는 평소처럼 다녀요. 막힌 길은 다른 길로 돌아가세요.';
+        if(/한파.*수도계량기.*동파\s*우려/.test(source))output='매우 추운 날씨라 수도 계량기가 얼어 터질 수 있어요.';
+        if(/시설물\s*방호\s*필요.*안전조치\s*실시/.test(source))output='건물이나 다리 같은 큰 것을 지키고, 안전을 위한 일을 해요.';
+        if(/관내.*대피시설.*폐쇄.*해제/.test(source))output='이 지역의 몸을 피하는 곳이 다시 열렸어요.';
+        if(/기상특보\s*발효\s*중/.test(source))output=output.replace(/기상위험 날씨 알림이 내려졌어요|위험한 날씨 알림이 내려져 있어요/g,'위험한 날씨 알림이 나와 있어요');
+        if(/^폭염\s*취약시간대\s*외출\s*자제(?:하시기 바랍니다|바랍니다|하세요)?[.!。]*$/.test(source))output='매우 더운 날, 더 위험한 시간에는 꼭 필요하지 않은 외출을 줄이세요.';
+        if(/취약시간대/.test(source))output=output.replace(/더운 시간/g,'더 위험한 시간').replace(/더 위험해지는 시간/g,'더 위험한 시간');
+        if(/^저지대침수우려/.test(compactSource))output=output.replace(/낮은 곳(?:에)?물(?:이)? 찰 수 있어요/g,'낮은 곳에 물이 찰 수 있어요');
+        if(/^낙뢰발생우려/.test(compactSource))output=output.replace(/번개\s*발생\s*우려/g,'번개가 칠 수 있어요');
+        if(/^취약계층안부확인및수분섭취/.test(compactSource))output='도움이 더 필요한 분이 잘 지내는지 살피고, 물을 마셔요.';
         if(/야외활동자제/.test(compactSource))output=output.replace(/밖에서 하는 활동\s*(?:하지 말아 주세요|하지 마세요|을 줄여 주세요|을 줄이세요\s*바랍니다)|밖에서 놀거나 일하지 마세요|밖에서 활동하지 마세요|밖에서 일하지 마세요/g,'밖에서 하는 활동을 줄이세요');
        if(/잔불정리중/.test(compactSource)){
          output=output.replace(/(?:현재\s*)?(?:아직\s*)?남은 작은 불을 끄고 있어요(?:입니다)?/g,'남은 작은 불을 끄고 있어요');
@@ -1810,7 +1825,7 @@
         }
         if(/잔불정리중이오니/.test(compactSource))output=output.replace(/끄고 있으니(?=[가-힣])/g,'끄고 있으니 ');
        output=output.replace(/\b0명/g,'0명').replace(/\.{2,}/g,'.');
-       const spellLengthUnits=value=>value.replace(/(\d[\d,]*(?:\.\d+)?)\s*(mm|km|m)\b/gi,(_,number,unit)=>{const key=unit.toLowerCase();const entry=entryFor(key);if(entry)applied.push({hard:entry.hard,easy:entry.easy,display:entry.easy});return `${number}${({mm:'밀리미터',km:'킬로미터',m:'미터'})[key]}`;});
+        const spellLengthUnits=value=>value.replace(/(\d[\d,]*(?:\.\d+)?)\s*(mm|km|cm|m)\b/gi,(_,number,unit)=>{const key=unit.toLowerCase();const entry=entryFor(key);if(entry)applied.push({hard:entry.hard,easy:entry.easy,display:entry.easy});return `${number}${({mm:'밀리미터',km:'킬로미터',cm:'센티미터',m:'미터'})[key]}`;});
        output=spellLengthUnits(output);
        const numericValues=value=>[...String(value).matchAll(/\d+(?:,\d{3})*(?:\.\d+)?/g)].map(([number])=>number.replace(/,/g,''));
        const sourceNumbers=numericValues(source);const outputNumbers=numericValues(output);
