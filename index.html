@@ -2163,11 +2163,15 @@
              .replace(/안전한 곳으로/g,'위험하지 않은 곳으로').replace(/필요합니다/g,'있어야 합니다').replace(/필요해요/g,'있어야 해요');
           if(/(?:교통\s*)?통제는.*수습활동 종료.*해제되었음을/.test(originalSource))output=output.replace(/(?:교통\s*)?통제는 .*$/,'사고 처리가 끝나 막았던 길을 다시 다닐 수 있어요.');
           output=output.replace(/불이 나지 않게 조심하세요 등/g,'불이 나지 않게 조심하세요. 또한').replace(/조심하세요 바랍니다/g,'조심해 주세요');
-         if(/(?:차량|도로)\s*(?:정체|혼잡)/.test(String(sourceText))){
-           output=output.replace(/차량\s*차가 막힐 수 있어요(?:되니|되오니|되므로)?/g,'차량이 막힐 수 있으니')
-             .replace(/도로\s*차가 막힐 수 있어요(?:되니|되오니|되므로)?/g,'도로가 막힐 수 있으니')
-             .replace(/차가 막힐 수 있어요(?:되니|되오니)/g,'차가 막힐 수 있으니');
-         }
+          if(/(?:차량|도로)\s*(?:정체|혼잡)/.test(String(sourceText))){
+            output=output.replace(/차량\s*차가 막힐 수 있어요(?:되니|되오니|되므로)?/g,'차량이 막힐 수 있으니')
+              .replace(/도로\s*차가 막힐 수 있어요(?:되니|되오니|되므로)?/g,'도로가 막힐 수 있으니')
+              .replace(/차가 막힐 수 있어요(?:되니|되오니)/g,'차가 막힐 수 있으니');
+            output=output.replace(/차량\s+차가 막힐 수 있으니/g,'차량이 막힐 수 있으니')
+              .replace(/도로\s+차가 막힐 수 있어요되니/g,'도로가 막힐 수 있으니')
+              .replace(/도로\s+차가 막힐 수 있어요/g,'도로가 막힐 수 있어요')
+              .replace(/차량\s+차가 막힐 수 있어요/g,'차량이 막힐 수 있어요');
+          }
          return {text:output,applied,numbersPreserved,numberFallback};
     }
     function renderEasyLines(element,text,dictionaryMarks=[]){
