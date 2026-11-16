@@ -187,13 +187,19 @@ async function handleCoreValidation(request, response, url) {
 }
 
 function cleanPreview(value) {
-  return value
+  let text = value
+    .replace(/실종(?:된)?\s*[^.。]{0,50}?(?:찾습니다|찾고 있습니다)/g, '실종자 수색 안내 (개인정보 제외)')
+    .replace(/\b(?:01[016789]|0[2-6][1-5])[-. ]?\d{3,4}[-. ]?\d{4}\b/g, ' ')
+    .replace(/\b\d{6}-[1-4]\d{6}\b/g, ' ')
+    .replace(/\b[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}\b/gi, ' ')
+    .replace(/([동리읍면])\s*\d{1,5}(?:-\d{1,5})?/g, '$1')
     .replace(/\[[^\]]*\]/g, ' ')
-    .replace(/\b\d+(?:[.:,-]\d+)*\b/g, ' ')
     .replace(/https?:\/\/\S+/gi, ' ')
     .replace(/\s+/g, ' ')
     .trim()
     .slice(0, 300);
+  if (/실종자 수색 안내 \(개인정보 제외\)/.test(text)) text = '실종자 수색 안내 (개인정보 제외)';
+  return text;
 }
 
 function readJsonBody(request) {
@@ -684,7 +690,8 @@ async function recordFeedback(request, response) {
 
   const hash = createHash('sha256').update(`${payload.language}\0${text}`).digest('hex');
   const records = await loadFeedback();
-  const record = records[hash] || { text, language: payload.language, understood: 0, difficult: 0 };
+  const record = records[hash] || { text, language: payload.language, sourceVersion: 2, understood: 0, difficult: 0 };
+  record.sourceVersion = 2;
   record[payload.vote] += 1;
   records[hash] = record;
 
@@ -708,7 +715,7 @@ async function getFeedbackSummary(response) {
     const entries = Object.values(records).sort((a, b) => (b.difficult + b.understood) - (a.difficult + a.understood));
     sendJson(response, 200, {
       total: entries.reduce((sum, entry) => sum + entry.difficult + entry.understood, 0),
-      entries,
+      entries: entries.map(entry => ({ ...entry, sourceKind: entry.sourceVersion === 2 ? 'original' : 'legacy-simplified' })),
     });
   } catch {
     sendJson(response, 500, { error: '피드백 통계를 불러오지 못했어요.' });

@@ -660,17 +660,15 @@
     document.getElementById('dictionarySearch').addEventListener('input',renderDictionary);
     const easyFeedback=document.getElementById('easyFeedback');
     const easyFeedbackStatus=document.getElementById('easyFeedbackStatus');
-    easyFeedback.querySelector('small').textContent='응답은 익명 통계로만 집계돼요. 재난문자 원문은 저장하지 않아요.';
-    easyFeedback.querySelector('small').textContent='응답은 익명으로 집계돼요. 재난문자 원문은 저장하지 않아요.';
-    easyFeedback.querySelector('small').textContent='응답은 익명으로 집계돼요. 원문은 저장하지 않아요.';
+    easyFeedback.querySelector('small').textContent='응답은 익명으로 집계돼요. 통계에는 원문 표현을 저장하되, 전화번호·실종자 개인정보는 제외해요.';
     function resetEasyFeedback(){easyFeedback.hidden=true;easyFeedbackStatus.textContent='';easyFeedback.querySelectorAll('[data-feedback]').forEach(button=>{button.disabled=false;button.setAttribute('aria-pressed','false');});}
     easyFeedback.querySelectorAll('[data-feedback]').forEach(button=>button.addEventListener('click',async()=>{
       if(!easySpeechText||button.disabled)return;
       const options=[...easyFeedback.querySelectorAll('[data-feedback]')];options.forEach(option=>option.disabled=true);
       easyFeedbackStatus.textContent='익명 응답을 보내고 있어요…';
       try{
-        const region=messageRegionName(lastTranslationSource);const feedbackText=(region?easySpeechText.replaceAll(region,''):easySpeechText).replace(/\[[^\]]*\]/g,' ').replace(/\b\d+(?:[.:,-]\d+)*\b/g,' ').replace(/https?:\/\/\S+/gi,' ').replace(/\s+/g,' ').trim();
-        const response=await fetch('/api/feedback',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({text:feedbackText,language:easySpeechLanguage,vote:button.dataset.feedback})});
+        const feedbackText=lastTranslationSource;
+        const response=await fetch('/api/feedback',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({text:feedbackText,language:'ko',vote:button.dataset.feedback})});
         const data=await response.json();if(!response.ok)throw new Error(data.error||'응답을 저장하지 못했어요.');
         options.forEach(option=>option.setAttribute('aria-pressed',String(option===button)));
         easyFeedbackStatus.textContent=`${button.dataset.feedback==='understood'?'답변해 주셔서 고마워요.':'알려주셔서 고마워요.'} 익명으로 집계했어요.`;
@@ -685,7 +683,7 @@
         status.textContent=`익명 응답 ${Number(data.total||0).toLocaleString()}건`;
         if(!entries.length){const empty=document.createElement('p');empty.className='feedback-dashboard-empty';empty.textContent='아직 답변이 없어요. 문자 순화 뒤 이해도 버튼으로 참여할 수 있어요.';list.replaceChildren(empty);return;}
         list.replaceChildren(...entries.map(entry=>{
-          const row=document.createElement('article');row.className='feedback-dashboard-item';const text=document.createElement('p');text.className='feedback-dashboard-text';text.textContent=`${entry.text} · ${document.querySelector(`.lang-chip[data-lang="${entry.language}"]`)?.dataset.name||entry.language}`;
+          const row=document.createElement('article');row.className='feedback-dashboard-item';const text=document.createElement('p');text.className='feedback-dashboard-text';const isOriginal=entry.sourceKind==='original';const kind=isOriginal?'원문 표현':'이전 응답 · 원문 미저장';const displayedText=isOriginal?entry.text:'이전에는 순화문만 저장해 원문을 복원할 수 없어요.';text.textContent=`[${kind}] ${displayedText} · ${document.querySelector(`.lang-chip[data-lang="${entry.language}"]`)?.dataset.name||entry.language}`;
           const counts=document.createElement('div');counts.className='feedback-dashboard-meta';const yes=document.createElement('span');yes.className='feedback-dashboard-count';yes.textContent=`이해했어요 ${Number(entry.understood).toLocaleString()}`;const difficult=document.createElement('span');difficult.className='feedback-dashboard-count';difficult.textContent=`아직 어려워요 ${Number(entry.difficult).toLocaleString()}`;counts.append(yes,difficult);row.append(text,counts);return row;
         }));
       }catch(error){status.textContent='통계를 불러오지 못했어요. 앱 서버가 실행 중인지 확인해 주세요.';}
@@ -3636,8 +3634,9 @@
     const list=document.getElementById('placeList');
     function geolocationErrorMessage(error){
       if(error?.code===1)return '위치 권한이 꺼져 있어요. 브라우저 사이트 설정에서 위치를 허용하거나 지역을 검색해 주세요.';
-      if(error?.code===2)return '기기에서 GPS 위치를 받지 못했어요. 위치 기능과 GPS 신호를 확인한 뒤 다시 눌러 주세요.';
-      if(error?.code===3)return 'GPS 위치 확인에 시간이 오래 걸렸어요. 창가나 야외에서 다시 시도해 주세요.';
+      if(error?.code===2)return '브라우저가 기기 위치를 받지 못했어요. GPS가 있는 기기라면 위치 서비스를 켜고 창가나 야외에서 다시 시도해 주세요. 컴퓨터에 GPS가 없으면 휴대전화에서 열어 주세요.';
+      if(error?.code===3)return 'GPS 신호를 받지 못해 시간이 초과됐어요. 위치 서비스를 켜고 창가나 야외에서 다시 시도해 주세요.';
+      if(error?.message)return error.message;
       return 'GPS 위치를 확인하지 못했어요. 다시 시도하거나 지도에서 지역을 검색해 주세요.';
     }
     function locationAccuracyText(accuracy,source='gps'){
@@ -3655,13 +3654,25 @@
       if(accuracy>300)return 12;
       return 15;
     }
-    function requestCurrentPosition({fresh=false}={}){
-      if(!navigator.geolocation)return Promise.reject(new Error('이 브라우저에서는 현재 위치를 사용할 수 없어요.'));
-      return new Promise((resolve,reject)=>navigator.geolocation.getCurrentPosition(position=>{
-        const {latitude,longitude,accuracy}=position.coords;
-        if(!Number.isFinite(latitude)||!Number.isFinite(longitude)||!Number.isFinite(accuracy)||Math.abs(latitude)>90||Math.abs(longitude)>180){reject(new Error('기기에서 올바른 GPS 위치를 받지 못했어요. 다시 시도해 주세요.'));return;}
-        resolve(position);
-      },reject,{enableHighAccuracy:true,maximumAge:0,timeout:60000}));
+    async function requestCurrentPosition({onWaiting=()=>{}}={}){
+      if(!window.isSecureContext)return Promise.reject(new Error('GPS 위치는 보안 연결에서만 쓸 수 있어요. HTTPS 주소로 다시 열어 주세요.'));
+      if(!navigator.geolocation)return Promise.reject(new Error('이 브라우저에서 위치 기능을 사용할 수 없어요. 위치를 지원하는 브라우저에서 다시 열어 주세요.'));
+      const policy=document.permissionsPolicy||document.featurePolicy;
+      if(policy?.allowsFeature&&!policy.allowsFeature('geolocation'))return Promise.reject(new Error('미리보기 화면이 브라우저 위치 기능을 허용하지 않아요. 페이지를 새 탭으로 열거나 운영자에게 위치 권한 설정을 요청해 주세요.'));
+      try{const permission=await navigator.permissions?.query({name:'geolocation'});if(permission?.state==='denied')return Promise.reject(Object.assign(new Error(),{code:1}));}catch(error){}
+      return new Promise((resolve,reject)=>{
+        let watchId=null;let finished=false;
+        const finish=(callback,value)=>{if(finished)return;finished=true;clearTimeout(waitTimer);clearTimeout(deadlineTimer);if(watchId!==null)navigator.geolocation.clearWatch(watchId);callback(value);};
+        const waitTimer=setTimeout(()=>onWaiting('GPS 위성 신호를 기다리고 있어요. 창가나 야외에서는 더 빨리 찾을 수 있어요…'),10000);
+        const deadlineTimer=setTimeout(()=>finish(reject,{code:3}),90000);
+        try{
+          watchId=navigator.geolocation.watchPosition(position=>{
+            const {latitude,longitude,accuracy}=position.coords;
+            if(!Number.isFinite(latitude)||!Number.isFinite(longitude)||!Number.isFinite(accuracy)||Math.abs(latitude)>90||Math.abs(longitude)>180){finish(reject,new Error('기기에서 올바른 GPS 좌표를 받지 못했어요. 다시 시도해 주세요.'));return;}
+            finish(resolve,position);
+          },error=>{if(error.code===1||error.code===2)finish(reject,error);},{enableHighAccuracy:true,maximumAge:10000,timeout:90000});
+        }catch(error){finish(reject,error);}
+      });
     }
     function getCurrentLocation({fresh=false}={}){
       if(userLocation&&!fresh&&Date.now()-userLocationAt<30000)return Promise.resolve(userLocation);
@@ -3841,10 +3852,11 @@
            const response=await fetch(localApiUrl(endpoint),{cache:'no-store'});data=await response.json();
            if(!response.ok)throw new Error(data.error||'대피시설 정보를 불러오지 못했어요.');
          }
-         if(requestId!==shelterListRequestId)return;
-         updateShelterSource(type,data);
-         showPlaces(data.items||[],type,data,{referenceOnly});
-      }catch(error){if(requestId!==shelterListRequestId)return;list.replaceChildren();const message=document.createElement('div');message.className='empty-list';message.textContent=error.message||'공식 대피시설 자료를 불러오지 못했어요. 잠시 후 다시 시도해 주세요.';list.append(message);}
+          if(requestId!==shelterListRequestId)return;
+          updateShelterSource(type,data);
+          showPlaces(data.items||[],type,data,{referenceOnly});
+          if(source==='gps')document.getElementById('locationStatus').textContent=`기기 위치 확인 완료 · ${data.items?.length||0}곳을 찾았어요. ${locationAccuracyText(userLocation?.accuracy)}`;
+       }catch(error){if(requestId!==shelterListRequestId)return;list.replaceChildren();const message=document.createElement('div');message.className='empty-list';message.textContent=error.message||'공식 대피시설 자료를 불러오지 못했어요. 잠시 후 다시 시도해 주세요.';list.append(message);if(source==='gps')document.getElementById('locationStatus').textContent=`기기 위치는 확인됐지만 대피소 자료를 불러오지 못했어요. ${message.textContent}`;}
     }
     if(map&&'IntersectionObserver'in window){
       const mapSlideObserver=new IntersectionObserver(entries=>entries.forEach(entry=>{
@@ -3875,11 +3887,11 @@
     async function findSheltersAtCurrentLocation(centerMap){
       const status=document.getElementById('locationStatus');status.textContent='현재 위치를 새로 확인하고 있어요…';
       try{
-        const position=await requestCurrentPosition({fresh:true}).catch(error=>{throw new Error(geolocationErrorMessage(error));});
+        const position=await requestCurrentPosition({onWaiting:message=>{status.textContent=message;}}).catch(error=>{throw new Error(geolocationErrorMessage(error));});
         updateUserPosition(position,centerMap,{refreshShelters:false});
         hasExplicitShelterLocation=true;
          const searchRadius=Number(position.coords.accuracy)>1000?Math.min(30,8+Math.ceil(Number(position.coords.accuracy)/1000)):8;lastShelterSearch={lat:userLocation.lat,lon:userLocation.lon,areaName:'',radiusKm:searchRadius};lastShelterRefresh={...userLocation,at:Date.now()};
-          status.textContent=Number(position.coords.accuracy)>1000?`GPS 위치의 오차가 커서 약 ${searchRadius}km 범위로 주변 대피소를 찾아요. ${locationAccuracyText(position.coords.accuracy)}`:`GPS 기반 기기 위치 주변 8km를 찾고 있어요. ${locationAccuracyText(position.coords.accuracy)}`;
+          status.textContent=Number(position.coords.accuracy)>1000?`고정밀 기기 위치를 확인했어요. 오차를 고려해 약 ${searchRadius}km 범위에서 대피소를 찾아요. ${locationAccuracyText(position.coords.accuracy)}`:`기기 위치를 확인했어요. 주변 8km에서 대피소를 찾아요. ${locationAccuracyText(position.coords.accuracy)}`;
          await findShelters(userLocation.lat,userLocation.lon,{areaName:'',radiusKm:searchRadius,source:'gps'});
       }catch(error){status.textContent=error.message||'현재 위치를 확인하지 못했어요. 지역을 검색해 주세요.';list.replaceChildren(Object.assign(document.createElement('div'),{className:'empty-list',textContent:'지도 위 지역 검색이나 길게 눌러 주변 대피소를 찾을 수 있어요.'}));}
     }
