@@ -2216,6 +2216,20 @@
       finally{await worker.setParameters({tessedit_pageseg_mode:'6',preserve_interword_spaces:'1'}).catch(()=>{});}
       return {...result.data,alternateText};
     }
+    function extractMissingPersonMessageFromOcr(results,regionFallback=''){
+      const candidates=results.flatMap(result=>[String(result?.text||''),String(result?.alternateText||''),...(result?.lines||[]).map(line=>String(line.text||''))]).map(text=>text.replace(/\s+/g,' ').replace(/[|]/g,'1').trim()).filter(text=>/(?:실\s*종|찾습니다|찾고\s*있습니다)/.test(text));
+      const expression=/실\s*종된\s*([가-힣A-Za-z*○O0]{1,16})\s*\(\s*(남|여)\s*\/\s*(\d+)\s*세\s*\)/;
+      const matches=candidates.map(text=>({text,match:text.match(expression)})).filter(item=>item.match);
+      matches.sort((a,b)=>(Number(/cm\b/i.test(b.text))-Number(/cm\b/i.test(a.text)))||(Number(/서천군|거창군|가평군/.test(b.text))-Number(/서천군|거창군|가평군/.test(a.text))));
+      const selected=matches[0];if(!selected)return null;
+      const [whole,name,gender,age]=selected.match;const before=selected.text.slice(0,selected.match.index);const address=before.match(/(?:[가-힣]+(?:특별자치도|특별자치시|광역시|특별시|도|시|군|구)\s+)?[가-힣]{2,}(?:읍|면|동)\s+[가-힣0-9-]+(?:리|동)?\s+\d+(?:-\d+)?/)?.[0]||before.match(/[가-힣]{2,}(?:읍|면|동)\s+[가-힣0-9-]+(?:리|동)?/)?.[0]||'';let location=address||regionFallback||'';
+      if(regionFallback&&location&&!location.startsWith(regionFallback))location=`${regionFallback} ${location}`;
+      const heightText=results.map(item=>[item?.text,item?.alternateText,(item?.lines||[]).map(line=>line.text||'').join(' ')].filter(Boolean).join(' ')).join(' ');const height=heightText.match(/(\d{2,3}(?:\.\d+)?)\s*cm\b/i)?.[1]||'';const tail=selected.text.slice(selected.match.index+whole.length);
+      const descriptors=[];if(/마른\s*체형/.test(tail))descriptors.push('마른 체형이에요.');if(/치매/.test(tail))descriptors.push('치매가 있어요.');if(/거동\s*불편/.test(tail))descriptors.push('걷거나 움직이기 불편해요.');
+      const clothing=[...tail.matchAll(/(검은색|회색|흰색|주황색|빨간색|파란색)?\s*(모자|점퍼|잠바|바지|셔츠|신발)/g)].map(item=>`${item[1]||''}${item[2]}을 착용했어요.`);descriptors.push(...clothing);
+      const prefix=location?`${location}에서 `:'';const heightSentence=height?` 키는 ${height}센티미터예요.`:'';
+      return {text:`${prefix}실종된 ${name}(${gender==='남'?'남성':'여성'}, ${age}세)을 찾고 있어요.${heightSentence}${descriptors.length?` ${descriptors.join(' ')}`:''}`.trim(),region:regionFallback||'',height:height||''};
+    }
     function normalizeMissingPersonOcrText(text,region,alternateText=''){
       let value=String(text).replace(/\s*\[[^\]]+\]\s*$/,'').replace(/\s+/g,' ').trim();
       const address=value.match(/(?:[가-힣]+(?:특별자치도|특별자치시|광역시|특별시|도|시|군|구)\s+)?[가-힣]{2,}(?:읍|면|동)\s+[가-힣0-9]+(?:리|동)?\s+\d+(?:-\d+)?/);
@@ -2236,9 +2250,8 @@
       try{
         const worker=await getTesseractWorker();await worker.setParameters({tessedit_pageseg_mode:'6',preserve_interword_spaces:'1'});const result=await worker.recognize(file);const extracted=extractDisasterMessageFromOcr(result.data);
         if(!extracted.text){imageOcrStatus.textContent='재난문자 본문을 찾지 못했어요 · 재난문자 부분만 잘라 다시 올려 주세요';return;}
-        const croppedData=await recognizeDisasterCrop(file,extracted.crop,worker).catch(()=>null);const cropExtraction=croppedData?.alternateText?extractDisasterMessageFromOcr({text:croppedData.alternateText}):null;const cropIsBetter=cropExtraction?.text?.length>=Math.max(8,Math.floor(extracted.text.length*.8))&&!cropExtraction.truncated;const chosen=extracted.screenCapture?{...(cropIsBetter?cropExtraction:extracted),screenCapture:true,region:extracted.region||cropExtraction?.region||''}:cropIsBetter?{...cropExtraction,region:cropExtraction.region||extracted.region}:extracted;
+         const croppedData=await recognizeDisasterCrop(file,extracted.crop,worker).catch(()=>null);const missingPerson=extractMissingPersonMessageFromOcr([result.data,croppedData],extracted.region);const cropExtraction=croppedData?.alternateText?extractDisasterMessageFromOcr({text:croppedData.alternateText}):null;const cropIsBetter=cropExtraction?.text?.length>=Math.max(8,Math.floor(extracted.text.length*.8))&&!cropExtraction.truncated;const chosen=missingPerson?{...missingPerson,screenCapture:extracted.screenCapture,truncated:false}:extracted.screenCapture?{...(cropIsBetter?cropExtraction:extracted),screenCapture:true,region:extracted.region||cropExtraction?.region||''}:cropIsBetter?{...cropExtraction,region:cropExtraction.region||extracted.region}:extracted;
         let messageText=String(chosen.text).replace(/\s*\[[^\]]+\]\s*$/,'').replace(/\s+/g,' ').trim();const detectedRegion=chosen.region||extracted.region||'';
-        if(/실종/.test(messageText)&&/찾습니다|찾고 있습니다/.test(messageText))messageText=normalizeMissingPersonOcrText(messageText,detectedRegion,croppedData?.alternateText||'');
         if(chosen.screenCapture){const alertStart=messageText.search(/(?:산불|산사태|호우|폭우|집중호우|침수|범람|하천|계곡|태풍|강풍|폭염|한파|대설|지진|해일|화재|이안류|너울성 파도)/);if(alertStart>0&&/20\d{2}[/.\-]\d{1,2}/.test(messageText.slice(0,alertStart)))messageText=messageText.slice(alertStart).trim();}
         let wasTruncated=Boolean(chosen.truncated)||Boolean(/(?:화기|우회하고|발생으로|창문을|대피 안내를 받|받으면|하시기|하여|및|하고|소각·|산불 현장에|인)$/.test(messageText));
         if(wasTruncated){const complete=[...messageText.matchAll(/[^.!?。！？]+[.!?。！？]/g)].map(match=>match[0].trim());if(complete.length)messageText=complete.join(' ');}
@@ -2465,14 +2478,13 @@
       const oneParagraph=value=>String(value).replace(/\s*(?:▲|\n\s*[•\-])\s*/g,'. ').replace(/[\r\n]+/g,' ').replace(/\s+/g,' ').replace(/\s+([,.;!?。！？])/g,'$1').replace(/([,;]|:(?!\d))(?=\S)/g,'$1 ').replace(/([.!?。！？]){2,}/g,'$1').trim();
       const preserveNumbers=result=>{const before=numbers(source);const after=numbers(result);return spellUnits(oneParagraph(before.length===after.length&&before.every((value,index)=>value===after[index])?result:simple));};
 
-      if(/(?:도로결빙|도로 결빙|도로가 얼|빙판길|살얼음)/.test(source)&&/(?:안전거리|차간거리|감속운전|감속 운전|보행 시|미끄럼 사고|한파|한랭질환)/.test(source)){
-        const warning=source.match(/(한파주의보|한파경보|한파특보|한파)/);const lead=warning?source.slice(0,warning.index).replace(/[./,，\s]+$/,'').trim():'';const time=source.match(/(오늘(?:\(\d+일\))?\s*\d{1,2}시(?:\s*\d{1,2}분)?부터|금일\s*\d{1,2}시부터)/)?.[1]?.replace(/금일/g,'오늘');const lines=[];
+      if(/(?:도로결빙|도로 결빙|도로가 얼|빙판길|살얼음)/.test(source)&&/(?:안전거리|차간거리|감속운전|감속 운전|보행 시|미끄럼 사고|한파|한랭질환)/.test(source)&&/(?:빙판길 안전사고|동파.*냉해|미끄럼 사고 예방)/.test(source)){
+        const warning=source.match(/(한파주의보|한파경보|한파특보)/);const lead=warning?source.slice(0,warning.index).replace(/[./,，\s]+$/,'').trim():'';const time=source.match(/(오늘(?:\(\d+일\))?\s*\d{1,2}시(?:\s*\d{1,2}분)?부터|금일\s*\d{1,2}시부터)/)?.[1]?.replace(/금일/g,'오늘');const lines=[];
         const header=lead||time||'';
         if(warning)lines.push(`${header?`${header} `:''}${warning[1]}가 나왔어요.`);
-        else if(lead)lines.push(`${lead} 날씨가 매우 추워요.`);
+        else if(/한파|강추위|한랭질환/.test(source))lines.push(`${header?`${header} `:''}매우 추운 날씨예요.`);
         if(/기온이 크게 떨어|기온 강하|기온이 급격히/.test(source))lines.push('기온이 갑자기 크게 내려가요.');
         lines.push('도로가 얼고 얇은 얼음이 생겨 미끄러울 수 있어요.');
-        if(/외출\s*시 보온|외출시 보온|외출 시 따뜻/.test(source))lines.push('밖에 나갈 때 따뜻하게 입으세요.');
         if(/차량|운전|감속|차간거리/.test(source))lines.push(/안전거리|차간거리/.test(source)?'운전할 때 속도를 줄이고 앞차와 거리를 넉넉히 두세요.':'운전할 때 속도를 줄이세요.');
         if(/보행|미끄럼 사고/.test(source))lines.push('걸을 때 미끄러져 넘어지지 않게 조심하세요.');
         if(/수도(?:계량기|관)?\s*동파|수도관/.test(source))lines.push('수도관이나 수도 계량기가 얼어 터지지 않게 해 주세요.');
@@ -2511,10 +2523,11 @@
         const missing=source.match(/^(.*?)에서\s*실종된\s*([^,(]+?)\s*\((남|여)\s*\/\s*(\d+)세\)\s*을?\s*찾습니다[.。]?/);
         if(missing){
           const [,location,name,gender,age]=missing;const tail=source.slice(missing[0].length).replace(/\[[^\]]+\]\s*$/,'').trim();
-          const height=tail.match(/(\d{2,3}(?:\.\d+)?)\s*(?:cm|센티미터)/i);const descriptors=tail.split(/[,，·/]+/).map(value=>value.trim().replace(/^[가-힣]\s+(?=[가-힣]{2,})/,'')).filter(Boolean).filter(value=>!/\d{2,3}(?:\.\d+)?\s*(?:cm|센티미터)/i.test(value)).map(value=>{if(value==='마른체형')return '마른 체형이에요';if(value==='치매')return '치매가 있어요';if(value==='거동불편')return '걷거나 움직이기 불편해요';const clothing=value.match(/(검은색|회색|흰색|주황색|빨간색|파란색)?\s*(모자|점퍼|잠바|바지|셔츠|신발)/);if(clothing){const item=`${clothing[1]||''}${clothing[2]}`;const last=item.charCodeAt(item.length-1);const particle=last>=0xAC00&&last<=0xD7A3&&(last-0xAC00)%28?'을':'를';return `${item}${particle} 착용했어요`;}return `찾을 때 참고할 특징은 ${value.replace(/\s+/g,' ').trim()}예요`;});
+          const height=tail.match(/(\d{2,3}(?:\.\d+)?)\s*(?:cm|센티미터)/i);const descriptors=tail.split(/[,，·/]+/).map(value=>value.trim().replace(/^[가-힣]\s+(?=[가-힣]{2,})/,'')).filter(Boolean).filter(value=>!/\d{2,3}(?:\.\d+)?\s*(?:cm|센티미터)/i.test(value)).map(value=>{if(value==='마른체형')return '마른 체형이에요';if(value==='치매')return '치매가 있어요';if(value==='거동불편')return '걷거나 움직이기 불편해요';const clothing=value.match(/(검은색|회색|흰색|주황색|빨간색|파란색)?\s*(모자|점퍼|잠바|바지|셔츠|신발)/);if(clothing){const item=`${clothing[1]||''}${clothing[2]}`;const last=item.charCodeAt(item.length-1);const particle=last>=0xAC00&&last<=0xD7A3&&(last-0xAC00)%28?'을':'를';return `${item}${particle} 착용했어요.`;}return `찾을 때 참고할 특징은 ${value.replace(/\s+/g,' ').trim()}예요.`;});
           const person=`${name}(${gender==='남'?'남성':'여성'}, ${age}세)`;
           const details=[...(height?[`키는 ${height[1]}센티미터예요.`]:[]),...descriptors];
-          return preserveNumbers(`${location}에서 ${person}을 찾고 있어요.${details.length?` ${details.join('. ')}.`:''}`);
+          const sentence=`${location}에서 ${person}을 찾고 있어요.${details.length?` ${details.join(' ')}`:''}`.replace(/\.\s*\./g,'.').replace(/\.{2,}/g,'.');
+          return preserveNumbers(sentence);
         }
         return preserveNumbers(source.replace(/실종된/g,'찾고 있는').replace(/찾습니다[.。]?/,'찾고 있어요.').replace(/검은색계열/g,'검은색').replace(/,(?=[^\s])/g,', '));
       }
@@ -2818,13 +2831,14 @@
         if(/일상(?:생활)?으로 복귀/.test(source))lines.push('가까이 사는 분은 평소 생활로 돌아가세요.');
         return preserveNumbers(lines.join(' '));
       }
-      if(/(?:도로결빙|도로 결빙|도로가 얼|빙판길|살얼음)/.test(source)&&/(?:감속|안전거리|차간거리|미끄럼|보행|노약자|한파|한랭)/.test(source)){
+      if(/(?:도로결빙|도로 결빙|도로가 얼|빙판길|살얼음)/.test(source)&&/(?:감속|안전거리|차간거리|미끄럼|보행|노약자|한파|한랭)/.test(source)&&/(?:빙판길 안전사고|동파.*냉해|미끄럼 사고 예방)/.test(source)){
         const lines=[];const time=source.match(/(?:오늘|금일)?\s*\d{1,2}:\d{2}/)?.[0]?.trim();const temp=source.match(/(영하\s*\d+도|기온이?\s*\d+도)/);
         lines.push(`${time?`${time} `:''}${temp?`${temp[1]}라서 `:''}길이 얼고 얇은 얼음이 생겨 미끄러울 수 있어요.`);
         if(/차량|운전|감속|차간거리/.test(source))lines.push(/안전거리|차간거리/.test(source)?'운전할 때 속도를 줄이고 앞차와 거리를 넉넉히 두세요.':'운전할 때 속도를 줄이세요.');
         if(/보행|미끄럼 사고/.test(source))lines.push('걸을 때 미끄러져 넘어지지 않게 조심하세요.');
         if(/노약자|취약계층/.test(source))lines.push('어르신과 도움이 필요한 분의 건강을 살펴 주세요.');
         if(/수도.?계량기|수도관|동파/.test(source))lines.push('수도관이나 수도 계량기가 얼어 터지지 않게 해 주세요.');
+        if(/외출\s*시 보온|외출시 보온/.test(source))lines.push('밖에 나갈 때 따뜻하게 입으세요.');
         if(/농작물|농축산물|냉해/.test(source))lines.push('농작물과 가축이 추위에 상하지 않게 살펴 주세요.');
         if(/난방기|화재/.test(source))lines.push('난방기에서 불이 나지 않게 조심하세요.');
         if(/안부연락|안부 확인|안부확인/.test(source))lines.push('가족과 이웃이 잘 지내는지 연락해 보세요.');

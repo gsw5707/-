@@ -31,6 +31,31 @@ let coreValidationSaveQueue = Promise.resolve();
 const siteTranslationMemory = new Map();
 const knownRegions = new Set();
 const civilShelterCache = new Map();
+const nonLocalAgencyWords = /(?:한국도로공사|한국철도공사|공항철도|경찰청|경찰서|소방서|소방본부|소방재난본부|산불방지대책본부|산림청|산림항공본부|행정안전부|국토교통부|기상청|해양경찰청|해경|군부대|공군|육군|해군|교육청|농어촌공사|공단|보건소|병원|문화재단|전력공사|한전|가스공사)/;
+const nonRegionPhrases = /(?:하시|주시|주십시|받으시|바라시|발생시|사용시|입산시|운행시|보행시|이동시|대피시|우천시|강우시|강설시|점검시|필요시|도착시|신고시|통제시|지속시|우리군|누수복구)$/;
+
+function extractMessageRegion(message) {
+  const body = String(message).replace(/\s*\[[^\]]+\]\s*$/, '').replace(/20\d{2}[/.\-]\d{1,2}[/.\-]\d{1,2}\s+\d{1,2}:\d{2}:\d{2}/g, ' ');
+  const hazardAt = body.search(/(?:산불|산사태|호우|폭염|한파|대설|강풍|태풍|침수|화재|지진|범람|대피|실종|발생|주의보|경보|통제)/);
+  const locationBody = hazardAt >= 0 ? body.slice(0, Math.min(body.length, hazardAt + 90)) : body.slice(0, 150);
+  const candidates = [];
+  const official = /(?:서울특별시|부산광역시|대구광역시|인천광역시|광주광역시|대전광역시|울산광역시|세종특별자치시|제주특별자치도|전북특별자치도|강원특별자치도|경기도|충청북도|충청남도|전라남도|경상북도|경상남도|[가-힣]{2,}(?:시|군|구))/g;
+  for (const match of locationBody.matchAll(official)) {
+    const value = match[0];
+    const following = locationBody.slice(match.index + value.length, match.index + value.length + 3);
+    if (nonLocalAgencyWords.test(value) || nonRegionPhrases.test(value) || /청$/.test(value) || /(?:청|공사|공단|본부|경찰서|소방서)/.test(following)) continue;
+    if (!/^(?:\s|[,，.。·:;()[\]\/]|은|는|이|가|을|를|에|에서|으로|로|과|와|민|전체|전역|일대|인근|지역|주민|호우|산불|한파|폭염|대설|강풍|태풍|침수|화재|지진|범람|대피|실종|통제|주의보|경보|예보|상황|예상)/.test(following)) continue;
+    const isProvince = /(?:특별자치도|특별시|광역시|도)$/.test(value);
+    candidates.push({ value, score: match.index + (isProvince ? 0 : 1000) });
+  }
+  const regionFirst = locationBody.match(/([가-힣]{2,}(?:시|군|구))\s+[^.。]{0,40}?(?:지역|전역|일대|인근)/);
+  if (regionFirst && !nonLocalAgencyWords.test(regionFirst[1]) && !nonRegionPhrases.test(regionFirst[1])) candidates.push({ value: regionFirst[1], score: 1200 });
+  const directional = locationBody.match(/([가-힣]{2,}(?:시|군)?\s*(?:동부|서부|남부|북부|동북부|서북부|남부지역|북부지역))/);
+  if (directional && !nonLocalAgencyWords.test(directional[1]) && !nonRegionPhrases.test(directional[1])) candidates.push({ value: directional[1].replace(/\s+/g, ''), score: 1300 });
+  const specific = candidates.filter(item => !/(?:특별자치도|특별시|광역시|도)$/.test(item.value)).sort((a, b) => b.score - a.score)[0];
+  const region = specific?.value || candidates.sort((a, b) => b.score - a.score)[0]?.value;
+  return region || '전국';
+}
 
 function sendJson(response, status, payload) {
   response.writeHead(status, {
@@ -230,13 +255,14 @@ function parseDisasterRows(html) {
     const createdAt = row.match(/<td[^>]*class="cell-date"[^>]*>([\s\S]*?)<\/td>/i)?.[1];
     if (!number || !subject || !createdAt) continue;
     const message = decodeHtml(subject[2]);
-    const region = message.match(/\[([^\]]+)\]\s*$/)?.[1]?.trim() || '전국';
+    const agency = message.match(/\[([^\]]+)\]\s*$/)?.[1]?.trim() || '';
+    const region = extractMessageRegion(message);
     knownRegions.add(region);
     entries.push({
       id: decodeHtml(number),
       region,
       createdAt: decodeHtml(createdAt),
-      agency: region,
+      agency,
       message,
       sourceUrl: new URL(subject[1], 'https://www.safetydata.go.kr').toString(),
     });
@@ -252,7 +278,7 @@ async function getDisasterMessages(url, response) {
   const region = (url.searchParams.get('region') || '').trim().slice(0, 80);
   const endDate = getKoreanDate(new Date());
   const startDate = getKoreanDate(new Date(Date.now() - (days - 1) * 86400000));
-  const sourceKeyword = region || keyword;
+  const sourceKeyword = region && region !== '전국' ? region : keyword;
   const sourceUrl = new URL(disasterSource);
   sourceUrl.searchParams.set('currentPage', String(page));
   sourceUrl.searchParams.set('cntPerPage', String(pageSize));
@@ -275,10 +301,11 @@ async function getDisasterMessages(url, response) {
     const matchTotal = html.match(/<span[^>]*>([\d,]+)<\/span>\s*건의 게시물이 검색되었습니다/);
     const sourceTotal = Number((matchTotal?.[1] || '0').replace(/,/g, ''));
     let items = parseDisasterRows(html);
-    if (keyword && region) items = items.filter(item => item.message.includes(keyword));
+    if (region && region !== '전국') items = items.filter(item => item.region === region && (!keyword || item.message.includes(keyword)));
+    else if (keyword) items = items.filter(item => item.message.includes(keyword));
     const regionCounts = {};
     items.forEach(item => { regionCounts[item.region] = (regionCounts[item.region] || 0) + 1; });
-    const totalCount = region && keyword ? items.length : sourceTotal;
+    const totalCount = region && region !== '전국' || keyword ? items.length : sourceTotal;
     const pageCount = Math.max(1, Math.ceil(totalCount / pageSize));
     sendJson(response, 200, {
       page,
