@@ -435,7 +435,7 @@ async function downloadCivilShelters(orgCode) {
 async function getNearbyShelters(url, response, samples = false) {
   const lat = Number(url.searchParams.get('lat'));
   const lon = Number(url.searchParams.get('lon'));
-  const radiusKm = Math.max(1, Math.min(30, Number(url.searchParams.get('radiusKm')) || 8));
+  const radiusKm = Math.max(1, Math.min(10, Number(url.searchParams.get('radiusKm')) || 10));
   const type = samples ? url.searchParams.get('type') : 'civil';
   if (!Number.isFinite(lat) || !Number.isFinite(lon)) {
     sendJson(response, 400, { error: '현재 위치나 지도 위치를 확인해 주세요.' });

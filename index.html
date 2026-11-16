@@ -3685,7 +3685,7 @@
     function updateUserPosition(position,follow=false,{refreshShelters=true}={}){
        const next={lat:position.coords.latitude,lon:position.coords.longitude,accuracy:position.coords.accuracy,source:'gps',areaName:''};userLocation=next;userLocationAt=Date.now();
       hasExplicitShelterLocation=true;
-       lastShelterSearch={lat:next.lat,lon:next.lon,areaName:next.areaName||'',source:next.source,radiusKm:Number(next.accuracy)>1000?Math.min(30,8+Math.ceil((Number(next.accuracy)||0)/1000)):8};
+        lastShelterSearch={lat:next.lat,lon:next.lon,areaName:next.areaName||'',source:next.source,radiusKm:10};
       if(map){
         if(currentMarker){currentMarker.setLatLng([next.lat,next.lon]);currentMarker.setPopupContent('현재 위치');}
         else currentMarker=L.marker([next.lat,next.lon]).addTo(map).bindPopup('현재 위치');
@@ -3760,11 +3760,11 @@
     }
     function updateShelterSource(type,data){
       const sources={
-        civil:{title:'민방위 대피시설',badge:'전국 공개자료',note:'행정안전부 민방위 대피시설 · 현재 위치 주변 8km · 운영 여부 별도 확인',sourceUrl:'https://www.data.go.kr/data/15044951/fileData.do'},
-        earthquake:{title:'지진 옥외대피장소',badge:'전국 공개자료',note:`${data?.regionName||'현재 위치 주변'} · 검색범위 자료 ${data?.sampleCount??0}곳 · 반경 8km ${data?.items?.length??0}곳`,sourceUrl:data?.sourceUrl||'https://life.ttpk.co.kr/shelter-eq/map'},
-        tsunami:{title:'지진해일 긴급대피장소',badge:`전국 공개자료 ${data?.sampleCount??647}곳`,note:`행정안전부 공개자료 · 현재 위치 주변 8km ${data?.items?.length??0}곳 · ${data?.retrievedAt||'자료 내려받기 날짜 미표시'}`,sourceUrl:data?.sourceUrl||'https://www.data.go.kr/data/15138870/openapi.do'},
-        heat:{title:'무더위쉼터',badge:'전국 공개자료',note:`${data?.regionName||'현재 위치 주변'} · 검색범위 자료 ${data?.sampleCount??0}곳 · 반경 8km ${data?.items?.length??0}곳`,sourceUrl:data?.sourceUrl||'https://life.ttpk.co.kr/shelter-heat/map'},
-        cold:{title:'한파쉼터',badge:'전국 공개자료',note:`${data?.regionName||'현재 위치 주변'} · 검색범위 자료 ${data?.sampleCount??0}곳 · 반경 8km ${data?.items?.length??0}곳`,sourceUrl:data?.sourceUrl||'https://life.ttpk.co.kr/shelter-cold/map'},
+         civil:{title:'민방위 대피시설',badge:'전국 공개자료',note:'행정안전부 민방위 대피시설 · 현재 위치 주변 10km · 운영 여부 별도 확인',sourceUrl:'https://www.data.go.kr/data/15044951/fileData.do'},
+         earthquake:{title:'지진 옥외대피장소',badge:'전국 공개자료',note:`${data?.regionName||'현재 위치 주변'} · 검색범위 자료 ${data?.sampleCount??0}곳 · 반경 10km ${data?.items?.length??0}곳`,sourceUrl:data?.sourceUrl||'https://life.ttpk.co.kr/shelter-eq/map'},
+         tsunami:{title:'지진해일 긴급대피장소',badge:`전국 공개자료 ${data?.sampleCount??647}곳`,note:`행정안전부 공개자료 · 현재 위치 주변 10km ${data?.items?.length??0}곳 · ${data?.retrievedAt||'자료 내려받기 날짜 미표시'}`,sourceUrl:data?.sourceUrl||'https://www.data.go.kr/data/15138870/openapi.do'},
+         heat:{title:'무더위쉼터',badge:'전국 공개자료',note:`${data?.regionName||'현재 위치 주변'} · 검색범위 자료 ${data?.sampleCount??0}곳 · 반경 10km ${data?.items?.length??0}곳`,sourceUrl:data?.sourceUrl||'https://life.ttpk.co.kr/shelter-heat/map'},
+         cold:{title:'한파쉼터',badge:'전국 공개자료',note:`${data?.regionName||'현재 위치 주변'} · 검색범위 자료 ${data?.sampleCount??0}곳 · 반경 10km ${data?.items?.length??0}곳`,sourceUrl:data?.sourceUrl||'https://life.ttpk.co.kr/shelter-cold/map'},
         flood:{title:'호우·홍수 대피 안내',badge:'민방위 시설 참고',note:'전국 민방위 공개시설 · 호우 전용 지정목록 아님',sourceUrl:'https://www.data.go.kr/data/15044951/fileData.do'},
         water:{title:'하천·계곡 안전',badge:'대피소 비해당',note:'물가 안전 안내 · 위험하면 119',sourceUrl:'https://www.safetydata.go.kr/disaster-data/disasterNotification'},
         fire:{title:'산불·화재 대피 안내',badge:'민방위 시설 참고',note:'전국 민방위 공개시설 · 산불·화재 전용 지정목록 아님',sourceUrl:'https://www.data.go.kr/data/15044951/fileData.do'},
@@ -3797,7 +3797,7 @@
       shelterLayer?.clearLayers();
         if(!places.length){
          const message=document.createElement('div');message.className='empty-list';
-         message.textContent=type==='civil'||referenceOnly?'이 위치 주변 8km에서 민방위 대피시설을 찾지 못했어요. 지자체의 재난별 대피 안내도 확인해 주세요.':type==='tsunami'?`전국 공개목록 ${data?.sampleCount??647}곳 중 이 위치 주변 8km에는 지진해일 대피장소가 없어요. 해안 가까운 지역을 검색해 보세요.`:`${data?.regionName||'이 지역'} ${data?.scopeLabel||'대피시설 공개목록'} 중 반경 8km 안에 시설이 없어요.`;
+          message.textContent=type==='civil'||referenceOnly?'이 위치 주변 10km에서 민방위 대피시설을 찾지 못했어요. 지자체의 재난별 대피 안내도 확인해 주세요.':type==='tsunami'?`전국 공개목록 ${data?.sampleCount??647}곳 중 이 위치 주변 10km에는 지진해일 대피장소가 없어요. 해안 가까운 지역을 검색해 보세요.`:`${data?.regionName||'이 지역'} ${data?.scopeLabel||'대피시설 공개목록'} 중 반경 10km 안에 시설이 없어요.`;
         list.append(message);return;
       }
       places.forEach((place,index)=>{
@@ -3824,7 +3824,7 @@
        });
      }
       let tsunamiSheltersPromise;
-      async function findNearbyTsunamiShelters(lat,lon,radiusKm=8){
+       async function findNearbyTsunamiShelters(lat,lon,radiusKm=10){
         tsunamiSheltersPromise??=fetch('/tsunami-shelters.json').then(response=>{if(!response.ok)throw new Error('전국 지진해일 대피장소 자료를 불러오지 못했어요.');return response.json();}).then(data=>{
           if(!Array.isArray(data.items))throw new Error('지진해일 대피장소 자료 형식이 올바르지 않아요.');
           return data;
@@ -3833,7 +3833,7 @@
         const items=source.items.map(place=>({...place,distanceKm:locationDistance({lat,lon},{lat:place.lat,lon:place.lon})/1000,kindLabel:'지진해일 긴급대피장소'})).filter(place=>place.distanceKm<=radiusKm).sort((a,b)=>a.distanceKm-b.distanceKm).slice(0,60);
         return {items,sampleCount:source.items.length,retrievedAt:source.retrievedAt,sourceUrl:source.sourceUrl,regionName:'전국 공개목록',scopeLabel:`전국 지진해일 긴급대피장소 공개자료 · ${source.items.length}곳`,temporary:false};
       }
-       async function findShelters(lat,lon,{keepRoute=false,areaName='',radiusKm=8,source='manual'}={}){
+        async function findShelters(lat,lon,{keepRoute=false,areaName='',radiusKm=10,source='manual'}={}){
       const requestId=++shelterListRequestId;
       mapSlideReady=true;mapNeedsShelterRefresh=false;ensureMapTiles();
        lastShelterSearch={lat,lon,areaName,radiusKm,source};
@@ -3843,7 +3843,7 @@
        if(!keepRoute){routeRequestId+=1;routeLayer?.clearLayers();lastRoutePlace=null;document.getElementById('routePanel').hidden=true;}
         list.innerHTML=type==='tsunami'?'<div class="empty-list">전국 지진해일 대피장소 자료에서 주변 시설을 찾는 중…</div>':referenceOnly?'<div class="empty-list">주변 민방위 시설을 참고용으로 찾는 중…</div>':lookupType==='civil'?'<div class="empty-list">전국 민방위 시설 불러오는 중…</div>':'전국 공개 대피시설에서 주변 장소를 찾는 중…';
        try{
-         const params=new URLSearchParams({lat:String(lat),lon:String(lon),radiusKm:String(Math.max(8,Math.min(30,Math.ceil(radiusKm))))});
+          const params=new URLSearchParams({lat:String(lat),lon:String(lon),radiusKm:String(Math.max(1,Math.min(10,Math.ceil(radiusKm))))});
          if(areaName)params.set('area',areaName);
          let data;
           if(type==='tsunami')data=await findNearbyTsunamiShelters(lat,lon,radiusKm);
@@ -3869,7 +3869,7 @@
         }
          if(mapNeedsShelterRefresh&&lastShelterRefresh){
            const center=userLocation||{lat:lastShelterSearch.lat,lon:lastShelterSearch.lon};mapNeedsShelterRefresh=false;
-            findShelters(center.lat,center.lon,{areaName:lastShelterSearch.areaName,keepRoute:Boolean(lastRoutePlace),radiusKm:lastShelterSearch.radiusKm||8,source:lastShelterSearch.source});
+             findShelters(center.lat,center.lon,{areaName:lastShelterSearch.areaName,keepRoute:Boolean(lastRoutePlace),radiusKm:lastShelterSearch.radiusKm||10,source:lastShelterSearch.source});
         }
       }),{root:appSlides,threshold:.12});
       mapSlideObserver.observe(document.getElementById('map-section'));
@@ -3890,13 +3890,13 @@
         const position=await requestCurrentPosition({onWaiting:message=>{status.textContent=message;}}).catch(error=>{throw new Error(geolocationErrorMessage(error));});
         updateUserPosition(position,centerMap,{refreshShelters:false});
         hasExplicitShelterLocation=true;
-         const searchRadius=Number(position.coords.accuracy)>1000?Math.min(30,8+Math.ceil(Number(position.coords.accuracy)/1000)):8;lastShelterSearch={lat:userLocation.lat,lon:userLocation.lon,areaName:'',radiusKm:searchRadius};lastShelterRefresh={...userLocation,at:Date.now()};
-          status.textContent=Number(position.coords.accuracy)>1000?`고정밀 기기 위치를 확인했어요. 오차를 고려해 약 ${searchRadius}km 범위에서 대피소를 찾아요. ${locationAccuracyText(position.coords.accuracy)}`:`기기 위치를 확인했어요. 주변 8km에서 대피소를 찾아요. ${locationAccuracyText(position.coords.accuracy)}`;
+          const searchRadius=10;lastShelterSearch={lat:userLocation.lat,lon:userLocation.lon,areaName:'',radiusKm:searchRadius};lastShelterRefresh={...userLocation,at:Date.now()};
+           status.textContent=`기기 위치를 확인했어요. 주변 10km에서 대피소를 찾아요. ${locationAccuracyText(position.coords.accuracy)}`;
          await findShelters(userLocation.lat,userLocation.lon,{areaName:'',radiusKm:searchRadius,source:'gps'});
       }catch(error){status.textContent=error.message||'현재 위치를 확인하지 못했어요. 지역을 검색해 주세요.';list.replaceChildren(Object.assign(document.createElement('div'),{className:'empty-list',textContent:'지도 위 지역 검색이나 길게 눌러 주변 대피소를 찾을 수 있어요.'}));}
     }
     document.getElementById('nearbyBtn').addEventListener('click',()=>findSheltersAtCurrentLocation(true));
-      document.getElementById('shelterType').addEventListener('change',()=>hasExplicitShelterLocation?findShelters(lastShelterSearch.lat,lastShelterSearch.lon,{areaName:lastShelterSearch.areaName,radiusKm:lastShelterSearch.radiusKm||8,source:lastShelterSearch.source}):findSheltersAtCurrentLocation(false));
+       document.getElementById('shelterType').addEventListener('change',()=>hasExplicitShelterLocation?findShelters(lastShelterSearch.lat,lastShelterSearch.lon,{areaName:lastShelterSearch.areaName,radiusKm:lastShelterSearch.radiusKm||10,source:lastShelterSearch.source}):findSheltersAtCurrentLocation(false));
     document.getElementById('locateBtn').addEventListener('click',()=>findSheltersAtCurrentLocation(true));
     async function searchPlace({deferShelterSearch=false}={}){
       const input=document.getElementById('placeSearch');const query=input.value.trim();if(!query){input.focus();return;}
