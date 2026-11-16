@@ -2132,6 +2132,10 @@
         if(/천천히\s*이동/.test(originalSource))output=output.replace(/천천히 움직여 주세요\s*바랍니다/g,'천천히 움직여 주세요');
         if(/안전한 곳.*이동해/.test(originalSource))output=output.replace(/위험하지 않은 곳으로 가세요해/g,'위험하지 않은 곳으로 가서');
          if(/유해가스\s*누출/.test(originalSource))output=output.replace(/몸에 해로운 가스 새어 나옴/g,'몸에 해로운 가스가 새어 나옴');
+         if(/(?:교통\s*)?(?:혼잡|정체)/.test(originalSource)&&/예상/.test(originalSource)){
+           const ending=/예상되므로/.test(originalSource)?'차가 막힐 수 있으므로':/(?:예상되오니|예상되니)/.test(originalSource)?'차가 막힐 수 있으니':'차가 막힐 수 있어요';
+           output=output.replace(/(?:교통\s*)?(?:사람이나 차가 많아 붐빔(?:이)?|차가 막혔어요(?:할 것으로)?|차가 막힘)(?:\s*(?:예상(?:되므로|되오니|되니|됩니다)?|생길 수 있어요|일어날 수 있어요))?/g,ending);
+         }
          if(/쓰레기\s*태우기\s*금지/.test(originalSource))output=output.replace(/쓰레기 태우기 금지/g,'쓰레기를 태우면 안 돼요');
          if(/불법소각|과태료/.test(originalSource))output=output.replace(/불법소각/g,'허락 없이 태우는 일').replace(/과태료/g,'정해진 벌금');
          if(/입산\s*시\s*화기\s*소지\s*금지/.test(originalSource))output=output.replace(/산에 갈 때 화기소지 금지|산에 갈 때 불을 붙이는 도구를 가지고 가면 안 돼요/g,'산에 갈 때 불을 붙이는 도구를 가져가면 안 돼요');
@@ -2141,8 +2145,14 @@
          if(/차량정체|도로\s*정체/.test(originalSource))output=output.replace(/차량정체/g,'차가 막힘').replace(/도로 정체/g,'도로가 막힘');
          if(/교통 통제|통행이 통제|전면통제|출입 통제|일시 통제/.test(originalSource))output=output.replace(/차량 통행이 통제됩니다/g,'차량이 지나갈 수 없어요').replace(/통행이 통제됩니다/g,'지나갈 수 없어요').replace(/전면 교통 통제중?/g,'차가 다니지 못하게 막고 있어요').replace(/전면통제/g,'차량이 지나가지 못하게 막음').replace(/출입 통제/g,'들어가지 못하게 막음').replace(/일시 통제/g,'잠시 길을 막음').replace(/통제될 예정이오니/g,'길을 막을 예정이니');
           output=output.replace(/계량기\s*(?:및|와)\s*수도관\s*동파\s*예방/g,'계량기와 수도관이 얼어 터지지 않도록 해 주세요').replace(/수도 계량기 그리고 수도관 수도관이나 물이 얼어 터지는 일 미리 막기/g,'수도 계량기와 수도관이 얼어 터지지 않게 해 주세요').replace(/수도 계량기/g,'수돗물 사용량을 재는 기계');
-          output=output.replace(/교통혼잡|교통 혼잡/g,'차가 막힘').replace(/정체가 예상되므로/g,'차가 막힐 수 있으므로').replace(/혼잡이 예상되므로/g,'사람이나 차가 많아 붐빌 수 있으므로');
-          output=output.replace(/다른 길로 가기이동/g,'다른 길로 가기').replace(/가까운 곳에 사는 사람분은/g,'가까이 사는 분은');
+           output=output.replace(/교통혼잡|교통 혼잡/g,'차가 막힘').replace(/정체가 예상되므로/g,'차가 막힐 수 있으므로').replace(/혼잡이 예상되므로/g,'사람이나 차가 많아 붐빌 수 있으므로');
+         output=output.replace(/(?:교통\s*)?(?:정체|혼잡)(?:가|이)?\s*(?:발생\s*)?(?:할 것으로\s*)?예상(?:되니|됩니다|되오니|되어|돼요|된다|되므로|될 것으로 보이니)?/g,match=>/되니|되오니/.test(match)?'차가 막힐 수 있으니':match.includes('되므로')?'차가 막힐 수 있으므로':'차가 막힐 수 있어요')
+           .replace(/차가 막혔어요\s*(?:일어날|생길) 수 있어요/g,'차가 막힐 수 있어요')
+           .replace(/차가 막힐 수 있어요\s*(?:일어날|생길) 수 있어요/g,'차가 막힐 수 있어요')
+           .replace(/차가 막힐 수 있어요\s*이므로/g,'차가 막힐 수 있으므로')
+           .replace(/차가 막힐 수 있어요\s*있으니/g,'차가 막힐 수 있으니');
+           if(/(?:교통\s*)?(?:정체|혼잡)/.test(source)&&/예상/.test(source))output=output.replace(/차가 막힐 수 있어요\s*(?:되니|되오니|예상되니)/g,'차가 막힐 수 있으니').replace(/차가 막힐 수 있어요\s*되므로/g,'차가 막힐 수 있으므로').replace(/차량 차가 막힐/g,'차량이 막힐').replace(/도로 차가 막힐/g,'도로가 막힐');
+           output=output.replace(/다른 길로 가기이동/g,'다른 길로 가기').replace(/가까운 곳에 사는 사람분은/g,'가까이 사는 분은');
           output=output.replace(/그 지역에 사는 분은센터에/g,'주민센터에').replace(/그 지역에 사는 분들은 이용/g,'이용하려는 분은 이용');
           output=output.replace(/수도 계량기/g,'수돗물 사용량을 재는 기계').replace(/항구 안쪽에서 밖으로 나가는 길 통제/g,'항구 안쪽에서 밖으로 나가는 길을 막고 있어요')
             .replace(/산불 발생지역 접근을 금지하고/g,'산불 난 곳에 가까이 가지 말고').replace(/출입을 금지하여 주시고/g,'들어가지 말아 주세요').replace(/(?:스마트폰|휴대전화) 사용금지/g,'휴대전화를 사용하면 안 돼요')
@@ -2152,7 +2162,12 @@
              .replace(/실시간 차와 길 상황를/g,'실시간 차와 길 상황을').replace(/교통 통제는 .*?해제되었음을 알려드립니다/g,'사고 처리가 끝나 막았던 길을 다시 다닐 수 있어요')
              .replace(/안전한 곳으로/g,'위험하지 않은 곳으로').replace(/필요합니다/g,'있어야 합니다').replace(/필요해요/g,'있어야 해요');
           if(/(?:교통\s*)?통제는.*수습활동 종료.*해제되었음을/.test(originalSource))output=output.replace(/(?:교통\s*)?통제는 .*$/,'사고 처리가 끝나 막았던 길을 다시 다닐 수 있어요.');
-         output=output.replace(/불이 나지 않게 조심하세요 등/g,'불이 나지 않게 조심하세요. 또한').replace(/조심하세요 바랍니다/g,'조심해 주세요');
+          output=output.replace(/불이 나지 않게 조심하세요 등/g,'불이 나지 않게 조심하세요. 또한').replace(/조심하세요 바랍니다/g,'조심해 주세요');
+         if(/(?:차량|도로)\s*(?:정체|혼잡)/.test(String(sourceText))){
+           output=output.replace(/차량\s*차가 막힐 수 있어요(?:되니|되오니|되므로)?/g,'차량이 막힐 수 있으니')
+             .replace(/도로\s*차가 막힐 수 있어요(?:되니|되오니|되므로)?/g,'도로가 막힐 수 있으니')
+             .replace(/차가 막힐 수 있어요(?:되니|되오니)/g,'차가 막힐 수 있으니');
+         }
          return {text:output,applied,numbersPreserved,numberFallback};
     }
     function renderEasyLines(element,text,dictionaryMarks=[]){
@@ -3946,8 +3961,7 @@
          else if(userLocation&&Date.now()-userLocationAt<120000)origin=userLocation;
          else origin=await getCurrentLocation({fresh:true});
          if(requestId!==routeRequestId)return;
-         if(origin.source!=='manual'&&Number(origin.accuracy)>1000)throw new Error(`현재 위치 오차가 약 ${(origin.accuracy/1000).toFixed(1)}km라 정확한 길을 안내하기 어려워요. 지도에서 출발 지점을 길게 눌러 선택한 뒤 다시 안내를 눌러 주세요.`);
-         if(!Number.isFinite(Number(origin.lat))||!Number.isFinite(Number(origin.lon))||!Number.isFinite(Number(place.lat))||!Number.isFinite(Number(place.lon)))throw new Error('출발 위치나 대피소 위치를 확인하지 못했어요. 지도에서 위치를 다시 선택해 주세요.');
+          if(!Number.isFinite(Number(origin.lat))||!Number.isFinite(Number(origin.lon))||!Number.isFinite(Number(place.lat))||!Number.isFinite(Number(place.lon)))throw new Error('출발 위치나 대피소 위치를 확인하지 못했어요. 지도에서 위치를 다시 선택해 주세요.');
          lastRouteRefresh={...origin,at:Date.now()};
         if(map){if(currentMarker){currentMarker.setLatLng([origin.lat,origin.lon]);currentMarker.setPopupContent('현재 위치');}else currentMarker=L.marker([origin.lat,origin.lon]).addTo(map).bindPopup('현재 위치');if(Number.isFinite(origin.accuracy)&&origin.accuracy>75){if(currentAccuracyCircle)currentAccuracyCircle.setLatLng([origin.lat,origin.lon]).setRadius(origin.accuracy);else currentAccuracyCircle=L.circle([origin.lat,origin.lon],{radius:origin.accuracy,color:'#536fa3',weight:1,fillColor:'#7f9ed3',fillOpacity:.12,interactive:false}).addTo(map);}}
         const params=new URLSearchParams({originLat:String(origin.lat),originLon:String(origin.lon),destLat:String(place.lat),destLon:String(place.lon),mode});
@@ -3962,9 +3976,9 @@
         else map?.fitBounds(L.latLngBounds(line),{padding:[42,42]});
         const minutes=Math.max(1,Math.ceil(data.durationSeconds/60));
         document.getElementById('routeModeLabel').textContent=mode==='foot'?'도보 경로':'차량 경로';
-        summary.textContent=`${formatRouteDistance(data.distanceMeters)} · 약 ${minutes}분`;
+        summary.textContent=`${origin.source!=='manual'&&Number(origin.accuracy)>1000?'대략 ':''}${formatRouteDistance(data.distanceMeters)} · 약 ${minutes}분`;
         data.steps.forEach(instruction=>{const item=document.createElement('li');item.textContent=instruction;steps.append(item);});
-          status.textContent=origin.source==='manual'?'선택한 지도 위치에서 경로를 표시해요. 실제 출발 위치와 선택한 지점이 다르면 경로도 달라질 수 있어요.':`경로 표시 · GPS 기반 기기 위치 · ${locationAccuracyText(origin.accuracy)} 현장 안내 우선`;
+          status.textContent=origin.source==='manual'?'선택한 지도 위치 기준 경로와 예상 시간이에요. 실제 출발 위치가 다르면 결과도 달라질 수 있어요.':Number(origin.accuracy)>1000?`GPS 위치 오차가 약 ${(origin.accuracy/1000).toFixed(1)}km예요. 경로와 예상 시간도 크게 다를 수 있어요. 지도에서 출발 지점을 선택하면 더 정확해요.`:`GPS 위치 기준 경로와 예상 시간 · ${locationAccuracyText(origin.accuracy)} 현장 안내 우선`;
       }catch(error){
         if(requestId!==routeRequestId)return;
         status.textContent=error.message||'경로를 불러오지 못했어요. 인터넷 연결을 확인해 주세요.';
