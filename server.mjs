@@ -304,7 +304,7 @@ async function getDisasterMessages(url, response) {
     const upstream = await fetch(sourceUrl, {
       headers: { 'User-Agent': 'Mozilla/5.0 (compatible; DisasterMessageReader/1.0)' },
       redirect: 'follow',
-      signal: AbortSignal.timeout(20000),
+      signal: AbortSignal.timeout(15000),
     });
     if (!upstream.ok) {
       sendJson(response, 502, { error: '공식 재난문자 목록에 연결하지 못했어요.' });

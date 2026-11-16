@@ -612,6 +612,9 @@
     updateSpeechButtons(false);
     const dictionaryCategories=['호우','산불','지진','폭염','한파','민방위','공통','기타'];
     let easyDictionary=[];
+    let orderedEasyDictionary=[];
+    let easyDictionaryByHard=new Map();
+    const dictionaryVariantTerms=new Set(['대피','저지대','하천','접근 금지','우회','외출 자제','접근 삼가','접근 자제','야외활동 자제','활동 자제','이동 자제','주민','기온','필요','이상','낙뢰','낙상','안전거리 확보','안전거리','통행 제한','교통통제','안전조치 완료','대피 종료','계량기','귀소','및','발효','재난대응체계','비상대응체계','수위급증','수위 급증','지정','준수','점검','실시','확보','발령','폐쇄','지속','유의']);
     let activeDictionaryCategory='전체';
     const statisticsCategories=['호우','산불','지진','폭염','한파','태풍·강풍','민방위','공통','기타'];
     let difficultWords=[];
@@ -623,12 +626,14 @@
     const difficultWordsPromise=fetch('/difficult-words.json').then(response=>{if(!response.ok)throw new Error('어려운 말 목록을 불러오지 못했어요.');return response.json();}).then(entries=>{
       if(!Array.isArray(entries))throw new Error('어려운 말 목록 형식이 올바르지 않아요.');
       difficultWords=entries.filter(entry=>entry&&typeof entry.hard==='string'&&typeof entry.easy==='string'&&Array.isArray(entry.tags));
-      difficultWordMatchers=[...difficultWords].sort((a,b)=>b.hard.length-a.hard.length).map(entry=>({entry,test:new RegExp(escapeRegExp(entry.hard)),replace:new RegExp(escapeRegExp(entry.hard),'g')}));
+      difficultWordMatchers=[...difficultWords].sort((a,b)=>b.hard.length-a.hard.length).map(entry=>({entry,test:new RegExp(entry.hard==='실시'?'실시(?!간)':escapeRegExp(entry.hard)),replace:new RegExp(escapeRegExp(entry.hard),'g')}));
       return difficultWords;
     });
     const dictionaryLoadPromise=fetch('/dictionary.json').then(response=>{if(!response.ok)throw new Error('사전 파일을 불러오지 못했어요.');return response.json();}).then(entries=>{
       if(!Array.isArray(entries))throw new Error('사전 파일 형식이 올바르지 않아요.');
-      easyDictionary=entries.filter(entry=>entry&&typeof entry.hard==='string'&&typeof entry.easy==='string'&&typeof entry.reason==='string'&&Array.isArray(entry.tags));
+       easyDictionary=entries.filter(entry=>entry&&typeof entry.hard==='string'&&typeof entry.easy==='string'&&typeof entry.reason==='string'&&Array.isArray(entry.tags));
+       orderedEasyDictionary=[...easyDictionary].sort((a,b)=>b.hard.length-a.hard.length);
+       easyDictionaryByHard=new Map(easyDictionary.map(entry=>[entry.hard,entry]));
       renderDictionaryFilters();renderDictionary();
       return easyDictionary;
     }).catch(error=>{document.getElementById('dictionaryCount').textContent=error.message;return [];});
@@ -1282,14 +1287,15 @@
       return [...new Set(String(text).split(/\n+/).flatMap(line=>findUnknownDifficultWords(line).map(match=>match.word)))];
     }
     function findCountableDifficultWords(text){
-      const listed=matchDifficultWords(text).map(entry=>entry.hard);
-      return [...new Set([...listed,...listUnknownDifficultWords(text)])];
+      const countableText=String(text).replace(/국가교통정보센터/g,'');
+      const listed=matchDifficultWords(countableText).map(entry=>entry.hard);
+      return [...new Set([...listed,...listUnknownDifficultWords(countableText)])];
     }
     function applyEasyDictionary(text,sourceText=''){
       let output=String(text);const applied=[];
-      const entries=[...easyDictionary].sort((a,b)=>b.hard.length-a.hard.length);
-      const contextOnlyTerms=new Set(['이상','미만','이하','초과','이내','미달','필요','외출 자제','접근 자제','야외활동 자제','활동 자제','이동 자제','낙뢰','낙상','안전거리','안전거리 확보','계량기','주민','우려','통행 제한','교통통제','귀소','대피 종료','안전조치 완료','짙다','정체','하수관로','감속','미끄럼','난방기','산행','시야','조치','복구','예상','정정','신고','규모','흔들림','피해','이동','가급적','양해','삼가 주시기','일체금합니다','번지다','서행','mm','km','주의보','경보','강풍주의보','건조주의보','폭염주의보','한파주의보','대설주의보','호우주의보','건조경보','호우경보','폭염경보','한파경보','강풍경보','대설경보','태풍주의보','태풍경보','풍랑주의보','풍랑경보','폭풍해일주의보','폭풍해일경보','폭염중대경보','열대야주의보','특별주의보','산불위기경보','국가위기경보','관심단계 위기경보','위기경보 발령','국가위기경보 「주의」 단계','국가위기경보 「경계」 단계','국가위기경보 「심각」 단계']);
-      const entryFor=hard=>easyDictionary.find(entry=>entry.hard===hard);
+      const entries=orderedEasyDictionary.length?orderedEasyDictionary:easyDictionary;
+      const contextOnlyTerms=applyEasyDictionary.contextOnlyTerms||(applyEasyDictionary.contextOnlyTerms=new Set(['이상','미만','이하','초과','이내','미달','필요','외출 자제','접근 자제','야외활동 자제','활동 자제','이동 자제','낙뢰','낙상','안전거리','안전거리 확보','계량기','주민','우려','통행 제한','교통통제','통제','금지','보행자','교통정보','혼잡','귀소','대피 종료','안전조치 완료','짙다','정체','하수관로','감속','미끄럼','난방기','산행','시야','조치','복구','예상','정정','신고','규모','흔들림','피해','이동','가급적','양해','삼가 주시기','일체금합니다','번지다','서행','mm','km','주의보','경보','강풍주의보','건조주의보','폭염주의보','한파주의보','대설주의보','호우주의보','건조경보','호우경보','폭염경보','한파경보','강풍경보','대설경보','태풍주의보','태풍경보','풍랑주의보','풍랑경보','폭풍해일주의보','폭풍해일경보','폭염중대경보','열대야주의보','특별주의보','산불위기경보','국가위기경보','관심단계 위기경보','위기경보 발령','국가위기경보 「주의」 단계','국가위기경보 「경계」 단계','국가위기경보 「심각」 단계']));
+      const entryFor=hard=>easyDictionaryByHard.get(hard)||easyDictionary.find(entry=>entry.hard===hard);
       const replacePhrase=(hard,pattern,makeEasy)=>{
         const entry=entryFor(hard);if(!entry)return;
         output=output.replace(pattern,(...args)=>{const easy=makeEasy(...args);applied.push({hard:entry.hard,easy:entry.easy,display:easy});return easy;});
@@ -1628,7 +1634,8 @@
         replacePhrase('고지대',/고지대(?:로|에)?\s*이동(?:하세요|해요|해 주세요|하시기 바랍니다|바랍니다)?/g,()=> '높은 곳으로 가세요');
        ['담배꽁초 무단 투기','발생 위험','내항 출구','생활용수','사전 확보','연기 흡입','암모니아 가스','산불조심기간','작은 규모','발생 상황','이상 없음','피해 없음','창문·식기','흙탕물','행정배수지','화학물질','소각 금지','산림 조심','계곡','산책로','빙초산','엄금','소출수','징역형','출몰','유해가스','누출','질산','전신주','고지대','위험물','안전조치','액화산소','에어쇼','전투기','혼잡','인파','밀치기','사이렌','연막탄','훈련','라이터','주원인','안전성','피서객','해수욕장','해안마을','해역','파고','진도','여진','피해','흔들림','영향','한빛원전','복구','조치'].sort((a,b)=>b.length-a.length).forEach(replaceNoun);
        entries.forEach(entry=>{
-        if(contextOnlyTerms.has(entry.hard))return;
+         if(contextOnlyTerms.has(entry.hard))return;
+         if(!output.includes(entry.hard)&&!dictionaryVariantTerms.has(entry.hard))return;
         const replace=(pattern,easy)=>{const globalPattern=new RegExp(pattern.source,pattern.flags.includes('g')?pattern.flags:`${pattern.flags}g`);output=output.replace(globalPattern,()=>{applied.push({hard:entry.hard,easy:entry.easy,display:easy});return easy;});};
         if(entry.hard==='대피'){
           replace(/안전한 곳으로 대피하시기 바랍니다/g,'안전한 곳으로 이동하세요');
@@ -1806,7 +1813,8 @@
           replace(/유의바랍니다/g,'조심하세요');
           replace(/유의 바랍니다/g,'조심하세요');
         }
-        const pattern=new RegExp(escapeRegExp(entry.hard),'g');
+         if(!output.includes(entry.hard))return;
+         const pattern=new RegExp(entry.hard==='실시'?'실시(?!간)':escapeRegExp(entry.hard),'g');
         output=output.replace(pattern,()=>{applied.push({hard:entry.hard,easy:entry.easy,display:entry.easy});return entry.easy;});
       });
        output=output.replace(/안전한 곳으로\s+안전한 곳으로/g,'안전한 곳으로').replace(/수도\s+수도관/g,'수도관').replace(/강가과/g,'강가와').replace(/하세요하세요/g,'하세요').replace(/주세요주세요/g,'주세요').replace(/(위험 알림|조심 알림)가 내려졌어요/g,'$1이 내려졌어요').replace(/알림이 내려졌어요중/g,'알림이 내려져 있어요').replace(/위험 알림가 내려졌어요/g,'위험 알림이 내려졌어요').replace(/나무 보일러의\s+작은 불/g,'나무 보일러의 작은 불').replace(/\.{2,}/g,'.');
@@ -2031,7 +2039,73 @@
           const entry=entryFor(`국가위기경보 「${stage}」 단계`);if(entry)applied.push({hard:entry.hard,easy:entry.easy,display:label});
         });
        if(/건조[,·]\s*강풍.*산불 발생 위험 급증/.test(source))output=output.replace(/날씨가 바짝 마른 날씨하고 바람이 강해 산에 불이 날 위험이 크게 높아졌어요/g,'날씨가 건조하고 바람이 세게 불어 산불 위험이 크게 높아졌어요');
-        const originalSource=String(sourceText||'');
+         const originalSource=String(sourceText||'');
+         if(/산불\s*예방은?.*관심과 실천에서 시작됩니다/.test(originalSource)&&/(?:소각 금지|소각금지|화기 금지)/.test(originalSource)){
+           output='산불을 막으려면 모두의 관심과 실천이 필요해요. 농사 뒤 남은 풀과 쓰레기를 태우지 마세요. 산에 갈 때 불을 붙이는 도구를 가져가지 마세요.';
+         }
+         if(/산불예방에 각별히 주의/.test(originalSource))output=output.replace(/산불예방에 각별히 주의하여 주시기 바랍니다/g,'산에서 불이 나지 않도록 각별히 조심해 주세요').replace(/산불예방/g,'산에서 불이 나는 일 막기');
+         if(/산림.*연접지.*소각/.test(originalSource))output=output.replace(/숲과 숲 옆 땅 소각·불을 피우면 안 돼요/g,'숲이나 숲 옆 땅에서 풀이나 쓰레기를 태우거나 불씨를 쓰면 안 돼요').replace(/숲과 숲 옆 땅 소각/g,'숲이나 숲 옆 땅에서 풀이나 쓰레기를 태우는 일');
+          if(/산불예방에 각별히 주의/.test(originalSource))output=output.replace(/산불예방에 각별히 주의하여 주시기 바랍니다/g,'산불 예방에 각별히 조심해 주세요').replace(/산림 및 연접지/g,'숲과 숲 옆 땅').replace(/화목보일러 불씨 주의/g,'나무를 때는 보일러 불을 조심해 주세요').replace(/불씨 사용 금지/g,'불을 피우면 안 돼요').replace(/불법소각 시/g,'허락 없이 태우면').replace(/과태료/g,'벌금').replace(/숲과 숲 옆 땅 소각·불을 피우면 안 돼요/g,'숲이나 숲 옆 땅에서 풀이나 쓰레기를 태우면 안 돼요');
+         if(/논·밭두렁/.test(originalSource))output=output.replace(/논·밭두렁/g,'논과 밭 사이 둑');
+         output=output.replace(/한파주의보(?:\([^)]*\))?(?:\s*발효중|\s*발효|\s*발령중|\s*발령)?/g,'매우 추운 날씨 주의 알림이 나왔어요')
+           .replace(/한파경보(?:\([^)]*\))?(?:\s*발효중|\s*발효|\s*발령중|\s*발령)?/g,'매우 추운 날씨 위험 알림이 나왔어요')
+           .replace(/(주의|위험) 알림이 나왔어요중/g,'$1 알림이 나와 있어요');
+         output=output.replace(/(?:현재\s*)?\d+차선\s*중\s*\d+차선\s*통제에 따라/g,match=>match.replace(/통제에 따라$/,'을 막아'))
+           .replace(/교통 통제는 교통사고 수습활동 종료에 따라 해제되었음을 알려드립니다/g,'사고 처리가 끝나 막았던 길을 다시 다닐 수 있어요')
+           .replace(/통제중/g,'못 지나가게 막고 있어요').replace(/통제 중/g,'못 지나가게 막고 있어요')
+           .replace(/(내항 출구|출구|도로|교통) 통제(?=\s|,|및|에|로|$)/g,'$1을 못 지나가게 막음');
+         output=output.replace(/(산행|입산)\s*시/g,'산에 갈 때').replace(/산행\s*(?:을|은|이)?\s*(?:삼가|자제)(?:해 주세요|하시기 바랍니다|바랍니다)?/g,'산에 가지 말아 주세요')
+           .replace(/불을 붙이는 도구\s*(?:하면 안 됨|금지)/g,'불을 붙이는 도구를 가져가면 안 돼요').replace(/(쓰레기|화기|불씨|산행)\s*금지/g,(_,thing)=>thing==='산행'?'산에 가지 마세요':`${thing}${thing==='화기'?'를':'을'} 함부로 쓰면 안 돼요`);
+         output=output.replace(/보행자(?:\s*사고)?\s*주의/g,'걸어 다니는 사람을 조심하세요').replace(/보행자/g,'걸어 다니는 사람');
+         output=output.replace(/(?:인근\s*)?주민(?:들께서는|께서는|들께서|은|는|들)?/g,match=>/인근/.test(match)?'가까이 사는 분은':'그 지역에 사는 분은');
+         output=output.replace(/난방기\s*사용\s*시\s*(?:화재예방|화재조심|불이 나지 않게 막기)/g,'난방기를 사용할 때 불이 나지 않도록 조심하세요')
+           .replace(/난방기 화재조심/g,'난방기에서 불이 나지 않게 조심하세요');
+         output=output.replace(/교통 사람이나 차가 많아 붐빔(?:이)?\s*예상되니/g,'차가 막힐 수 있으니').replace(/교통\s*(?:혼잡|정체)(?:이|가)\s*예상되니/g,'차가 막힐 수 있으니').replace(/교통\s*(?:혼잡|정체)(?:이|가)\s*예상됩니다/g,'차가 막힐 수 있어요')
+           .replace(/소음이\s*예상되니/g,'소음이 날 수 있으니').replace(/(\S+)이\s*예상되니/g,'$1이 생길 수 있으니').replace(/(\S+)이\s*예상됩니다/g,'$1이 생길 수 있어요')
+           .replace(/예상(?:되오니|되어|됩니다|된다|되니)/g,'생길 수 있어요')
+           .replace(/(생김|발생)이\s*우려됩니다/g,'생길 수 있어요').replace(/우려됩니다/g,'걱정돼요');
+         output=output.replace(/이동하여\s*주시고/g,'가 주시고').replace(/이동하시기 바랍니다/g,'가세요').replace(/이동하시고/g,'가시고').replace(/이동 바랍니다/g,'가세요').replace(/이동하세요/g,'가세요').replace(/이동해 주세요/g,'가 주세요').replace(/이동에 지장없음을/g,'다니는 데 문제가 없음을').replace(/안전한 곳으로 이동/g,'위험하지 않은 곳으로 가');
+         output=output.replace(/차량\s*서행\s*운전/g,'차량은 천천히 운전').replace(/교차로\s*서행/g,'교차로에서는 천천히 운전').replace(/서행하고/g,'천천히 운전하고').replace(/서행하시기 바랍니다/g,'천천히 운전하세요');
+         output=output.replace(/보행자(?:\s*사고)?\s*주의/g,'걸어 다니는 사람을 조심하세요').replace(/보행자/g,'걸어 다니는 사람')
+           .replace(/주민께서는|주민들께서는/g,'그 지역에 사는 분은').replace(/주민은/g,'그 지역에 사는 분은');
+         output=output.replace(/난방기(?:를)?\s*사용\s*시\s*불이 나지 않게 막기/g,'방을 따뜻하게 하는 기계를 쓸 때 불이 나지 않게 조심하세요')
+           .replace(/난방기(?:를)?\s*사용\s*시\s*화재(?:예방|조심)/g,'방을 따뜻하게 하는 기계를 쓸 때 불이 나지 않게 조심하세요')
+           .replace(/난방기 화재조심/g,'방을 따뜻하게 하는 기계에서 불이 나지 않게 조심하세요')
+           .replace(/난방기를 사용할 때/g,'방을 따뜻하게 하는 기계를 쓸 때');
+         output=output.replace(/모두의 관심과 실천이 필요해요/g,'모두의 관심과 실천이 있어야 해요');
+         output=output.replace(/걸어 다니는 사람을 조심하세요 바랍니다/g,'걸어 다니는 사람을 조심하세요').replace(/걸어 다니는 사람 사고 주의 바랍니다/g,'걸어 다니는 사람을 조심하세요');
+         output=output.replace(/차량 차가 막힐 수/g,'차량이 막힐 수');
+         output=output.replace(/(\d+차선 중 \d+차선) 을 막아/g,'$1을 막아');
+         output=output.replace(/(가까운 곳에 사는 사람|그 지역에 사는 사람)(께서는|은|는)/g,'$1분은');
+          output=output.replace(/산에 갈 때 불을 붙이는 도구를 함부로 쓰면 안 돼요/g,'산에 갈 때 불을 붙이는 도구를 가져가지 마세요')
+            .replace(/등 산불을 막기 수칙/g,'등 산불 예방 수칙').replace(/산불을 막기 수칙/g,'산불 예방 수칙');
+           const alertEasyNames={건조:'날씨가 매우 말라',호우:'비가 많이 오는',폭염:'매우 더운 날씨',한파:'매우 추운 날씨',강풍:'바람이 센',대설:'눈이 많이 오는',태풍:'태풍',풍랑:'바다의 파도가 거친',폭풍해일:'바닷물이 크게 밀려오는'};
+           output=output.replace(/(건조|호우|폭염|한파|강풍|대설|태풍|풍랑|폭풍해일)\s*(주의보|경보)(?:\([^)]*\))?(?:\s*(?:발효중|발효|발령중|발령))?/g,(_,hazard,level)=>`${alertEasyNames[hazard]} ${level==='주의보'?'주의':'위험'} 알림`);
+          output=output.replace(/매우 추운 날씨 알림이 나와 있어요/g,'매우 추운 날씨 주의 알림이 나와 있어요');
+          output=output.replace(/(?:전면\s*)?(?:교통\s*)?통제를\s*(?:실시합니다|실시해요|실시할 예정입니다)/g,'차량이 지나가지 못하게 막습니다')
+            .replace(/(?:전면\s*)?(?:교통\s*)?통제될 예정(?:이오니|입니다|이에요)?/g,'길을 막을 예정이니')
+            .replace(/(?:일시\s*)?통제가\s*(?:예상되니|예상됩니다|생길 수 있어요)/g,'길이 막힐 수 있으니')
+            .replace(/(?:\d+차선\s*)?통제(?:될)?\s*예정/g,'길을 막을 예정').replace(/\d+차선\s*통제/g,'해당 차로를 막음')
+            .replace(/(?:전면|부분|출입|구간|도로|교통)통제/g,'길을 막는 일')
+            .replace(/교통\s*통제는\s*.*?해제되었음을 알려드립니다/g,'사고 처리가 끝나 막았던 길을 다시 다닐 수 있어요')
+            .replace(/통제는\s*.*?해제되었음을 알려드립니다/g,'막았던 길을 다시 다닐 수 있어요')
+            .replace(/차량 통행이 통제됩니다/g,'차량이 지나갈 수 없어요').replace(/통행이 통제됩니다/g,'지나갈 수 없어요')
+            .replace(/통제중/g,'못 지나가게 막고 있어요').replace(/통제 중/g,'못 지나가게 막고 있어요')
+            .replace(/(내항 출구|출구|도로|교통) 통제(?=\s|,|및|에|로|$)/g,'$1을 못 지나가게 막음')
+            .replace(/통제에 따라/g,'막아').replace(/통제 및/g,'막고').replace(/통제,/g,'막고,');
+          output=output.replace(/입산\s*시\s*화기\s*소지\s*금지/g,'산에 갈 때 불을 붙이는 도구를 가지고 가면 안 돼요')
+            .replace(/화기\s*소지\s*금지/g,'불을 붙이는 도구를 가지고 가면 안 돼요')
+            .replace(/소각[·ㆍ,]?\s*불씨\s*사용\s*금지/g,'태우거나 불씨를 쓰면 안 돼요')
+            .replace(/소각\s*금지/g,'태우면 안 돼요').replace(/스마트폰\s*사용금지/g,'스마트폰을 쓰면 안 돼요');
+          output=output.replace(/교통사람이나 차가 많아 붐빔/g,'차가 막힘').replace(/교통\s*(?:혼잡|정체)가?\s*예상되니/g,'차가 막힐 수 있으니').replace(/교통\s*(?:혼잡|정체)가?\s*예상됩니다/g,'차가 막힐 수 있어요');
+           output=output.replace(/차량\s*운전\s*시\s*서행/g,'차량은 천천히 운전').replace(/차량\s*서행\s*운전/g,'차량은 천천히 운전').replace(/교차로\s*서행/g,'교차로에서는 천천히 운전').replace(/운행\s*시\s*감속/g,'운전할 때 속도를 줄이고').replace(/감속\s*(?:및|하고)/g,'속도를 줄이고').replace(/감속운행/g,'속도를 줄여 운전');
+           output=output.replace(/함께 이동하며/g,'함께 가며').replace(/순차적 가 주시고/g,'차례대로 가 주세요').replace(/(안전한 곳|높은 곳)으로 이동/g,'$1으로 가세요');
+          output=output.replace(/난방기에서/g,'방을 따뜻하게 하는 기계에서').replace(/난방기/g,'방을 따뜻하게 하는 기계');
+           output=output.replace(/가까운 곳에 사는 사람분은/g,'가까이 사는 분은').replace(/그 지역에 사는 사람분은/g,'그 지역에 사는 분은');
+           output=output.replace(/속도를 줄이기/g,'속도를 줄이세요').replace(/조심하세요 바랍니다/g,'조심해 주세요').replace(/다른 길로 가기(?:를)? 이용(?:해|하여)?/g,'다른 길로 가세요').replace(/길을 막는 일이 예상(?:됩니다|되니)?/g,'길이 막힐 수 있어요');
+         output=output.replace(/모두의 관심과 실천이 필요해요/g,'모두의 관심과 실천이 있어야 해요')
+           .replace(/교통안전에 각별한 주의가 필요합니다/g,'교통안전에 각별히 조심해야 합니다')
+           .replace(/필요하신 분들?/g,'이용을 원하시는 분').replace(/필요한 분들?/g,'도움을 받을 분');
         if(/난방기.*화재\s*예방/.test(originalSource))output=output.replace(/난방기에서 불이 나지 않게 조심을 위해 주의해요/g,'난방기에서 불이 나지 않게 주의하세요').replace(/실내를 따뜻하게 하는 기계에서 불이 나지 않게 조심(?:을 위해)?\s*주의해요/g,'난방기에서 불이 나지 않게 주의하세요');
         if(/감속\s*운전/.test(originalSource))output=output.replace(/감속\s*운전(?:해요|하세요|하기)?/g,'속도를 줄여 운전하세요');
         if(/가급적.*삼가/.test(originalSource))output=output.replace(/될 수 있으면 삼가\s*해요/g,'되도록 하지 말아 주세요');
@@ -2040,12 +2114,33 @@
         if(/에어쇼.*훈련/.test(originalSource))output=output.replace(/비행기가 하늘에서 펼치는 공연 미리 연습하기로/g,'비행 공연 연습으로');
         if(/질서를? 유지/.test(originalSource))output=output.replace(/질서를 유지해요|질서 유지를 해요/g,'차례와 약속을 지켜 주세요');
         if(/고지대.*이동/.test(originalSource))output=output.replace(/높은 곳으로 가세요해요|높은 곳으로 가세요하세요/g,'높은 곳으로 가세요');
-        if(/1\s*개\s*차선\s*통행/.test(originalSource))output=output.replace(/1개 차로만 이용해 지나가기으로/g,'1개 차로만 이용해 지나가므로');
+         if(/1\s*개\s*차선\s*통행/.test(originalSource))output=output.replace(/1개 차로만 이용해 지나가기으로/g,'1개 차로만 이용해 지나가므로');
         if(/혼잡하니|혼잡하여/.test(originalSource))output=output.replace(/사람이나 차가 많아 붐빔하니|혼잡하니/g,'차가 많아 막히니').replace(/사람이나 차가 많아 붐빔하여|혼잡하여/g,'차가 많아 막혀');
         if(/천천히\s*이동/.test(originalSource))output=output.replace(/천천히 움직여 주세요\s*바랍니다/g,'천천히 움직여 주세요');
         if(/안전한 곳.*이동해/.test(originalSource))output=output.replace(/위험하지 않은 곳으로 가세요해/g,'위험하지 않은 곳으로 가서');
-        if(/유해가스\s*누출/.test(originalSource))output=output.replace(/몸에 해로운 가스 새어 나옴/g,'몸에 해로운 가스가 새어 나옴');
-        return {text:output,applied,numbersPreserved,numberFallback};
+         if(/유해가스\s*누출/.test(originalSource))output=output.replace(/몸에 해로운 가스 새어 나옴/g,'몸에 해로운 가스가 새어 나옴');
+         if(/쓰레기\s*태우기\s*금지/.test(originalSource))output=output.replace(/쓰레기 태우기 금지/g,'쓰레기를 태우면 안 돼요');
+         if(/불법소각|과태료/.test(originalSource))output=output.replace(/불법소각/g,'허락 없이 태우는 일').replace(/과태료/g,'정해진 벌금');
+         if(/입산\s*시\s*화기\s*소지\s*금지/.test(originalSource))output=output.replace(/산에 갈 때 화기소지 금지|산에 갈 때 불을 붙이는 도구를 가지고 가면 안 돼요/g,'산에 갈 때 불을 붙이는 도구를 가져가면 안 돼요');
+         if(/화재발생/.test(originalSource))output=output.replace(/화재발생/g,'불이 남');
+         if(/(119|112).*신고/.test(originalSource))output=output.replace(/신고 바랍니다/g,'관계 기관에 알려 주세요');
+         if(/실시간\s*교통정보/.test(originalSource))output=output.replace(/하기간 교통정보|실시간 교통정보/g,'실시간 차와 길 상황');
+         if(/차량정체|도로\s*정체/.test(originalSource))output=output.replace(/차량정체/g,'차가 막힘').replace(/도로 정체/g,'도로가 막힘');
+         if(/교통 통제|통행이 통제|전면통제|출입 통제|일시 통제/.test(originalSource))output=output.replace(/차량 통행이 통제됩니다/g,'차량이 지나갈 수 없어요').replace(/통행이 통제됩니다/g,'지나갈 수 없어요').replace(/전면 교통 통제중?/g,'차가 다니지 못하게 막고 있어요').replace(/전면통제/g,'차량이 지나가지 못하게 막음').replace(/출입 통제/g,'들어가지 못하게 막음').replace(/일시 통제/g,'잠시 길을 막음').replace(/통제될 예정이오니/g,'길을 막을 예정이니');
+          output=output.replace(/계량기\s*(?:및|와)\s*수도관\s*동파\s*예방/g,'계량기와 수도관이 얼어 터지지 않도록 해 주세요').replace(/수도 계량기 그리고 수도관 수도관이나 물이 얼어 터지는 일 미리 막기/g,'수도 계량기와 수도관이 얼어 터지지 않게 해 주세요').replace(/수도 계량기/g,'수돗물 사용량을 재는 기계');
+          output=output.replace(/교통혼잡|교통 혼잡/g,'차가 막힘').replace(/정체가 예상되므로/g,'차가 막힐 수 있으므로').replace(/혼잡이 예상되므로/g,'사람이나 차가 많아 붐빌 수 있으므로');
+          output=output.replace(/다른 길로 가기이동/g,'다른 길로 가기').replace(/가까운 곳에 사는 사람분은/g,'가까이 사는 분은');
+          output=output.replace(/그 지역에 사는 분은센터에/g,'주민센터에').replace(/그 지역에 사는 분들은 이용/g,'이용하려는 분은 이용');
+          output=output.replace(/수도 계량기/g,'수돗물 사용량을 재는 기계').replace(/항구 안쪽에서 밖으로 나가는 길 통제/g,'항구 안쪽에서 밖으로 나가는 길을 막고 있어요')
+            .replace(/산불 발생지역 접근을 금지하고/g,'산불 난 곳에 가까이 가지 말고').replace(/출입을 금지하여 주시고/g,'들어가지 말아 주세요').replace(/(?:스마트폰|휴대전화) 사용금지/g,'휴대전화를 사용하면 안 돼요')
+            .replace(/차량정체/g,'차가 막힘').replace(/교통혼잡이 예상되므로/g,'차가 막힐 수 있으므로').replace(/혼잡이 예상되므로/g,'사람이 많이 모일 수 있으므로')
+            .replace(/들이마심 우려가 있으므로/g,'들이마실 수 있으니').replace(/우려되오니/g,'일어날 수 있으니').replace(/우려가 있으므로/g,'일어날 수 있으므로')
+            .replace(/신고 바랍니다/g,'관계 기관에 알려 주세요').replace(/신고하세요/g,'관계 기관에 알려 주세요')
+             .replace(/실시간 차와 길 상황를/g,'실시간 차와 길 상황을').replace(/교통 통제는 .*?해제되었음을 알려드립니다/g,'사고 처리가 끝나 막았던 길을 다시 다닐 수 있어요')
+             .replace(/안전한 곳으로/g,'위험하지 않은 곳으로').replace(/필요합니다/g,'있어야 합니다').replace(/필요해요/g,'있어야 해요');
+          if(/(?:교통\s*)?통제는.*수습활동 종료.*해제되었음을/.test(originalSource))output=output.replace(/(?:교통\s*)?통제는 .*$/,'사고 처리가 끝나 막았던 길을 다시 다닐 수 있어요.');
+         output=output.replace(/불이 나지 않게 조심하세요 등/g,'불이 나지 않게 조심하세요. 또한').replace(/조심하세요 바랍니다/g,'조심해 주세요');
+         return {text:output,applied,numbersPreserved,numberFallback};
     }
     function renderEasyLines(element,text,dictionaryMarks=[]){
       const normalized=String(text).replace(/\s*▲\s*/g,'. ').replace(/[\r\n]+\s*[•\-]?\s*/g,'. ').replace(/\s+/g,' ').replace(/\s+([,.;!?。！？])/g,'$1').replace(/([.!?。！？]){2,}/g,'$1').trim();
@@ -2363,7 +2458,7 @@
        const requestId=++disasterRequestId;disasterArchiveLoaded=true;reloadButton.disabled=true;searchButton.disabled=true;regionSelect.disabled=true;previousButton.disabled=true;nextButton.disabled=true;document.getElementById('disasterPagination').hidden=true;status.textContent=fixedUiText('최근 {days}일 불러오는 중…',siteLanguage,{days:Number(days).toLocaleString(siteLanguage==='ko'?'ko-KR':siteLanguage)});list.replaceChildren();
       try{
         const params=new URLSearchParams({days,keyword,region,page:String(disasterPage),pageSize:'50'});
-         const response=await fetch(localApiUrl(`/api/disaster-messages?${params}`),{cache:'no-store'});const data=await response.json();
+          const response=await fetch(localApiUrl(`/api/disaster-messages?${params}`),{cache:'no-store',signal:AbortSignal.timeout(22000)});const data=await response.json();
          if(!response.ok)throw new Error('전국 재난문자 목록을 불러오지 못했어요.');
         if(requestId!==disasterRequestId)return;
         const selectedRegion=regionSelect.value;const availableRegions=data.regions||[];const currentOptions=[...regionSelect.options].slice(1).map(option=>option.value);
@@ -2435,7 +2530,7 @@
       categories.push('기타');
       return categories;
     }
-    function matchDifficultWords(text){return difficultWordMatchers.filter(item=>item.test.test(text)).map(item=>item.entry);}
+     function matchDifficultWords(text){return difficultWordMatchers.filter(item=>item.test.test(text)).map(item=>item.entry);}
     function applyStatisticsWordList(text){
       return applyEasyDictionary(simplifyDisasterMessage(text,'general'),text).text;
     }
@@ -2463,7 +2558,7 @@
         row.append(word,track,value);return row;
       }));
     }
-    function writeStatisticsResult(messages,meta){
+    function writeStatisticsResultLegacy(messages,meta){
       const allTerms=new Map();const categories=new Map(statisticsCategories.map(category=>[category,{messages:0,terms:new Map()}]));
       let hardMessages=0,totalWordsBefore=0,totalWordsAfter=0,totalCharactersBefore=0,totalCharactersAfter=0,total=0;
       messages.forEach(message=>{
@@ -2513,15 +2608,48 @@
     }
     async function requestStatisticsPage(page){
       let lastError;
-      for(let attempt=0;attempt<3;attempt++){
+      for(let attempt=0;attempt<2;attempt++){
         try{
-          const params=new URLSearchParams({days:'365',keyword:'',region:'',page:String(page),pageSize:'100'});
-          const response=await fetch(localApiUrl(`/api/disaster-messages?${params}`),{signal:AbortSignal.timeout(25000)});
+          const params=new URLSearchParams({days:'365',keyword:'',region:'',page:String(page),pageSize:'50'});
+          const response=await fetch(localApiUrl(`/api/disaster-messages?${params}`),{signal:AbortSignal.timeout(18000)});
           const data=await response.json();if(!response.ok)throw new Error(data.error||'재난문자 페이지를 불러오지 못했어요.');
           return data;
-        }catch(error){lastError=error;if(attempt<2)await new Promise(resolve=>setTimeout(resolve,350*(attempt+1)));}
+        }catch(error){lastError=error;if(attempt===0)await new Promise(resolve=>setTimeout(resolve,250));}
       }
       throw lastError;
+    }
+    async function writeStatisticsResultIncrementally(messages,meta){
+      const allTerms=new Map();const categories=new Map(statisticsCategories.map(category=>[category,{messages:0,terms:new Map()}]));
+      let hardMessages=0,totalWordsBefore=0,totalWordsAfter=0,totalCharactersBefore=0,totalCharactersAfter=0,total=0;
+      const simplifiedCache=new Map();const status=document.getElementById('statisticsStatus');
+      for(let index=0;index<messages.length;index++){
+        const text=String(messages[index]||'').replace(/\s*\[[^\]]+\]\s*$/,'').trim();if(!text)continue;
+        total+=1;
+        const matches=matchDifficultWords(text);const difficultBefore=[...new Set([...matches.map(entry=>entry.hard),...listUnknownDifficultWords(text)])];if(difficultBefore.length)hardMessages+=1;totalWordsBefore+=difficultBefore.length;totalCharactersBefore+=Array.from(text.replace(/\s/g,'')).length;
+        const types=classifyStatisticsMessage(text);const groups=new Set([...types,'공통']);
+        groups.forEach(category=>{const group=categories.get(category);if(group)group.messages+=1;});
+        matches.forEach(entry=>{
+          allTerms.set(entry,(allTerms.get(entry)||0)+1);
+          groups.forEach(category=>{const group=categories.get(category);if(!group||!(entry.tags.includes(category)||entry.tags.includes('공통')))return;group.terms.set(entry,(group.terms.get(entry)||0)+1);});
+        });
+        let simplified=simplifiedCache.get(text);
+        if(simplified===undefined){simplified=applyStatisticsWordList(text);if(simplifiedCache.size<20000)simplifiedCache.set(text,simplified);}
+        totalWordsAfter+=findCountableDifficultWords(simplified).length;totalCharactersAfter+=Array.from(simplified.replace(/\s/g,'')).length;
+        if((index+1)%40===0){status.textContent=fixedUiText('문자 {done}/{total}건의 순화 결과를 나누어 분석하고 있어요.',siteLanguage,{done:(index+1).toLocaleString(siteLanguage==='ko'?'ko-KR':siteLanguage),total:messages.length.toLocaleString(siteLanguage==='ko'?'ko-KR':siteLanguage)});await new Promise(resolve=>setTimeout(resolve,0));}
+      }
+      statisticsResult={allTerms,categories,total,hardMessages,totalWordsBefore,totalWordsAfter,totalCharactersBefore,totalCharactersAfter,meta};
+      const rate=total?hardMessages/total*100:0;
+      document.getElementById('statisticsRate').textContent=`${rate.toFixed(1)}%`;
+      document.getElementById('statisticsSummaryText').textContent=fixedUiText('{total}건 가운데 {hard}건에 사전 목록 또는 자동 감지한 어려운 표현이 한 개 이상 있었어요. 모든 어려운 말을 빠짐없이 찾는 수치는 아니에요.',siteLanguage,{total:total.toLocaleString(siteLanguage==='ko'?'ko-KR':siteLanguage),hard:hardMessages.toLocaleString(siteLanguage==='ko'?'ko-KR':siteLanguage)});
+      document.getElementById('statisticsTotalMessages').textContent=total.toLocaleString();document.getElementById('statisticsDifficultMessages').textContent=hardMessages.toLocaleString();
+      const wordsBefore=total?totalWordsBefore/total:0;const wordsAfter=total?totalWordsAfter/total:0;
+      document.getElementById('statisticsWordCountBefore').textContent=siteLanguage==='ko'?`${wordsBefore.toFixed(2)}개`:`${wordsBefore.toFixed(2)} ${fixedUiText('개')}`;
+      document.getElementById('statisticsWordCountAfter').textContent=siteLanguage==='ko'?`${wordsAfter.toFixed(2)}개`:`${wordsAfter.toFixed(2)} ${fixedUiText('개')}`;
+      const averageBefore=total?totalCharactersBefore/total:0;const averageAfter=total?totalCharactersAfter/total:0;
+      document.getElementById('statisticsAverageLengthBefore').textContent=siteLanguage==='ko'?`${averageBefore.toFixed(1)}자`:`${averageBefore.toFixed(1)} ${fixedUiText('자')}`;
+      document.getElementById('statisticsAverageLengthAfter').textContent=siteLanguage==='ko'?`${averageAfter.toFixed(1)}자`:`${averageAfter.toFixed(1)} ${fixedUiText('자')}`;
+      document.getElementById('statisticsCoverage').textContent=fixedUiText('자료 범위: {startDate} ~ {endDate} · {total}건 · {completeness}',siteLanguage,{startDate:meta.startDate||fixedUiText('최근 1년'),endDate:meta.endDate||fixedUiText('현재'),total:total.toLocaleString(siteLanguage==='ko'?'ko-KR':siteLanguage),completeness:fixedUiText(meta.complete?'전체 수집':'일부 누락')});
+      renderStatisticsChart();
     }
     async function loadDifficultyStatistics(force=false){
       if(statisticsLoading||statisticsLoaded&&!force)return;
@@ -2533,17 +2661,17 @@
         const first=await requestStatisticsPage(1);const pageCount=Math.max(1,Number(first.pageCount)||1);const totalCount=Number(first.totalCount)||first.items?.length||0;
         const pages=new Map([[1,first.items||[]]]);const failed=[];let finished=1;progress.max=pageCount;progress.value=finished;
         const pageNumbers=Array.from({length:Math.max(0,pageCount-1)},(_,index)=>index+2);let cursor=0;
-        async function worker(){
+         async function worker(){
           while(cursor<pageNumbers.length){const page=pageNumbers[cursor++];try{const data=await requestStatisticsPage(page);pages.set(page,data.items||[]);}catch(error){failed.push(page);}
             finished+=1;progress.value=finished;
-             if(finished===pageCount||finished%8===0)status.textContent=fixedUiText('최근 1년 자료 불러오는 중 · {finished}/{pages} 묶음 · {total}건 예상',siteLanguage,{finished:finished.toLocaleString(siteLanguage==='ko'?'ko-KR':siteLanguage),pages:pageCount.toLocaleString(siteLanguage==='ko'?'ko-KR':siteLanguage),total:totalCount.toLocaleString(siteLanguage==='ko'?'ko-KR':siteLanguage)});
+              if(finished===pageCount||finished%4===0)status.textContent=fixedUiText('최근 1년 자료 불러오는 중 · {finished}/{pages} 묶음 · {total}건 예상',siteLanguage,{finished:finished.toLocaleString(siteLanguage==='ko'?'ko-KR':siteLanguage),pages:pageCount.toLocaleString(siteLanguage==='ko'?'ko-KR':siteLanguage),total:totalCount.toLocaleString(siteLanguage==='ko'?'ko-KR':siteLanguage)});
           }
         }
-        await Promise.all(Array.from({length:Math.min(8,pageNumbers.length)},worker));
+         await Promise.all(Array.from({length:Math.min(4,pageNumbers.length)},worker));
         const seen=new Set();const messages=[];
         [...pages.keys()].sort((a,b)=>a-b).forEach(page=>pages.get(page).forEach(item=>{const id=item.id||`${page}:${messages.length}`;if(seen.has(id))return;seen.add(id);messages.push(item.message||'');}));
         const complete=failed.length===0&&pages.size===pageCount&&messages.length>=totalCount&&first.complete!==false;
-        writeStatisticsResult(messages,{startDate:first.startDate,endDate:first.endDate,complete,expected:totalCount,failed});
+         await writeStatisticsResultIncrementally(messages,{startDate:first.startDate,endDate:first.endDate,complete,expected:totalCount,failed});
         statisticsLoaded=true;
          status.textContent=complete?fixedUiText('분석 완료 · 최근 1년 {count}건 전체 확인',siteLanguage,{count:messages.length.toLocaleString(siteLanguage==='ko'?'ko-KR':siteLanguage)}):fixedUiText('일부 자료로 분석했어요 · {count}/{total}건 · 빠진 묶음 {missing}개 · 다시 분석할 수 있어요',siteLanguage,{count:messages.length.toLocaleString(siteLanguage==='ko'?'ko-KR':siteLanguage),total:totalCount.toLocaleString(siteLanguage==='ko'?'ko-KR':siteLanguage),missing:failed.length.toLocaleString(siteLanguage==='ko'?'ko-KR':siteLanguage)});
        }catch(error){status.textContent=fixedUiText('통계를 불러오지 못했어요 · 잠시 후 다시 시도해 주세요.');document.getElementById('statisticsChart').replaceChildren(Object.assign(document.createElement('p'),{className:'statistics-empty',textContent:fixedUiText('자료를 불러오지 못했어요. 다시 분석을 눌러 주세요.')}));}
