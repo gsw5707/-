@@ -804,6 +804,7 @@
     themeToggleButton.addEventListener('click',()=>setColorTheme(document.documentElement.dataset.theme==='dark'?'light':'dark'));
     updateThemeButton();
     function hazardTypeForMessage(text=''){
+      if(/(?:실종자|실종.{0,12}찾|찾습니다|찾고 있습니다|노조파업|노조 파업|시위|집회|추모사이렌|호국훈련|안전한국훈련|오발송|보이스피싱|대리구매)/.test(text))return 'generic';
       if(/지진해일|쓰나미|해일/.test(text))return 'tsunami';
       if(/지진|흔들림/.test(text))return 'earthquake';
       if(/산불|산림화재/.test(text))return 'wildfire';
@@ -831,7 +832,8 @@
       return {type,easy,changed:easy!==original};
     }
     function shelterTypeForMessage(text){
-      return shelterTypeForHazard(hazardTypeForMessage(text));
+      const type=hazardTypeForMessage(text);
+      return type==='generic'?'':shelterTypeForHazard(type);
     }
     function messageRegionName(text){
       const raw=text.match(/\[([^\]]+)\]\s*$/)?.[1]?.trim()||'';
@@ -1058,7 +1060,7 @@
       speechStatus.textContent=fixedUiText(template,siteLanguage,{language:localizedName,...values});
     }
     function updateActionGuideView(){
-      const message=document.getElementById('message').value.trim();const type=hazardTypeForMessage(message);const mapType=shelterTypeForHazard(type);const cards=[...document.querySelectorAll('.guide-card[data-hazard]')];document.querySelector('.action-grid').classList.toggle('is-filtered',Boolean(type));
+      const message=document.getElementById('message').value.trim();const detectedType=hazardTypeForMessage(message);const type=detectedType==='generic'?'':detectedType;const mapType=shelterTypeForHazard(type);const cards=[...document.querySelectorAll('.guide-card[data-hazard]')];document.querySelector('.action-grid').classList.toggle('is-filtered',Boolean(type));
       cards.forEach(card=>{card.hidden=Boolean(type)&&card.dataset.hazard!==type;});
       document.querySelectorAll('.action-guide-group').forEach(group=>{group.hidden=Boolean(type);});
       const detail=document.getElementById('actionGuideDetail');const status=document.getElementById('actionGuideStatus');const shelterButton=document.getElementById('actionGuideShelterButton');
@@ -2129,8 +2131,8 @@
     }
     function extractDisasterMessageFromOcr(ocr){
       const uiLine=/^(?:재난문자 순화|문자 순화|쉬운 말 사전|어려운 말 통계|행동 안내|대피소|재난문자|안전안내문자|긴급재난문자|알림|알림 설정|알림 기록|메시지|문자 메시지|메시지 입력|답장|전송|전달|삭제|복사|더 보기|닫기|취소|설정|검색|전체|오늘|어제|방금|지금|확인|홈|뒤로|받은 편지함|모두 지우기|모두 읽음|개인정보 제외|이미지에서 문자 읽기|글자 크기|안내 언어|언어 선택|한국어|English|中文|Tiếng Việt|नेपाली|Filipino|ไทย|日本語|notifications?|messages?|emergency alerts?|reply|send|settings?|close|cancel|search|home|back|done|clear all|mark all as read|LTE|5G|Wi.?Fi|배터리)$/i;
-      const alertSignal=/(?:재난문자|안전안내문자|긴급재난문자|호우|폭우|홍수|침수|범람|하천|계곡|산사태|산불|화재|지진|해일|태풍|강풍|폭염|한파|대설|폭설|결빙|낙뢰|대피|출입금지|통제구간|통행금지|대피소|주의보|경보|재난안전)/;
-      const actionSignal=/(?:대피|이동|피하|금지|통제|주의|조심|유의|바랍니다|하세요|주시기|접근|출입|우회|자제|확인하시|삼가|멀리|벗어나|신고|문의)/;
+      const alertSignal=/(?:재난문자|안전안내문자|긴급재난문자|호우|폭우|홍수|침수|범람|하천|계곡|산사태|산불|화재|지진|해일|태풍|강풍|폭염|한파|대설|폭설|결빙|낙뢰|대피|출입금지|통제구간|통행금지|대피소|주의보|경보|재난안전|실종|시위|집회|노조파업|노조 파업|훈련|추모사이렌|보이스피싱)/;
+      const actionSignal=/(?:대피|이동|피하|금지|통제|주의|조심|유의|바랍니다|하세요|주시기|접근|출입|우회|자제|확인하시|삼가|멀리|벗어나|신고|문의|찾습니다|찾고 있습니다|제보)/;
       const blockedLine=/^(?:\d{1,2}:\d{2}(?:\s*(?:AM|PM))?|(?:오전|오후)\s*\d{1,2}:\d{2}|\d{1,2}%$|\d+개의? 알림|알림 \d+개|방금 전|\d+분 전|\d+시간 전|오늘\s*\d{1,2}:\d{2}$|\d{4}년\s*\d{1,2}월\s*\d{1,2}일|(?:\d{1,2}:\d{2}\s+)?(?:[\d:%]+\s+)*(?:5G|LTE|Wi.?Fi|배터리|Battery)(?:\s|$).+|[←→↻⋮…⌕♡☆★]+)$/i;
       const screenNoise=/(?:조회 기간|조회기간|검색\s*\(|전체\s*\d[\d,]*\s*건|개\s*지역|표시\s*\d|쉬운말보기|공식\s*원문|쉬운 말 사전|어려운 말 통계|문자 순화|다크\s*모드|Language and text size|TAMIL|더보기\s*[+＋]|화재 발생시 이렇게 행동|대피장소 시설안내|재난문자\s*쉬운 말 보기)/i;
       const guideNoise=/(?:비상소집을 합니다|화재경보가 울리면|불이 났는지 확인하려|소리를.{0,24}깨우고|대처방안에 따라|대피방법을 결정|손등으로 출입문 손잡이|손잡이가 따뜻하거나 뜨거우면|반대쪽에 불이 난|문을 열지 않습니다|연기 들어오는 방향|계단으로 나갈지|창문으로 구조를 요청|신속히 대피합니다|건물 밖으로 대피하는 방법)/;
@@ -2152,11 +2154,22 @@
         if(text.length>=30)score+=1;
         return score;
       };
+      const looksLikeMessageLine=line=>/[가-힣]/.test(line.text)&&line.text.length>=8&&!uiLine.test(line.text)&&!screenNoise.test(line.text)&&!guideNoise.test(line.text)&&!blockedLine.test(line.text)&&!(/^[가-힣]{2,}(?:시|군|구|도|면|동|읍)$/.test(line.text));
       const anchors=lines.map((line,index)=>({index,score:signalScore(line)})).filter(item=>item.score>=4);
       if(!anchors.length)return {text:'',confidence:'none',crop:null,region:detectedRegion};
+      if(screenCapture){
+        const missingIndex=lines.findIndex(line=>/(?:실종.{0,40}(?:찾습니다|찾고 있습니다)|(?:찾습니다|찾고 있습니다).{0,40}실종)/.test(line.text));
+        if(missingIndex>=0){
+          let rowStart=missingIndex;let rowEnd=missingIndex;const anchor=lines[missingIndex];const x0=Number(anchor.bbox?.x0);const limit=Number(anchor.bbox?.y1);
+          for(let step=0;step<3&&rowStart>0;step++){const previous=lines[rowStart-1];const gap=Number(lines[rowStart].bbox?.y0)-Number(previous.bbox?.y1);if(!looksLikeMessageLine(previous)||Math.abs(Number(previous.bbox?.x0)-x0)>120||(Number.isFinite(gap)&&gap>40))break;rowStart--;}
+          for(let step=0;step<3&&rowEnd<lines.length-1;step++){const next=lines[rowEnd+1];const gap=Number(next.bbox?.y0)-Number(lines[rowEnd].bbox?.y1);if(!looksLikeMessageLine(next)||Math.abs(Number(next.bbox?.x0)-x0)>120||(Number.isFinite(gap)&&gap>40))break;rowEnd++;}
+          const row=lines.slice(rowStart,rowEnd+1);const rowText=row.map(line=>line.text).join(' ').replace(/\s+/g,' ').trim();const region=regionNameFromOcr([...row,...rawLines.filter(line=>line.bbox&&anchor.bbox&&Math.abs(line.bbox.y0-anchor.bbox.y0)<65)] )||detectedRegion;const boxes=row.map(line=>line.bbox).filter(box=>box&&[box.x0,box.y0,box.x1,box.y1].every(Number.isFinite));const crop=boxes.length?{x0:Math.max(0,Math.min(...boxes.map(box=>box.x0))-12),y0:Math.max(0,Math.min(...boxes.map(box=>box.y0))-8),x1:Math.max(...boxes.map(box=>box.x1))+12,y1:Math.max(...boxes.map(box=>box.y1))+8}:null;
+          return {text:rowText,confidence:'missing-person-row',crop,screenCapture:true,truncated:/(?:…|⋯|\.{3,}|찾습니다\s*\d{2,3}0{1,2},?)$/.test(rowText),region};
+        }
+      }
       if(screenCapture&&dateRows.length>=2){
         const firstTimestamp=lines.filter(line=>/\d{1,2}:\d{2}/.test(line.text)&&/[가-힣]/.test(line.text));
-        const firstIncident=anchors.map(anchor=>({...anchor,line:lines[anchor.index]})).filter(anchor=>/(?:오늘|금일|어제)\s*\d{1,2}:\d{2}/.test(anchor.line.text)&&/(?:화재|산불|침수|사고|발생|대피)/.test(anchor.line.text));
+        const firstIncident=anchors.map(anchor=>({...anchor,line:lines[anchor.index]})).filter(anchor=>/(?:오늘|금일|어제)\s*\d{1,2}:\d{2}/.test(anchor.line.text)&&/(?:화재|산불|침수|사고|발생|대피|실종|찾습니다|찾고 있습니다|시위|집회|노조파업|노조 파업|훈련|추모사이렌|보이스피싱)/.test(anchor.line.text));
         const preferred=firstIncident[0];
         if(preferred){
           const line=preferred.line;const crop=line.bbox?{x0:Math.max(0,line.bbox.x0-8),y0:Math.max(0,line.bbox.y0-5),x1:line.bbox.x1+8,y1:line.bbox.y1+5}:null;
@@ -2172,8 +2185,7 @@
         return (timing(b)*5+incident(b)*2+b.score)-(timing(a)*5+incident(a)*2+a.score)||(Number(lines[a.start].bbox?.y0)||0)-(Number(lines[b.start].bbox?.y0)||0);
       })[0];
       let start=selectedGroup.start;let end=selectedGroup.end;
-      const looksLikeMessageLine=line=>/[가-힣]/.test(line.text)&&line.text.length>=8&&!uiLine.test(line.text)&&!screenNoise.test(line.text)&&!guideNoise.test(line.text)&&!blockedLine.test(line.text)&&!(/^[가-힣]{2,}(?:시|군|구|도|면|동|읍)$/.test(line.text));
-      if(!screenCapture){
+       if(!screenCapture){
         for(let step=0;step<3&&start>0;step++){const previous=lines[start-1];const gap=Number(lines[start].bbox?.y0)-Number(previous.bbox?.y1);const sameColumn=Math.abs(Number(lines[start].bbox?.x0)-Number(previous.bbox?.x0))<100;if(!looksLikeMessageLine(previous)||!sameColumn||(Number.isFinite(gap)&&gap>42))break;start--;}
         for(let step=0;step<3&&end<lines.length-1;step++){const next=lines[end+1];const gap=Number(next.bbox?.y0)-Number(lines[end].bbox?.y1);const sameColumn=Math.abs(Number(next.bbox?.x0)-Number(lines[end].bbox?.x0))<100;if(!looksLikeMessageLine(next)||!sameColumn||(Number.isFinite(gap)&&gap>42))break;end++;}
       }
@@ -2197,8 +2209,24 @@
       if(!crop||!window.createImageBitmap)return null;
       const bitmap=await createImageBitmap(file);const left=Math.max(0,Math.floor(crop.x0));const top=Math.max(0,Math.floor(crop.y0));const width=Math.min(bitmap.width-left,Math.ceil(crop.x1-left));const height=Math.min(bitmap.height-top,Math.ceil(crop.y1-top));
       if(width<80||height<24){bitmap.close();return null;}
-      const scale=Math.max(2,Math.min(3,Math.ceil(1400/width)));const canvas=document.createElement('canvas');canvas.width=width*scale;canvas.height=height*scale;const context=canvas.getContext('2d');context.imageSmoothingEnabled=true;context.imageSmoothingQuality='high';context.drawImage(bitmap,left,top,width,height,0,0,canvas.width,canvas.height);bitmap.close();
-      const result=await worker.recognize(canvas);return result.data;
+      const scale=Math.max(2,Math.min(4,Math.ceil(2200/width)));const canvas=document.createElement('canvas');canvas.width=width*scale;canvas.height=height*scale;const context=canvas.getContext('2d');context.imageSmoothingEnabled=true;context.imageSmoothingQuality='high';context.drawImage(bitmap,left,top,width,height,0,0,canvas.width,canvas.height);bitmap.close();
+      const result=await worker.recognize(canvas);let alternateText='';
+      try{await worker.setParameters({tessedit_pageseg_mode:'11',preserve_interword_spaces:'1'});alternateText=String((await worker.recognize(canvas)).data?.text||'');}
+      catch(error){}
+      finally{await worker.setParameters({tessedit_pageseg_mode:'6',preserve_interword_spaces:'1'}).catch(()=>{});}
+      return {...result.data,alternateText};
+    }
+    function normalizeMissingPersonOcrText(text,region,alternateText=''){
+      let value=String(text).replace(/\s*\[[^\]]+\]\s*$/,'').replace(/\s+/g,' ').trim();
+      const address=value.match(/(?:[가-힣]+(?:특별자치도|특별자치시|광역시|특별시|도|시|군|구)\s+)?[가-힣]{2,}(?:읍|면|동)\s+[가-힣0-9]+(?:리|동)?\s+\d+(?:-\d+)?/);
+      if(region&&address){const regionAt=value.indexOf(region);value=regionAt>=0?value.slice(regionAt):`${region} ${value.slice(address.index)}`;}
+      else if(region&&!value.includes(region)){const placeStart=value.search(/[가-힣]{2,}(?:읍|면|동)\s+/);if(placeStart>=0)value=`${region} ${value.slice(placeStart)}`;}
+      if(/실종/.test(value)&&/찾습니다|찾고 있습니다/.test(value)){
+        const alternateHeight=String(alternateText).match(/(\d{2,3}(?:\.\d+)?)\s*cm\b/i);
+        if(alternateHeight)value=value.replace(/(찾습니다)\s*\d{2,3}0{1,2}(?=[,，])/i,`$1. 키 ${alternateHeight[1]}cm`);
+        value=value.replace(/(찾습니다)\s*(\d{2,3})00(?=[,，])/i,'$1. 키 $2cm');
+      }
+      return value.replace(/\s+([,.;!?。！？])/g,'$1').replace(/,{2,}/g,',');
     }
     messageImageInput.addEventListener('change',async event=>{
       const file=event.currentTarget.files?.[0];if(!file)return;
@@ -2206,10 +2234,11 @@
       if(file.size>12*1024*1024){imageOcrStatus.textContent='이미지가 너무 커요 · 12MB 이하 선택';messageImageInput.value='';return;}
       messageImageObjectUrl=URL.createObjectURL(file);messageImagePreview.src=messageImageObjectUrl;messageImagePreview.hidden=false;messageImageButton.disabled=true;imageOcrStatus.textContent='이미지에서 글자 읽는 중…';
       try{
-        const worker=await getTesseractWorker();const result=await worker.recognize(file);const extracted=extractDisasterMessageFromOcr(result.data);
+        const worker=await getTesseractWorker();await worker.setParameters({tessedit_pageseg_mode:'6',preserve_interword_spaces:'1'});const result=await worker.recognize(file);const extracted=extractDisasterMessageFromOcr(result.data);
         if(!extracted.text){imageOcrStatus.textContent='재난문자 본문을 찾지 못했어요 · 재난문자 부분만 잘라 다시 올려 주세요';return;}
-        const croppedData=await recognizeDisasterCrop(file,extracted.crop,worker).catch(()=>null);const croppedResult=croppedData?extractDisasterMessageFromOcr(croppedData):null;const cropIsBetter=croppedResult?.text?.length>=Math.max(8,Math.floor(extracted.text.length*.9))&&!croppedResult.truncated;const chosen=extracted.screenCapture?{...(cropIsBetter?croppedResult:extracted),screenCapture:true,region:extracted.region||croppedResult?.region||''}:cropIsBetter?{...croppedResult,region:croppedResult.region||extracted.region}:extracted;
-        let messageText=String(chosen.text).replace(/\s*\[[^\]]+\]\s*$/,'').replace(/\s+/g,' ').trim();
+        const croppedData=await recognizeDisasterCrop(file,extracted.crop,worker).catch(()=>null);const cropExtraction=croppedData?.alternateText?extractDisasterMessageFromOcr({text:croppedData.alternateText}):null;const cropIsBetter=cropExtraction?.text?.length>=Math.max(8,Math.floor(extracted.text.length*.8))&&!cropExtraction.truncated;const chosen=extracted.screenCapture?{...(cropIsBetter?cropExtraction:extracted),screenCapture:true,region:extracted.region||cropExtraction?.region||''}:cropIsBetter?{...cropExtraction,region:cropExtraction.region||extracted.region}:extracted;
+        let messageText=String(chosen.text).replace(/\s*\[[^\]]+\]\s*$/,'').replace(/\s+/g,' ').trim();const detectedRegion=chosen.region||extracted.region||'';
+        if(/실종/.test(messageText)&&/찾습니다|찾고 있습니다/.test(messageText))messageText=normalizeMissingPersonOcrText(messageText,detectedRegion,croppedData?.alternateText||'');
         if(chosen.screenCapture){const alertStart=messageText.search(/(?:산불|산사태|호우|폭우|집중호우|침수|범람|하천|계곡|태풍|강풍|폭염|한파|대설|지진|해일|화재|이안류|너울성 파도)/);if(alertStart>0&&/20\d{2}[/.\-]\d{1,2}/.test(messageText.slice(0,alertStart)))messageText=messageText.slice(alertStart).trim();}
         let wasTruncated=Boolean(chosen.truncated)||Boolean(/(?:화기|우회하고|발생으로|창문을|대피 안내를 받|받으면|하시기|하여|및|하고|소각·|산불 현장에|인)$/.test(messageText));
         if(wasTruncated){const complete=[...messageText.matchAll(/[^.!?。！？]+[.!?。！？]/g)].map(match=>match[0].trim());if(complete.length)messageText=complete.join(' ');}
@@ -2300,6 +2329,7 @@
       }));
     }
     function classifyStatisticsMessage(text){
+      if(/(?:실종자|실종.{0,12}찾|찾습니다|찾고 있습니다|노조파업|노조 파업|시위|집회|추모사이렌|호국훈련|안전한국훈련|오발송|보이스피싱|대리구매)/.test(text))return ['기타'];
       const categories=[];
       if(/호우|폭우|집중호우|침수|범람|홍수|하천|계곡|산사태|낙뢰|저지대|급경사지|지하차도|강우/.test(text))categories.push('호우');
       if(/산불|산림|입산|영농|소각|화기/.test(text))categories.push('산불');
@@ -2446,6 +2476,7 @@
         if(/차량|운전|감속|차간거리/.test(source))lines.push(/안전거리|차간거리/.test(source)?'운전할 때 속도를 줄이고 앞차와 거리를 넉넉히 두세요.':'운전할 때 속도를 줄이세요.');
         if(/보행|미끄럼 사고/.test(source))lines.push('걸을 때 미끄러져 넘어지지 않게 조심하세요.');
         if(/수도(?:계량기|관)?\s*동파|수도관/.test(source))lines.push('수도관이나 수도 계량기가 얼어 터지지 않게 해 주세요.');
+        if(/외출\s*시 보온|외출시 보온/.test(source))lines.push('밖에 나갈 때 따뜻하게 입으세요.');
         if(/농작물|농축산물|냉해/.test(source))lines.push('농작물과 가축이 추위에 상하지 않게 살펴 주세요.');
         if(/노약자|취약계층/.test(source))lines.push('어르신과 도움이 필요한 분의 건강을 살펴 주세요.');
         if(/안부연락|안부 확인|안부확인/.test(source))lines.push('가족과 이웃이 잘 지내는지 연락해 보세요.');
@@ -2476,7 +2507,17 @@
         return preserveNumbers(lines.join(' '));
       }
 
-      if(/실종/.test(source)&&/찾습니다|찾고 있습니다/.test(source))return preserveNumbers(source.replace(/(.+?)에서 실종된\s*(.+?)을 찾습니다[.。]?/,'$1에서 $2을 찾고 있어요.').replace(/검은색계열/g,'검은색').replace(/,(?=[^\s])/g,', '));
+      if(/실종/.test(source)&&/찾습니다|찾고 있습니다/.test(source)){
+        const missing=source.match(/^(.*?)에서\s*실종된\s*([^,(]+?)\s*\((남|여)\s*\/\s*(\d+)세\)\s*을?\s*찾습니다[.。]?/);
+        if(missing){
+          const [,location,name,gender,age]=missing;const tail=source.slice(missing[0].length).replace(/\[[^\]]+\]\s*$/,'').trim();
+          const height=tail.match(/(\d{2,3}(?:\.\d+)?)\s*(?:cm|센티미터)/i);const descriptors=tail.split(/[,，·/]+/).map(value=>value.trim().replace(/^[가-힣]\s+(?=[가-힣]{2,})/,'')).filter(Boolean).filter(value=>!/\d{2,3}(?:\.\d+)?\s*(?:cm|센티미터)/i.test(value)).map(value=>{if(value==='마른체형')return '마른 체형이에요';if(value==='치매')return '치매가 있어요';if(value==='거동불편')return '걷거나 움직이기 불편해요';const clothing=value.match(/(검은색|회색|흰색|주황색|빨간색|파란색)?\s*(모자|점퍼|잠바|바지|셔츠|신발)/);if(clothing){const item=`${clothing[1]||''}${clothing[2]}`;const last=item.charCodeAt(item.length-1);const particle=last>=0xAC00&&last<=0xD7A3&&(last-0xAC00)%28?'을':'를';return `${item}${particle} 착용했어요`;}return `찾을 때 참고할 특징은 ${value.replace(/\s+/g,' ').trim()}예요`;});
+          const person=`${name}(${gender==='남'?'남성':'여성'}, ${age}세)`;
+          const details=[...(height?[`키는 ${height[1]}센티미터예요.`]:[]),...descriptors];
+          return preserveNumbers(`${location}에서 ${person}을 찾고 있어요.${details.length?` ${details.join('. ')}.`:''}`);
+        }
+        return preserveNumbers(source.replace(/실종된/g,'찾고 있는').replace(/찾습니다[.。]?/,'찾고 있어요.').replace(/검은색계열/g,'검은색').replace(/,(?=[^\s])/g,', '));
+      }
       if(/산불/.test(source)&&/(?:산불발생 위험|산불 발생 위험|산불위험|강풍으로 산불|건조.*산불)/.test(source)){
         const lines=[];const trigger=source.match(/강한 바람|강풍으로|대기건조|건조한 날씨|건조에 따른|산불발생 위험|산불 발생 위험|산불위험/);let lead=trigger?source.slice(0,trigger.index).replace(/[▲,，\s]+$/,'').trim():'';lead=lead.replace(/(?:오늘|금일)$/,'').trim();
         if(/강한 바람|강풍으로/.test(source))lines.push(`${lead?`${lead} `:''}바람이 세게 불어요.`);
@@ -3584,7 +3625,7 @@
     function updateUserPosition(position,follow=false,{refreshShelters=true}={}){
       const next={lat:position.coords.latitude,lon:position.coords.longitude,accuracy:position.coords.accuracy};userLocation=next;userLocationAt=Date.now();
       hasExplicitShelterLocation=true;
-      lastShelterSearch={lat:next.lat,lon:next.lon,areaName:''};
+       lastShelterSearch={lat:next.lat,lon:next.lon,areaName:'',radiusKm:Number(next.accuracy)>1000?Math.min(30,8+Math.ceil((Number(next.accuracy)||0)/1000)):8};
       if(map){
         if(currentMarker){currentMarker.setLatLng([next.lat,next.lon]);currentMarker.setPopupContent('현재 위치');}
         else currentMarker=L.marker([next.lat,next.lon]).addTo(map).bindPopup('현재 위치');
@@ -3595,7 +3636,7 @@
       const shelterMoved=!lastShelterRefresh||locationDistance(lastShelterRefresh,next)>=250;
       if(refreshShelters&&shelterMoved&&(!lastShelterRefresh||now-lastShelterRefresh.at>=12000)){
         lastShelterRefresh={...next,at:now};
-        if(mapSlideActive)findShelters(next.lat,next.lon,{keepRoute:Boolean(lastRoutePlace)});else mapNeedsShelterRefresh=true;
+         if(mapSlideActive)findShelters(next.lat,next.lon,{keepRoute:Boolean(lastRoutePlace),radiusKm:lastShelterSearch.radiusKm});else mapNeedsShelterRefresh=true;
       }
       const routeMoved=!lastRouteRefresh||locationDistance(lastRouteRefresh,next)>=120;
       if(lastRoutePlace&&routeMoved&&(!lastRouteRefresh||now-lastRouteRefresh.at>=10000)){
@@ -3723,29 +3764,29 @@
        });
      }
       let tsunamiSheltersPromise;
-      async function findNearbyTsunamiShelters(lat,lon){
+      async function findNearbyTsunamiShelters(lat,lon,radiusKm=8){
         tsunamiSheltersPromise??=fetch('/tsunami-shelters.json').then(response=>{if(!response.ok)throw new Error('전국 지진해일 대피장소 자료를 불러오지 못했어요.');return response.json();}).then(data=>{
           if(!Array.isArray(data.items))throw new Error('지진해일 대피장소 자료 형식이 올바르지 않아요.');
           return data;
         });
         const source=await tsunamiSheltersPromise;
-        const items=source.items.map(place=>({...place,distanceKm:locationDistance({lat,lon},{lat:place.lat,lon:place.lon})/1000,kindLabel:'지진해일 긴급대피장소'})).filter(place=>place.distanceKm<=8).sort((a,b)=>a.distanceKm-b.distanceKm).slice(0,60);
+        const items=source.items.map(place=>({...place,distanceKm:locationDistance({lat,lon},{lat:place.lat,lon:place.lon})/1000,kindLabel:'지진해일 긴급대피장소'})).filter(place=>place.distanceKm<=radiusKm).sort((a,b)=>a.distanceKm-b.distanceKm).slice(0,60);
         return {items,sampleCount:source.items.length,retrievedAt:source.retrievedAt,sourceUrl:source.sourceUrl,regionName:'전국 공개목록',scopeLabel:`전국 지진해일 긴급대피장소 공개자료 · ${source.items.length}곳`,temporary:false};
       }
-      async function findShelters(lat,lon,{keepRoute=false,areaName=''}={}){
+      async function findShelters(lat,lon,{keepRoute=false,areaName='',radiusKm=8}={}){
       const requestId=++shelterListRequestId;
       mapSlideReady=true;mapNeedsShelterRefresh=false;ensureMapTiles();
-      lastShelterSearch={lat,lon,areaName};
+       lastShelterSearch={lat,lon,areaName,radiusKm};
       const type=document.getElementById('shelterType').value;
        const referenceOnly=['flood','fire','storm'].includes(type);const lookupType=referenceOnly?'civil':type;
        updateShelterSource(type);updateShelterGuidance(type);
        if(!keepRoute){routeRequestId+=1;routeLayer?.clearLayers();lastRoutePlace=null;document.getElementById('routePanel').hidden=true;}
         list.innerHTML=type==='tsunami'?'<div class="empty-list">전국 지진해일 대피장소 자료에서 주변 시설을 찾는 중…</div>':referenceOnly?'<div class="empty-list">주변 민방위 시설을 참고용으로 찾는 중…</div>':lookupType==='civil'?'<div class="empty-list">전국 민방위 시설 불러오는 중…</div>':'전국 공개 대피시설에서 주변 장소를 찾는 중…';
        try{
-         const params=new URLSearchParams({lat:String(lat),lon:String(lon),radiusKm:'8'});
+         const params=new URLSearchParams({lat:String(lat),lon:String(lon),radiusKm:String(Math.max(8,Math.min(30,Math.ceil(radiusKm))))});
          if(areaName)params.set('area',areaName);
          let data;
-         if(type==='tsunami')data=await findNearbyTsunamiShelters(lat,lon);
+          if(type==='tsunami')data=await findNearbyTsunamiShelters(lat,lon,radiusKm);
          else{
            const endpoint=lookupType==='civil'?`/api/shelters?${params}`:`/api/shelter-samples?type=${encodeURIComponent(lookupType)}&${params}`;
            const response=await fetch(localApiUrl(endpoint),{cache:'no-store'});data=await response.json();
@@ -3765,9 +3806,9 @@
           mapSlideReady=true;updateShelterSource(document.getElementById('shelterType').value);updateShelterGuidance(document.getElementById('shelterType').value);
           list.innerHTML='<div class="empty-list">현재 위치를 사용하거나 지역을 검색해 주변 대피소를 찾으세요.</div>';
         }
-        if(mapNeedsShelterRefresh&&lastShelterRefresh){
-          const center=userLocation||{lat:lastShelterSearch.lat,lon:lastShelterSearch.lon};mapNeedsShelterRefresh=false;
-          findShelters(center.lat,center.lon,{areaName:lastShelterSearch.areaName,keepRoute:Boolean(lastRoutePlace)});
+         if(mapNeedsShelterRefresh&&lastShelterRefresh){
+           const center=userLocation||{lat:lastShelterSearch.lat,lon:lastShelterSearch.lon};mapNeedsShelterRefresh=false;
+           findShelters(center.lat,center.lon,{areaName:lastShelterSearch.areaName,keepRoute:Boolean(lastRoutePlace),radiusKm:lastShelterSearch.radiusKm||8});
         }
       }),{root:appSlides,threshold:.12});
       mapSlideObserver.observe(document.getElementById('map-section'));
@@ -3791,13 +3832,13 @@
         });
         updateUserPosition(position,centerMap,{refreshShelters:false});
         hasExplicitShelterLocation=true;
-        lastShelterRefresh={...userLocation,at:Date.now()};
-         status.textContent=`현재 위치를 기준으로 주변 8km를 찾고 있어요. ${locationAccuracyText(position.coords.accuracy)}`;
-        await findShelters(userLocation.lat,userLocation.lon,{areaName:''});
+         const searchRadius=Number(position.coords.accuracy)>1000?Math.min(30,8+Math.ceil(Number(position.coords.accuracy)/1000)):8;lastShelterSearch={lat:userLocation.lat,lon:userLocation.lon,areaName:'',radiusKm:searchRadius};lastShelterRefresh={...userLocation,at:Date.now()};
+          status.textContent=Number(position.coords.accuracy)>1000?`컴퓨터 위치의 오차가 커서 약 ${searchRadius}km 범위로 대략 찾아요. 정확한 위치는 주소나 지역을 검색해 주세요. ${locationAccuracyText(position.coords.accuracy)}`:`현재 위치를 기준으로 주변 8km를 찾고 있어요. ${locationAccuracyText(position.coords.accuracy)}`;
+         await findShelters(userLocation.lat,userLocation.lon,{areaName:'',radiusKm:searchRadius});
       }catch(error){status.textContent=error.message||'현재 위치를 확인하지 못했어요. 지역을 검색해 주세요.';list.replaceChildren(Object.assign(document.createElement('div'),{className:'empty-list',textContent:'지도 위 지역 검색이나 길게 눌러 주변 대피소를 찾을 수 있어요.'}));}
     }
     document.getElementById('nearbyBtn').addEventListener('click',()=>findSheltersAtCurrentLocation(true));
-    document.getElementById('shelterType').addEventListener('change',()=>hasExplicitShelterLocation?findShelters(lastShelterSearch.lat,lastShelterSearch.lon,{areaName:lastShelterSearch.areaName}):findSheltersAtCurrentLocation(false));
+     document.getElementById('shelterType').addEventListener('change',()=>hasExplicitShelterLocation?findShelters(lastShelterSearch.lat,lastShelterSearch.lon,{areaName:lastShelterSearch.areaName,radiusKm:lastShelterSearch.radiusKm||8}):findSheltersAtCurrentLocation(false));
     document.getElementById('locateBtn').addEventListener('click',()=>findSheltersAtCurrentLocation(true));
     async function searchPlace({deferShelterSearch=false}={}){
       const input=document.getElementById('placeSearch');const query=input.value.trim();if(!query){input.focus();return;}
