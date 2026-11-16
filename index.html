@@ -428,7 +428,7 @@
             <p class="core-validation-error" id="coreValidationFormError" role="status" aria-live="polite"></p>
             <div class="core-validation-actions"><button class="statistics-category-button" id="saveCoreValidationButton" type="submit">기록 저장</button><button class="statistics-category-button" id="cancelCoreValidationButton" type="button">취소</button></div>
           </form>
-          <div class="core-validation-table-wrap"><table class="core-validation-table"><thead><tr><th>재난 유형</th><th>원문</th><th>순화문</th><th>대상·장소·시간·숫자·위험 수준·행동·금지 조건</th><th>판정</th><th>수정 전 → 후 순화문</th><th>재검증 결과</th><th>기록 관리</th></tr></thead><tbody id="coreValidationRows"></tbody></table><div class="core-validation-empty" id="coreValidationEmpty">아직 검증 기록이 없습니다. 예시 판정이나 임의 수치는 넣지 않았어요.</div></div>
+    <div class="core-validation-table-wrap"><table class="core-validation-table"><thead><tr><th>재난 유형</th><th>원문</th><th>순화문</th><th>대상·장소·시간·숫자·행동</th><th>판정</th><th>수정 전 → 후 순화문</th><th>재검증 결과</th><th>기록 관리</th></tr></thead><tbody id="coreValidationRows"></tbody></table><div class="core-validation-empty" id="coreValidationEmpty">아직 검증 기록이 없습니다. 예시 판정이나 임의 수치는 넣지 않았어요.</div></div>
         </section>
       </div>
     </section>
@@ -692,9 +692,9 @@
       finally{button.disabled=false;}
     });
     const appSlides=document.getElementById('appSlides');
-    ['home','translate','dictionary','statistics','action-guide','map-section','library'].forEach(id=>{const slide=document.getElementById(id);if(slide)appSlides.append(slide);});
-    const appSlideSections=[...appSlides.children].filter(element=>element.tagName==='SECTION');
     const bottomTabs=document.getElementById('bottomTabs');
+    [...bottomTabs.querySelectorAll('[data-slide-target]')].forEach(button=>{const slide=document.getElementById(button.dataset.slideTarget);if(slide)appSlides.append(slide);});
+    const appSlideSections=[...appSlides.children].filter(element=>element.tagName==='SECTION');
     let activeSlideId='home';
     function setActiveSlide(id){
       if(!id)return;activeSlideId=id;
@@ -2127,7 +2127,7 @@
       clearTranslationResult(text?'내용 변경 · 다시 눌러 확인':'문자 입력 필요');
     });
     document.getElementById('translateBtn').addEventListener('click',()=>{const empty=!document.getElementById('message').value.trim();renderTranslation();if(empty)document.getElementById('message').focus();});
-    const coreValidationChecks=[['target','대상'],['place','장소'],['time','시간'],['number','숫자'],['risk','위험 수준'],['action','행동'],['prohibition','금지 조건']];
+    const coreValidationChecks=[['target','대상'],['place','장소'],['time','시간'],['number','숫자'],['action','행동']];
     const coreValidationJudgments={review:'검토 중',pass:'통과',error:'오류'};
     const coreValidationRechecks={pending:'재검증 중',pass:'통과',error:'오류'};
     const coreValidationRecordStatus=(count,saved=false)=>fixedUiText(saved?'팀 검증 기록 {count}건 · 저장했어요.':'팀 검증 기록 {count}건',siteLanguage,{count:Number(count).toLocaleString(siteLanguage==='ko'?'ko-KR':siteLanguage)});
@@ -3719,29 +3719,29 @@
       if(accuracy>300)return 12;
       return 15;
     }
-    async function requestCurrentPosition({onWaiting=()=>{}}={}){
+    async function requestCurrentPosition({fresh=false,onWaiting=()=>{}}={}){
       if(!window.isSecureContext)return Promise.reject(new Error('GPS 위치는 보안 연결에서만 쓸 수 있어요. HTTPS 주소로 다시 열어 주세요.'));
       if(!navigator.geolocation)return Promise.reject(new Error('이 브라우저에서 위치 기능을 사용할 수 없어요. 위치를 지원하는 브라우저에서 다시 열어 주세요.'));
       const policy=document.permissionsPolicy||document.featurePolicy;
       if(policy?.allowsFeature&&!policy.allowsFeature('geolocation'))return Promise.reject(new Error('미리보기 화면이 브라우저 위치 기능을 허용하지 않아요. 페이지를 새 탭으로 열거나 운영자에게 위치 권한 설정을 요청해 주세요.'));
       try{const permission=await navigator.permissions?.query({name:'geolocation'});if(permission?.state==='denied')return Promise.reject(Object.assign(new Error(),{code:1}));}catch(error){}
       return new Promise((resolve,reject)=>{
-        let watchId=null;let finished=false;
-        const finish=(callback,value)=>{if(finished)return;finished=true;clearTimeout(waitTimer);clearTimeout(deadlineTimer);if(watchId!==null)navigator.geolocation.clearWatch(watchId);callback(value);};
+        let finished=false;
+        const finish=(callback,value)=>{if(finished)return;finished=true;clearTimeout(waitTimer);callback(value);};
         const waitTimer=setTimeout(()=>onWaiting('GPS 위성 신호를 기다리고 있어요. 창가나 야외에서는 더 빨리 찾을 수 있어요…'),10000);
-        const deadlineTimer=setTimeout(()=>finish(reject,{code:3}),90000);
+        const acceptPosition=position=>{
+          const {latitude,longitude,accuracy}=position.coords;
+          if(!Number.isFinite(latitude)||!Number.isFinite(longitude)||!Number.isFinite(accuracy)||Math.abs(latitude)>90||Math.abs(longitude)>180){finish(reject,new Error('기기에서 올바른 GPS 좌표를 받지 못했어요. 다시 시도해 주세요.'));return;}
+          finish(resolve,position);
+        };
         try{
-          watchId=navigator.geolocation.watchPosition(position=>{
-            const {latitude,longitude,accuracy}=position.coords;
-            if(!Number.isFinite(latitude)||!Number.isFinite(longitude)||!Number.isFinite(accuracy)||Math.abs(latitude)>90||Math.abs(longitude)>180){finish(reject,new Error('기기에서 올바른 GPS 좌표를 받지 못했어요. 다시 시도해 주세요.'));return;}
-            finish(resolve,position);
-          },error=>{if(error.code===1||error.code===2)finish(reject,error);},{enableHighAccuracy:true,maximumAge:10000,timeout:90000});
+          navigator.geolocation.getCurrentPosition(acceptPosition,error=>finish(reject,error),{enableHighAccuracy:true,maximumAge:fresh?5000:15000,timeout:30000});
         }catch(error){finish(reject,error);}
       });
     }
     function getCurrentLocation({fresh=false}={}){
       if(userLocation&&!fresh&&Date.now()-userLocationAt<30000)return Promise.resolve(userLocation);
-      return requestCurrentPosition({fresh}).then(position=>{
+       return requestCurrentPosition({fresh}).then(position=>{
         userLocation={lat:position.coords.latitude,lon:position.coords.longitude,accuracy:position.coords.accuracy,source:position.source||'gps',areaName:position.areaName||''};userLocationAt=Date.now();return userLocation;
       }).catch(error=>{throw new Error(error.code?geolocationErrorMessage(error):error.message||geolocationErrorMessage(error));});
     }
