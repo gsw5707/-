@@ -1,4 +1,4 @@
-import { createHash } from 'node:crypto';
+import { createHash, randomUUID } from 'node:crypto';
 import { mkdir, readFile, rename, writeFile } from 'node:fs/promises';
 import { createServer } from 'node:http';
 import path from 'node:path';
@@ -7,6 +7,7 @@ import { fileURLToPath } from 'node:url';
 const root = path.dirname(fileURLToPath(import.meta.url));
 const dataDirectory = path.join(root, 'data');
 const feedbackFile = path.join(dataDirectory, 'understanding-feedback.json');
+const coreValidationFile = path.join(dataDirectory, 'core-info-validation.json');
 const disasterSource = 'https://www.safetydata.go.kr/disaster-data/disasterNotification';
 const localDataOrigin = 'https://file.localdata.go.kr';
 const publicFacilityOrigin = 'https://life.ttpk.co.kr';
@@ -25,6 +26,8 @@ const mimeTypes = {
 
 let feedbackRecords = null;
 let saveQueue = Promise.resolve();
+let coreValidationRecords = null;
+let coreValidationSaveQueue = Promise.resolve();
 const siteTranslationMemory = new Map();
 const knownRegions = new Set();
 const civilShelterCache = new Map();
@@ -48,6 +51,114 @@ async function loadFeedback() {
     feedbackRecords = {};
   }
   return feedbackRecords;
+}
+
+async function loadCoreValidationRecords() {
+  if (coreValidationRecords) return coreValidationRecords;
+  try {
+    const stored = JSON.parse(await readFile(coreValidationFile, 'utf8'));
+    coreValidationRecords = Array.isArray(stored) ? stored : [];
+  } catch (error) {
+    if (error.code !== 'ENOENT') throw error;
+    coreValidationRecords = [];
+    await saveCoreValidationRecords(coreValidationRecords);
+  }
+  return coreValidationRecords;
+}
+
+function normalizeCoreValidationRecord(payload, existing = null) {
+  const checks = {};
+  for (const key of ['target', 'place', 'time', 'number', 'risk', 'action', 'prohibition']) {
+    const value = payload.checks?.[key];
+    checks[key] = ['○', '△', '✕'].includes(value) ? value : '';
+  }
+  const judgment = ['review', 'pass', 'error'].includes(payload.judgment) ? payload.judgment : '';
+  const recheckStatus = ['pending', 'pass', 'error'].includes(payload.recheckStatus) ? payload.recheckStatus : '';
+  const text = value => typeof value === 'string' ? value.trim().slice(0, 10000) : '';
+  return {
+    id: existing?.id || randomUUID(),
+    createdAt: existing?.createdAt || new Date().toISOString(),
+    updatedAt: new Date().toISOString(),
+    disasterType: text(payload.disasterType).slice(0, 80),
+    original: text(payload.original),
+    simplified: text(payload.simplified),
+    checks,
+    judgment,
+    correctionBefore: text(payload.correctionBefore),
+    correctionAfter: text(payload.correctionAfter),
+    recheckStatus,
+    recheckResult: text(payload.recheckResult),
+  };
+}
+
+function saveCoreValidationRecords(records) {
+  coreValidationSaveQueue = coreValidationSaveQueue.catch(() => {}).then(async () => {
+    await mkdir(dataDirectory, { recursive: true });
+    const temporaryFile = `${coreValidationFile}.tmp`;
+    await writeFile(temporaryFile, `${JSON.stringify(records, null, 2)}\n`, { mode: 0o600 });
+    await rename(temporaryFile, coreValidationFile);
+  });
+  return coreValidationSaveQueue;
+}
+
+async function handleCoreValidation(request, response, url) {
+  const records = await loadCoreValidationRecords();
+  if (request.method === 'GET' && url.pathname === '/api/core-info-validation') {
+    sendJson(response, 200, { records });
+    return;
+  }
+  if (request.method === 'DELETE') {
+    const match = url.pathname.match(/^\/api\/core-info-validation\/([\w-]+)$/);
+    const index = match ? records.findIndex(record => record.id === match[1]) : -1;
+    if (index < 0) {
+      sendJson(response, 404, { error: '검증 기록을 찾을 수 없어요.' });
+      return;
+    }
+    records.splice(index, 1);
+    await saveCoreValidationRecords(records);
+    sendJson(response, 200, { ok: true });
+    return;
+  }
+  let payload;
+  try {
+    payload = await readJsonBody(request);
+  } catch (error) {
+    sendJson(response, error.message === 'too_large' ? 413 : 400, { error: '검증 기록을 읽지 못했어요.' });
+    return;
+  }
+  if (request.method === 'POST' && url.pathname === '/api/core-info-validation') {
+    const record = normalizeCoreValidationRecord(payload);
+    if (!record.disasterType || !record.original || !record.simplified) {
+      sendJson(response, 400, { error: '재난 유형, 원문, 순화문을 입력해 주세요.' });
+      return;
+    }
+    records.push(record);
+    await saveCoreValidationRecords(records);
+    sendJson(response, 201, { record });
+    return;
+  }
+  const match = url.pathname.match(/^\/api\/core-info-validation\/([\w-]+)$/);
+  if (!match) {
+    sendJson(response, 404, { error: '검증 기록을 찾을 수 없어요.' });
+    return;
+  }
+  const index = records.findIndex(record => record.id === match[1]);
+  if (index < 0) {
+    sendJson(response, 404, { error: '검증 기록을 찾을 수 없어요.' });
+    return;
+  }
+  if (request.method === 'PATCH') {
+    const updated = normalizeCoreValidationRecord(payload, records[index]);
+    if (!updated.disasterType || !updated.original || !updated.simplified) {
+      sendJson(response, 400, { error: '재난 유형, 원문, 순화문을 입력해 주세요.' });
+      return;
+    }
+    records[index] = updated;
+    await saveCoreValidationRecords(records);
+    sendJson(response, 200, { record: updated });
+    return;
+  }
+  sendJson(response, 405, { error: '지원하지 않는 요청이에요.' });
 }
 
 function cleanPreview(value) {
@@ -619,6 +730,12 @@ createServer(async (request, response) => {
     if (request.method === 'POST' && url.pathname === '/api/feedback') {
       await recordFeedback(request, response);
       return;
+    }
+    if (url.pathname === '/api/core-info-validation' || url.pathname.startsWith('/api/core-info-validation/')) {
+      if (['GET', 'POST', 'PATCH', 'DELETE'].includes(request.method)) {
+        await handleCoreValidation(request, response, url);
+        return;
+      }
     }
     if (request.method === 'POST' && url.pathname === '/api/speech') {
       await synthesizeSpeech(request, response);
