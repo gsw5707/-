@@ -29,29 +29,37 @@ let saveQueue = Promise.resolve();
 let coreValidationRecords = null;
 let coreValidationSaveQueue = Promise.resolve();
 const siteTranslationMemory = new Map();
-const knownRegions = new Set();
 const civilShelterCache = new Map();
 const nonLocalAgencyWords = /(?:한국도로공사|한국철도공사|공항철도|경찰청|경찰서|소방서|소방본부|소방재난본부|산불방지대책본부|산림청|산림항공본부|행정안전부|국토교통부|기상청|해양경찰청|해경|군부대|공군|육군|해군|교육청|농어촌공사|공단|보건소|병원|문화재단|전력공사|한전|가스공사)/;
 const nonRegionPhrases = /(?:하시|주시|주십시|받으시|바라시|발생시|사용시|입산시|운행시|보행시|이동시|대피시|우천시|강우시|강설시|점검시|필요시|도착시|신고시|통제시|지속시|우리군|누수복구)$/;
+// Names verified against Korea's 2026-10-01 administrative-dong boundaries.
+const observedDisasterRegions = new Set(`
+가평군 강남구 강동구 강릉시 강북구 강서구 강진군 강화군 거제시 거창군 검단구 경기도 경산시 경상북도 계룡시 계양구 고령군 고성군 고양시 고창군 고흥군 곡성군 과천시 관악구 광명시 광산구 광양시 광진구 괴산군 구례군 구로구 구리시 구미시 군산시 군위군 군포시 권선구 금산군 금정구 금천구 기장군 기흥구 김제시 김천시 김포시 김해시 남동구 남원시 노원구 논산시 단양군 단원구 달서구 달성군 담양군 당진시 대구광역시 대구시 대덕구 대전광역시 덕양구 덕진구 도봉구 동남구 동대문구 동두천시 동래구 동작구 동탄구 동해시 마산합포구 마포구 만세구 목포시 무안군 무주군 문경시 미추홀구 밀양시 보령시 보성군 보은군 봉화군 부산시 부산진구 부안군 부여군 부천시 부평구 분당구 사상구 사천시 사하구 산청군 삼척시 상당구 상록구 서귀포시 서대문구 서북구 서산시 서울시 서천군 서초구 서해구 성남시 성동구 성북구 성산구 성주군 세종시 세종특별자치시 소사구 송파구 수성구 수원시 순창군 순천시 시흥시 신안군 아산시 안동시 안산시 안성시 안양시 양구군 양산시 양양군 양천구 양평군 여수시 연수구 연천군 영광군 영덕군 영도구 영동군 영등포구 영암군 영양군 영월군 영종구 영천시 영통구 예산군 예천군 오산시 옥천군 옹진군 완도군 완주군 용산구 용인시 울릉군 울산광역시 울산시 울주군 울진군 원미구 유성구 은평구 음성군 의령군 의성군 의왕시 의정부시 의창구 이천시 익산시 인제군 인천시 일산동구 일산서구 임실군 장성군 장수군 장안구 장흥군 전국 전남광주통합특별시 전북특별자치도 정선군 정읍시 제물포구 제천시 종로구 중랑구 증평군 진도군 진안군 진천군 창녕군 창원시 처인구 천안시 철원군 청도군 청송군 청양군 청원구 춘천시 충청남도 칠곡군 태백시 태안군 통영시 팔달구 평창군 평택시 포천시 포항시 하남시 하동군 함안군 함양군 함평군 합천군 해남군 해운대구 홍성군 홍천군 화성시 화순군 화천군 횡성군 효행구 흥덕구
+`.trim().split(/\s+/));
+const validDisasterRegions = new Set([
+  ...observedDisasterRegions,
+  '강원특별자치도', '경상남도', '광주시', '부산광역시', '서울특별시',
+  '인천광역시', '전남광주통합특별시', '제주시', '제주특별자치도', '충청북도',
+]);
 
 function extractMessageRegion(message) {
   const body = String(message).replace(/\s*\[[^\]]+\]\s*$/, '').replace(/20\d{2}[/.\-]\d{1,2}[/.\-]\d{1,2}\s+\d{1,2}:\d{2}:\d{2}/g, ' ');
   const hazardAt = body.search(/(?:산불|산사태|호우|폭염|한파|대설|강풍|태풍|침수|화재|지진|범람|대피|실종|발생|주의보|경보|통제)/);
   const locationBody = hazardAt >= 0 ? body.slice(0, Math.min(body.length, hazardAt + 90)) : body.slice(0, 150);
   const candidates = [];
-  const official = /(?:서울특별시|부산광역시|대구광역시|인천광역시|광주광역시|대전광역시|울산광역시|세종특별자치시|제주특별자치도|전북특별자치도|강원특별자치도|경기도|충청북도|충청남도|전라남도|경상북도|경상남도|[가-힣]{2,}(?:시|군|구))/g;
+  const official = /(?:서울특별시|부산광역시|대구광역시|인천광역시|전남광주통합특별시|광주광역시|대전광역시|울산광역시|세종특별자치시|제주특별자치도|전북특별자치도|강원특별자치도|경기도|충청북도|충청남도|전라남도|경상북도|경상남도|[가-힣]{2,}(?:시|군|구))/g;
   for (const match of locationBody.matchAll(official)) {
     const value = match[0];
     const following = locationBody.slice(match.index + value.length, match.index + value.length + 3);
-    if (nonLocalAgencyWords.test(value) || nonRegionPhrases.test(value) || /청$/.test(value) || /(?:청|공사|공단|본부|경찰서|소방서)/.test(following)) continue;
+    if (!validDisasterRegions.has(value) || nonLocalAgencyWords.test(value) || nonRegionPhrases.test(value) || /청$/.test(value) || /(?:청|공사|공단|본부|경찰서|소방서)/.test(following)) continue;
     if (!/^(?:\s|[,，.。·:;()[\]\/]|은|는|이|가|을|를|에|에서|으로|로|과|와|민|전체|전역|일대|인근|지역|주민|호우|산불|한파|폭염|대설|강풍|태풍|침수|화재|지진|범람|대피|실종|통제|주의보|경보|예보|상황|예상)/.test(following)) continue;
     const isProvince = /(?:특별자치도|특별시|광역시|도)$/.test(value);
     candidates.push({ value, score: match.index + (isProvince ? 0 : 1000) });
   }
   const regionFirst = locationBody.match(/([가-힣]{2,}(?:시|군|구))\s+[^.。]{0,40}?(?:지역|전역|일대|인근)/);
-  if (regionFirst && !nonLocalAgencyWords.test(regionFirst[1]) && !nonRegionPhrases.test(regionFirst[1])) candidates.push({ value: regionFirst[1], score: 1200 });
+  if (regionFirst && validDisasterRegions.has(regionFirst[1]) && !nonLocalAgencyWords.test(regionFirst[1]) && !nonRegionPhrases.test(regionFirst[1])) candidates.push({ value: regionFirst[1], score: 1200 });
   const directional = locationBody.match(/([가-힣]{2,}(?:시|군)?\s*(?:동부|서부|남부|북부|동북부|서북부|남부지역|북부지역))/);
-  if (directional && !nonLocalAgencyWords.test(directional[1]) && !nonRegionPhrases.test(directional[1])) candidates.push({ value: directional[1].replace(/\s+/g, ''), score: 1300 });
+  if (directional && validDisasterRegions.has(directional[1].replace(/\s+/g, '')) && !nonLocalAgencyWords.test(directional[1]) && !nonRegionPhrases.test(directional[1])) candidates.push({ value: directional[1].replace(/\s+/g, ''), score: 1300 });
   const specific = candidates.filter(item => !/(?:특별자치도|특별시|광역시|도)$/.test(item.value)).sort((a, b) => b.score - a.score)[0];
   const region = specific?.value || candidates.sort((a, b) => b.score - a.score)[0]?.value;
   return region || '전국';
@@ -263,7 +271,6 @@ function parseDisasterRows(html) {
     const message = decodeHtml(subject[2]);
     const agency = message.match(/\[([^\]]+)\]\s*$/)?.[1]?.trim() || '';
     const region = extractMessageRegion(message);
-    knownRegions.add(region);
     entries.push({
       id: decodeHtml(number),
       region,
@@ -323,7 +330,7 @@ async function getDisasterMessages(url, response) {
       complete: true,
       startDate,
       endDate,
-      regions: [...knownRegions].sort((a, b) => a.localeCompare(b, 'ko')),
+      regions: [...observedDisasterRegions].sort((a, b) => a.localeCompare(b, 'ko')),
       regionCounts,
       items,
     });
