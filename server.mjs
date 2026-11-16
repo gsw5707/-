@@ -535,7 +535,7 @@ function splitSpeechText(text, limit = 180) {
   const chunks = [];
   let remaining = text;
   while (remaining.length > limit) {
-    let splitAt = Math.max(remaining.lastIndexOf('。', limit), remaining.lastIndexOf('！', limit), remaining.lastIndexOf('？', limit), remaining.lastIndexOf('।', limit), remaining.lastIndexOf(' ', limit));
+    let splitAt = Math.max(...['。', '！', '？', '।', '.', '!', '?', ';', ',', '，', '、', ' '].map(separator => remaining.lastIndexOf(separator, limit)));
     if (splitAt < limit * 0.55) splitAt = limit;
     chunks.push(remaining.slice(0, splitAt + 1).trim());
     remaining = remaining.slice(splitAt + 1).trim();

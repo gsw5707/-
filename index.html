@@ -535,7 +535,8 @@
       stopSpeechButton.disabled=!canSpeak||!speaking;
       speakOriginalButton.classList.toggle('is-speaking',speaking&&activeSpeechKind==='original');
       speakEasyButton.classList.toggle('is-speaking',speaking&&activeSpeechKind==='easy');
-      if(!speechSupported&&canSpeak){speechStatus.textContent='기기 음성이 없어 온라인 음성으로 읽어요.';}
+      if(originalSpeechText||(easySpeechLanguage==='ko'&&easySpeechText)){speechStatus.textContent=fixedUiText('한국어는 Google 온라인 음성으로 읽어요. 버튼을 누르면 읽을 문장이 Google로 전송돼요.');}
+      else if(!speechSupported&&canSpeak){speechStatus.textContent='기기 음성이 없어 온라인 음성으로 읽어요.';}
       else if(!speechSupported){speechStatus.textContent='이 브라우저에서는 음성 읽기를 지원하지 않아요.';}
     }
     function stopSpeech(message='읽기를 멈췄어요.'){
@@ -561,14 +562,37 @@
         if(remoteSpeechObjectUrl)URL.revokeObjectURL(remoteSpeechObjectUrl);remoteSpeechObjectUrl='';remoteSpeechAudio=null;activeSpeechKind='';updateSpeechButtons(false);speechStatus.textContent=fixedUiText('음성을 만들지 못했어요. 다시 눌러 주세요.');
       }
     }
+    function prepareSpeechText(text,language){
+      let clean=String(text||'').replace(/[\u{1F300}-\u{1FAFF}\u{2600}-\u{27BF}]/gu,' ');
+      if(language==='ko'){
+        const weekdays={월:'월요일',화:'화요일',수:'수요일',목:'목요일',금:'금요일',토:'토요일',일:'일요일'};
+        clean=clean.replace(/(\d{1,2})\s*\.\s*(\d{1,2})\s*\.\s*\(([월화수목금토일])\)/g,(_,month,day,weekday)=>`${month}월 ${day}일 ${weekdays[weekday]}`)
+          .replace(/(\d{1,2})\s*:\s*(\d{2})/g,'$1시 $2분')
+          .replace(/(\d{1,2})시(?:\s*(\d{2})분)?\s*[~～]\s*(\d{1,2})시/g,(_,start,minute,end)=>minute?`${start}시 ${minute}분부터 ${end}시까지`:`${start}시부터 ${end}시까지`)
+          .replace(/(\d{1,2})\s*[~～]\s*(\d{1,2})\s*시/g,'$1시부터 $2시까지')
+          .replace(/(\d[\d,]*(?:\.\d+)?)\s*km\b/gi,'$1 킬로미터')
+          .replace(/(\d[\d,]*(?:\.\d+)?)\s*cm\b/gi,'$1 센티미터')
+          .replace(/(\d[\d,]*(?:\.\d+)?)\s*mm\b/gi,'$1 밀리미터')
+          .replace(/(\d[\d,]*(?:\.\d+)?)\s*m\b/gi,'$1 미터')
+          .replace(/(\d[\d,]*(?:\.\d+)?)\s*℃/g,'$1도')
+          .replace(/(\d[\d,]*(?:\.\d+)?)\s*%/g,'$1 퍼센트')
+          .replace(/\[([^\]]+)\]/g,' $1 ')
+          .replace(/[▲▶▷•●◆▪■]/g,', ')
+          .replace(/[／/]/g,' ');
+      }else clean=clean.replace(/\[[^\]]+\]/g,' ');
+      return clean.replace(/[\[\]{}<>]/g,' ').replace(/\s+/g,' ').replace(/\s+([,.;:!?，。！？])/g,'$1').trim();
+    }
     function startSpeech(text,kind,language){
-      const cleanText=String(text||'').replace(/\[[^\]]+\]/g,' ').replace(/[•📖]/g,' ').replace(/\s+/g,' ').trim();
+      const cleanText=prepareSpeechText(text,language);
       if(!cleanText){speechStatus.textContent=fixedUiText('읽을 문자가 없어요.');return;}
       if(!speechSupported&&!remoteSpeechLanguages.has(language)){speechStatus.textContent=fixedUiText('이 브라우저에서는 음성 읽기를 지원하지 않아요.');return;}
       if(speechSupported)window.speechSynthesis.cancel();
       if(remoteSpeechAudio){remoteSpeechAudio.pause();remoteSpeechAudio.removeAttribute('src');remoteSpeechAudio.load();remoteSpeechAudio=null;}
       if(remoteSpeechObjectUrl){URL.revokeObjectURL(remoteSpeechObjectUrl);remoteSpeechObjectUrl='';}
       const requestId=++speechRequestId;
+      if(language==='ko'){
+        activeSpeechKind=kind;updateSpeechButtons(true);setLocalizedSpeechStatus('한국어 음성을 만드는 중이에요. 읽을 문장이 음성 서비스로 전달돼요.',language);startRemoteSpeech(cleanText,language,requestId);return;
+      }
       const locale=speechLanguageCodes[language]||'ko-KR';
       const voices=speechSupported?window.speechSynthesis.getVoices():[];const voice=voices.find(item=>item.lang.toLowerCase()===locale.toLowerCase())||voices.find(item=>item.lang.toLowerCase().startsWith(locale.split('-')[0].toLowerCase()));
       if(!voice){activeSpeechKind=kind;updateSpeechButtons(true);setLocalizedSpeechStatus('음성을 만드는 중이에요. 읽을 문장이 음성 서비스로 전달돼요.',language);startRemoteSpeech(cleanText,language,requestId);return;}
