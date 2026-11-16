@@ -997,7 +997,7 @@
       while(siteTranslationCache.size>6000)siteTranslationCache.delete(siteTranslationCache.keys().next().value);
       try{localStorage.setItem(siteTranslationStorageKey,JSON.stringify([...siteTranslationCache]));}catch(error){}
     }
-    const siteSkipSelector='script,style,noscript,svg,code,pre,.language-start-dialog,.lang-chip,.side-language-option,.geochang-easy-output,.geochang-message,#translatedText,.result-original,.leaflet-control-zoom,.leaflet-control-attribution,[data-no-site-translate],#libraryOriginal,#resultLang,.library-original';
+    const siteSkipSelector='script,style,noscript,svg,code,pre,[hidden],.language-start-dialog,.lang-chip,.side-language-option,.geochang-easy-output,.geochang-message,#translatedText,.result-original,.leaflet-control-zoom,.leaflet-control-attribution,[data-no-site-translate],#libraryOriginal,#resultLang,.library-original,.core-validation-source-text';
     let siteTranslationVersion=0;
     function sourceLanguage(text){
       if(/^(?:A[+-]|(?:dictionary|difficult-words|ui-translations|ui-label-overrides)\.json|km|mm)$/i.test(text.trim()))return null;
@@ -1012,6 +1012,10 @@
       return null;
     }
     function isSiteTextSkipped(element){return !element||Boolean(element.closest(siteSkipSelector));}
+    function isSiteSourceContent(entry){
+      const element=entry.kind==='text'?entry.node.parentElement:entry.element;
+      return Boolean(element?.closest('.dictionary-hard,.dictionary-easy,.dictionary-reason,.statistics-word,.geochang-message,.geochang-meta,.disaster-region-heading,.core-validation-source-text'));
+    }
     function rememberSiteText(node){
       if(!originalSiteText.has(node))originalSiteText.set(node,node.nodeValue);
       return originalSiteText.get(node);
@@ -1059,7 +1063,7 @@
       const addText=node=>{
         if(seen.has(node)||isSiteTextSkipped(node.parentElement)||node.parentElement?.closest('h1,h2,h3'))return;seen.add(node);
         const original=rememberSiteText(node);const trimmed=original.trim();const source=sourceLanguage(trimmed);
-        if(trimmed.length<2||!source)return;
+        if((trimmed.length<2&&!uiTranslationCatalog[siteLanguage]?.[trimmed])||!source)return;
         const start=original.indexOf(trimmed);
         entries.push({kind:'text',node,original:trimmed,prefix:original.slice(0,start),suffix:original.slice(start+trimmed.length),source});
       };
@@ -1102,15 +1106,17 @@
         const fixedTranslation=uiTranslationCatalog[language]?.[normalized];
         if(fixedTranslation){applySiteTranslation(entry,fixedTranslation,version);continue;}
         if(siteTranslationCache.has(cacheKey)){applySiteTranslation(entry,siteTranslationCache.get(cacheKey),version);continue;}
-        if(unseen.has(normalized))continue;
-        unseen.add(normalized);failures+=1;
+        if(isSiteSourceContent(entry)){applySiteTranslation(entry,entry.original,version);continue;}
+        if(unseen.has(cacheKey))continue;
+        unseen.add(cacheKey);failures+=1;
         applySiteTranslation(entry,entry.original,version);
       }
       return failures;
     }
     function translateVisibleSlide(slideId=activeSlideId,version=siteTranslationVersion){
       if(siteLanguage==='ko')return Promise.resolve(0);
-      return translateSiteEntries([document.body],siteLanguage,version);
+      const slide=document.getElementById(slideId);const roots=[slide,document.querySelector('.topbar'),document.querySelector('.accessibility-rail'),document.getElementById('bottomTabs')].filter(Boolean);
+      return translateSiteEntries(roots,siteLanguage,version);
     }
     function restoreSiteLanguage(){
       siteBlockElements.forEach(element=>{const original=originalSiteBlocks.get(element);if(element.isConnected&&original){translatedSiteBlocks.delete(element);element.innerHTML=original.html;element.classList.remove('site-translated-title');}});
@@ -1160,7 +1166,7 @@
       if(language!==siteLanguage)restoreSiteLanguage();
       siteLanguage=language;selectedLang=language;translationLanguageChosen=true;try{localStorage.setItem('ansimgil-translation-language',language);}catch(error){}const version=++siteTranslationVersion;
       document.documentElement.lang=language;syncLanguageButtons(language);updateThemeButton();
-      renderDictionaryFilters();renderDictionary();renderStatisticsFilters();if(statisticsResult)renderStatisticsChart(activeStatisticsCategory);
+       renderDictionaryFilters();renderDictionary();renderStatisticsFilters();if(statisticsResult){renderStatisticsChart(activeStatisticsCategory);updateStatisticsLocalizedText();}if(typeof coreValidationRecords!=='undefined'&&document.getElementById('coreValidationCounts')){renderCoreValidationRecords();coreValidationStatus.textContent=coreValidationRecordStatus(coreValidationRecords.length);}
       try{localStorage.setItem('ansimgil-site-language',language);}catch(error){}
       if(language==='ko'){
         restoreSiteLanguage();renderTranslation();
@@ -1179,7 +1185,7 @@
       translateVisibleSlide(activeSlideId,version).then(async failures=>{
         if(version!==siteTranslationVersion)return;
         document.title=uiTranslationCatalog[language]?.[originalDocumentTitle]||originalDocumentTitle;
-        renderDictionaryFilters();renderDictionary();renderStatisticsFilters();if(statisticsResult)renderStatisticsChart(activeStatisticsCategory);updateActionGuideView();
+         renderDictionaryFilters();renderDictionary();renderStatisticsFilters();if(statisticsResult){renderStatisticsChart(activeStatisticsCategory);updateStatisticsLocalizedText();}if(document.getElementById('coreValidationCounts')){renderCoreValidationRecords();coreValidationStatus.textContent=coreValidationRecordStatus(coreValidationRecords.length);}updateActionGuideView();
         if(version===siteTranslationVersion)toast(failures?'일부 고정 문구가 번역 사전에 없어 한국어로 남았어요':'언어 변경 완료');
       });
     }
@@ -2019,6 +2025,7 @@
     const coreValidationChecks=[['target','대상'],['place','장소'],['time','시간'],['number','숫자'],['risk','위험 수준'],['action','행동'],['prohibition','금지 조건']];
     const coreValidationJudgments={review:'검토 중',pass:'통과',error:'오류'};
     const coreValidationRechecks={pending:'재검증 중',pass:'통과',error:'오류'};
+    const coreValidationRecordStatus=(count,saved=false)=>fixedUiText(saved?'팀 검증 기록 {count}건 · 저장했어요.':'팀 검증 기록 {count}건',siteLanguage,{count:Number(count).toLocaleString(siteLanguage==='ko'?'ko-KR':siteLanguage)});
     let coreValidationRecords=[];let editingCoreValidationId='';
     const coreValidationForm=document.getElementById('coreValidationForm');
     const coreValidationStatus=document.getElementById('coreValidationStatus');
@@ -2033,48 +2040,48 @@
       return {disasterType:value('coreValidationDisasterType'),original:value('coreValidationOriginal'),simplified:value('coreValidationSimplified'),checks,judgment:value('coreValidationJudgment'),correctionBefore:value('coreValidationCorrectionBefore'),correctionAfter:value('coreValidationCorrectionAfter'),recheckStatus:value('coreValidationRecheckStatus'),recheckResult:value('coreValidationRecheckResult')};
     }
     function resetCoreValidationForm(){
-      editingCoreValidationId='';coreValidationForm.reset();coreValidationChecksElement.querySelectorAll('select').forEach(select=>select.value='');document.getElementById('coreValidationFormTitle').textContent='검증 기록 작성';document.getElementById('saveCoreValidationButton').textContent='기록 저장';document.getElementById('coreValidationFormError').textContent='';
+      editingCoreValidationId='';coreValidationForm.reset();coreValidationChecksElement.querySelectorAll('select').forEach(select=>select.value='');document.getElementById('coreValidationFormTitle').textContent=fixedUiText('검증 기록 작성');document.getElementById('saveCoreValidationButton').textContent=fixedUiText('기록 저장');document.getElementById('coreValidationFormError').textContent='';
     }
     function renderCoreValidationRecords(){
       const filter=document.getElementById('coreValidationTypeFilter');const selected=filter.value;const types=[...new Set(coreValidationRecords.map(record=>record.disasterType).filter(Boolean))].sort((a,b)=>a.localeCompare(b,'ko'));
-      filter.replaceChildren(new Option('전체 유형',''),...types.map(type=>new Option(type,type)));filter.value=types.includes(selected)?selected:'';
+       filter.replaceChildren(new Option(fixedUiText('전체 유형'),''),...types.map(type=>new Option(type,type)));filter.value=types.includes(selected)?selected:'';
       const reviewed=coreValidationRecords.filter(record=>record.judgment).length;const passed=coreValidationRecords.filter(record=>record.judgment==='pass').length;const errors=coreValidationRecords.filter(record=>record.judgment==='error').length;const recheckPassed=coreValidationRecords.filter(record=>record.recheckStatus==='pass').length;
-      const countValues=[['검토',reviewed],['통과',passed],['오류',errors],['재검증 통과',recheckPassed]];
-      document.getElementById('coreValidationCounts').replaceChildren(...countValues.map(([label,count])=>{const card=document.createElement('article');card.className='core-validation-count';const title=document.createElement('span');title.textContent=label;const value=document.createElement('strong');value.textContent=Number(count).toLocaleString();card.append(title,value);return card;}));
+       const countValues=[['검토',reviewed],['통과',passed],['오류',errors],['재검증 통과',recheckPassed]];
+       document.getElementById('coreValidationCounts').replaceChildren(...countValues.map(([label,count])=>{const card=document.createElement('article');card.className='core-validation-count';const title=document.createElement('span');title.textContent=fixedUiText(label);const value=document.createElement('strong');value.textContent=Number(count).toLocaleString();card.append(title,value);return card;}));
       const shown=coreValidationRecords.filter(record=>!filter.value||record.disasterType===filter.value);
-      document.getElementById('coreValidationEmpty').hidden=shown.length>0;document.getElementById('coreValidationEmpty').textContent=coreValidationRecords.length?'선택한 유형의 기록이 없습니다.':'아직 검증 기록이 없습니다. 예시 판정이나 임의 수치는 넣지 않았어요.';
+       document.getElementById('coreValidationEmpty').hidden=shown.length>0;document.getElementById('coreValidationEmpty').textContent=fixedUiText(coreValidationRecords.length?'선택한 유형의 기록이 없습니다.':'아직 검증 기록이 없습니다. 예시 판정이나 임의 수치는 넣지 않았어요.');
       coreValidationRows.replaceChildren(...shown.map(record=>{
         const row=document.createElement('tr');
-        const cell=text=>{const element=document.createElement('td');element.textContent=text||'—';row.append(element);return element;};
-        cell(record.disasterType);cell(record.original);cell(record.simplified);
-        const checkCell=document.createElement('td');checkCell.className='core-validation-check-list';coreValidationChecks.forEach(([key,label])=>{const item=document.createElement('span');item.textContent=`${label} ${record.checks?.[key]||'—'}`;item.className='core-validation-mark';checkCell.append(item);});row.append(checkCell);
-        cell(coreValidationJudgments[record.judgment]||'—');cell(`${record.correctionBefore||'—'}\n→\n${record.correctionAfter||'—'}`);cell(`${coreValidationRechecks[record.recheckStatus]||'—'}${record.recheckResult?`\n${record.recheckResult}`:''}`);
-        const actions=document.createElement('td');actions.className='core-validation-actions-cell';const edit=document.createElement('button');edit.type='button';edit.textContent='수정';edit.addEventListener('click',()=>openCoreValidationForm(record));const remove=document.createElement('button');remove.type='button';remove.textContent='삭제';remove.addEventListener('click',()=>deleteCoreValidation(record));actions.append(edit,remove);row.append(actions);return row;
+         const cell=(text,className='')=>{const element=document.createElement('td');if(className)element.className=className;element.textContent=text||'—';row.append(element);return element;};
+         cell(record.disasterType,'core-validation-source-text');cell(record.original,'core-validation-source-text');cell(record.simplified,'core-validation-source-text');
+         const checkCell=document.createElement('td');checkCell.className='core-validation-check-list';coreValidationChecks.forEach(([key,label])=>{const item=document.createElement('span');item.textContent=`${fixedUiText(label)} ${record.checks?.[key]||'—'}`;item.className='core-validation-mark';checkCell.append(item);});row.append(checkCell);
+         cell(coreValidationJudgments[record.judgment]||'—');cell(`${record.correctionBefore||'—'}\n→\n${record.correctionAfter||'—'}`,'core-validation-source-text');const recheckCell=document.createElement('td');const recheckLabel=document.createElement('span');recheckLabel.textContent=coreValidationRechecks[record.recheckStatus]||'—';recheckCell.append(recheckLabel);if(record.recheckResult){const result=document.createElement('span');result.className='core-validation-source-text';result.textContent=`\n${record.recheckResult}`;recheckCell.append(result);}row.append(recheckCell);
+         const actions=document.createElement('td');actions.className='core-validation-actions-cell';const edit=document.createElement('button');edit.type='button';edit.textContent=fixedUiText('수정');edit.addEventListener('click',()=>openCoreValidationForm(record));const remove=document.createElement('button');remove.type='button';remove.textContent=fixedUiText('삭제');remove.addEventListener('click',()=>deleteCoreValidation(record));actions.append(edit,remove);row.append(actions);return row;
       }));
     }
     async function loadCoreValidationRecords(){
-      coreValidationStatus.textContent='팀 검증 기록을 불러오는 중…';
-      try{const response=await fetch('/api/core-info-validation',{cache:'no-store'});const data=await response.json();if(!response.ok)throw new Error(data.error||'검증 기록을 불러오지 못했어요.');coreValidationRecords=Array.isArray(data.records)?data.records:[];renderCoreValidationRecords();coreValidationStatus.textContent=`팀이 저장한 검증 기록 ${coreValidationRecords.length}건`;
-      }catch(error){coreValidationStatus.textContent='검증 기록 파일에 연결하지 못했어요. 앱 서버 상태를 확인해 주세요.';document.getElementById('coreValidationEmpty').hidden=false;}
+      await uiTranslationCatalogPromise;coreValidationStatus.textContent=fixedUiText('검증 기록을 불러오는 중…');
+       try{const response=await fetch('/api/core-info-validation',{cache:'no-store'});const data=await response.json();if(!response.ok)throw new Error(data.error||'검증 기록을 불러오지 못했어요.');coreValidationRecords=Array.isArray(data.records)?data.records:[];renderCoreValidationRecords();coreValidationStatus.textContent=coreValidationRecordStatus(coreValidationRecords.length);
+       }catch(error){coreValidationStatus.textContent=fixedUiText('검증 기록 파일에 연결하지 못했어요. 앱 서버 상태를 확인해 주세요.');document.getElementById('coreValidationEmpty').hidden=false;}
     }
     function openCoreValidationForm(record=null,prefill=null){
-      resetCoreValidationForm();editingCoreValidationId=record?.id||'';coreValidationForm.hidden=false;
+       resetCoreValidationForm();editingCoreValidationId=record?.id||'';coreValidationForm.hidden=false;
       const data=record||prefill||{};document.getElementById('coreValidationDisasterType').value=data.disasterType||'';document.getElementById('coreValidationOriginal').value=data.original||'';document.getElementById('coreValidationSimplified').value=data.simplified||'';document.getElementById('coreValidationJudgment').value=data.judgment||'';document.getElementById('coreValidationCorrectionBefore').value=data.correctionBefore||'';document.getElementById('coreValidationCorrectionAfter').value=data.correctionAfter||'';document.getElementById('coreValidationRecheckStatus').value=data.recheckStatus||'';document.getElementById('coreValidationRecheckResult').value=data.recheckResult||'';
       coreValidationChecks.forEach(([key])=>{coreValidationChecksElement.querySelector(`[data-core-check="${key}"]`).value=data.checks?.[key]||'';});
-      document.getElementById('coreValidationFormTitle').textContent=record?'검증 기록 수정':'검증 기록 작성';document.getElementById('saveCoreValidationButton').textContent=record?'수정 저장':'기록 저장';
-      coreValidationForm.scrollIntoView({behavior:'smooth',block:'center'});document.getElementById('coreValidationDisasterType').focus({preventScroll:true});
+       document.getElementById('coreValidationFormTitle').textContent=fixedUiText(record?'검증 기록 수정':'검증 기록 작성');document.getElementById('saveCoreValidationButton').textContent=fixedUiText(record?'수정 저장':'기록 저장');
+      translateSiteEntries([coreValidationForm],siteLanguage,siteTranslationVersion);coreValidationForm.scrollIntoView({behavior:'smooth',block:'center'});document.getElementById('coreValidationDisasterType').focus({preventScroll:true});
     }
     async function saveCoreValidation(event){
-      event.preventDefault();const payload=coreValidationFormValue();if(!payload.disasterType||!payload.original||!payload.simplified){document.getElementById('coreValidationFormError').textContent='재난 유형, 원문, 순화문을 입력해 주세요.';return;}
+       event.preventDefault();const payload=coreValidationFormValue();if(!payload.disasterType||!payload.original||!payload.simplified){document.getElementById('coreValidationFormError').textContent=fixedUiText('재난 유형, 원문, 순화문을 입력해 주세요.');return;}
       const button=document.getElementById('saveCoreValidationButton');button.disabled=true;document.getElementById('coreValidationFormError').textContent='';
-      try{const endpoint=editingCoreValidationId?`/api/core-info-validation/${encodeURIComponent(editingCoreValidationId)}`:'/api/core-info-validation';const response=await fetch(endpoint,{method:editingCoreValidationId?'PATCH':'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(payload)});const data=await response.json();if(!response.ok)throw new Error(data.error||'기록을 저장하지 못했어요.');if(editingCoreValidationId)coreValidationRecords=coreValidationRecords.map(record=>record.id===data.record.id?data.record:record);else coreValidationRecords.push(data.record);renderCoreValidationRecords();resetCoreValidationForm();coreValidationForm.hidden=true;coreValidationStatus.textContent=`팀 검증 기록 ${coreValidationRecords.length}건 · 저장했어요.`;
-      }catch(error){document.getElementById('coreValidationFormError').textContent=error.message||'기록을 저장하지 못했어요.';}
+       try{const endpoint=editingCoreValidationId?`/api/core-info-validation/${encodeURIComponent(editingCoreValidationId)}`:'/api/core-info-validation';const response=await fetch(endpoint,{method:editingCoreValidationId?'PATCH':'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(payload)});const data=await response.json();if(!response.ok)throw new Error(data.error||'기록을 저장하지 못했어요.');if(editingCoreValidationId)coreValidationRecords=coreValidationRecords.map(record=>record.id===data.record.id?data.record:record);else coreValidationRecords.push(data.record);renderCoreValidationRecords();resetCoreValidationForm();coreValidationForm.hidden=true;coreValidationStatus.textContent=coreValidationRecordStatus(coreValidationRecords.length,true);
+       }catch(error){document.getElementById('coreValidationFormError').textContent=fixedUiText(error.message||'기록을 저장하지 못했어요.');}
       finally{button.disabled=false;}
     }
     async function deleteCoreValidation(record){
-      if(!confirm('이 검증 기록을 삭제할까요?'))return;
-      try{const response=await fetch(`/api/core-info-validation/${encodeURIComponent(record.id)}`,{method:'DELETE'});const data=await response.json();if(!response.ok)throw new Error(data.error||'기록을 삭제하지 못했어요.');coreValidationRecords=coreValidationRecords.filter(item=>item.id!==record.id);renderCoreValidationRecords();coreValidationStatus.textContent=`팀 검증 기록 ${coreValidationRecords.length}건`;
-      }catch(error){coreValidationStatus.textContent=error.message||'기록을 삭제하지 못했어요.';}
+        if(!confirm(fixedUiText('기록을 삭제할까요?')))return;
+       try{const response=await fetch(`/api/core-info-validation/${encodeURIComponent(record.id)}`,{method:'DELETE'});const data=await response.json();if(!response.ok)throw new Error(data.error||'기록을 삭제하지 못했어요.');coreValidationRecords=coreValidationRecords.filter(item=>item.id!==record.id);renderCoreValidationRecords();coreValidationStatus.textContent=coreValidationRecordStatus(coreValidationRecords.length);
+        }catch(error){coreValidationStatus.textContent=fixedUiText('검증 기록을 삭제하지 못했어요.');}
     }
     document.getElementById('newCoreValidationButton').addEventListener('click',()=>openCoreValidationForm());
     document.getElementById('cancelCoreValidationButton').addEventListener('click',()=>{resetCoreValidationForm();coreValidationForm.hidden=true;});
@@ -2207,46 +2214,47 @@
       if(resetPage)disasterPage=1;
       const days=document.getElementById('disasterDays').value;const keyword=document.getElementById('disasterSearch').value.trim();const regionSelect=document.getElementById('disasterRegion');const region=regionSelect.value;
       const reloadButton=document.getElementById('disasterReload');const searchButton=document.getElementById('disasterSearchBtn');const previousButton=document.getElementById('disasterPrevious');const nextButton=document.getElementById('disasterNext');const status=document.getElementById('disasterStatus');const list=document.getElementById('disasterList');
-      const requestId=++disasterRequestId;disasterArchiveLoaded=true;reloadButton.disabled=true;searchButton.disabled=true;regionSelect.disabled=true;previousButton.disabled=true;nextButton.disabled=true;document.getElementById('disasterPagination').hidden=true;status.textContent=`최근 ${days}일 불러오는 중…`;list.replaceChildren();
+       const requestId=++disasterRequestId;disasterArchiveLoaded=true;reloadButton.disabled=true;searchButton.disabled=true;regionSelect.disabled=true;previousButton.disabled=true;nextButton.disabled=true;document.getElementById('disasterPagination').hidden=true;status.textContent=fixedUiText('최근 {days}일 불러오는 중…',siteLanguage,{days:Number(days).toLocaleString(siteLanguage==='ko'?'ko-KR':siteLanguage)});list.replaceChildren();
       try{
         const params=new URLSearchParams({days,keyword,region,page:String(disasterPage),pageSize:'50'});
          const response=await fetch(localApiUrl(`/api/disaster-messages?${params}`),{cache:'no-store'});const data=await response.json();
-        if(!response.ok)throw new Error(data.error||'전국 재난문자 목록을 불러오지 못했어요.');
+         if(!response.ok)throw new Error('전국 재난문자 목록을 불러오지 못했어요.');
         if(requestId!==disasterRequestId)return;
         const selectedRegion=regionSelect.value;const availableRegions=data.regions||[];const currentOptions=[...regionSelect.options].slice(1).map(option=>option.value);
-        if(JSON.stringify(currentOptions)!==JSON.stringify(availableRegions)){
-          regionSelect.replaceChildren(new Option('전체 지역',''),...availableRegions.map(value=>new Option(value,value)));
-          if(selectedRegion&&!availableRegions.includes(selectedRegion))regionSelect.add(new Option(`${selectedRegion} · 기록 없음`,selectedRegion));
+         if(JSON.stringify(currentOptions)!==JSON.stringify(availableRegions)){
+           regionSelect.replaceChildren(new Option(fixedUiText('전체 지역'),''),...availableRegions.map(value=>{const option=new Option(value,value);option.dataset.noSiteTranslate='true';return option;}));
+           if(selectedRegion&&!availableRegions.includes(selectedRegion)){const option=new Option(`${selectedRegion} · ${fixedUiText('기록 없음')}`,selectedRegion);option.dataset.noSiteTranslate='true';regionSelect.add(option);}
           regionSelect.value=selectedRegion;
         }
         disasterPage=data.page;
-        document.getElementById('disasterDateRange').textContent=`조회 기간 ${data.startDate} ~ ${data.endDate}`;
-        const first=data.totalCount?(data.page-1)*data.pageSize+1:0;const last=first+data.items.length-1;
-        const completeness=data.complete?`전체 ${data.nationalCount.toLocaleString()}건`:`${data.collectedCount.toLocaleString()}/${data.nationalCount.toLocaleString()}건 · 일부 누락`;
-        const regionSummary=region?`${region} · `:`${availableRegions.length}개 지역 · `;
-        status.textContent=`${completeness} · ${regionSummary}${keyword?'검색':'기간'} ${data.totalCount.toLocaleString()}건 · ${first.toLocaleString()}~${last.toLocaleString()} 표시`;
+         document.getElementById('disasterDateRange').textContent=`${fixedUiText('조회 기간')} ${data.startDate} ~ ${data.endDate}`;
+         const first=data.totalCount?(data.page-1)*data.pageSize+1:0;const last=first+data.items.length-1;
+         const locale=siteLanguage==='ko'?'ko-KR':siteLanguage;const messageCount=value=>siteLanguage==='ko'?`${Number(value).toLocaleString(locale)}건`:fixedUiText('{count}건',siteLanguage,{count:Number(value).toLocaleString(locale)});
+         const completeness=data.complete?fixedUiText('전체 {count}건',siteLanguage,{count:Number(data.nationalCount).toLocaleString(locale)}):fixedUiText('{collected}/{total}건 · 일부 누락',siteLanguage,{collected:Number(data.collectedCount).toLocaleString(locale),total:Number(data.nationalCount).toLocaleString(locale)});
+         const regionSummary=region?`${region} · `:siteLanguage==='ko'?`${availableRegions.length}개 지역 · `:`${availableRegions.length} ${fixedUiText('개 지역')} · `;
+         status.textContent=`${completeness} · ${regionSummary}${fixedUiText(keyword?'검색':'기간')} ${messageCount(data.totalCount)} · ${fixedUiText('{first}~{last} 표시',siteLanguage,{first:first.toLocaleString(locale),last:last.toLocaleString(locale)})}`;
         const pagination=document.getElementById('disasterPagination');pagination.hidden=data.pageCount<=1;
-        document.getElementById('disasterPageInfo').textContent=`${data.page} / ${data.pageCount} · ${data.totalCount.toLocaleString()}건`;
+         document.getElementById('disasterPageInfo').textContent=fixedUiText('{page} / {pages} · {count}건',siteLanguage,{page:data.page.toLocaleString(locale),pages:data.pageCount.toLocaleString(locale),count:Number(data.totalCount).toLocaleString(locale)});
         previousButton.disabled=data.page<=1;nextButton.disabled=data.page>=data.pageCount;
-        if(!data.items.length){const empty=document.createElement('div');empty.className='geochang-empty';empty.textContent=keyword?'검색 결과 없음':'해당 기간 기록 없음';list.append(empty);return;}
+         if(!data.items.length){const empty=document.createElement('div');empty.className='geochang-empty';empty.textContent=fixedUiText(keyword?'검색 결과 없음':'해당 기간 기록 없음');list.append(empty);return;}
         const groupCounts=new Map();data.items.forEach(item=>groupCounts.set(item.region,(groupCounts.get(item.region)||0)+1));let activeRegion='';
         data.items.forEach(item=>{
-          if(item.region!==activeRegion){activeRegion=item.region;const heading=document.createElement('h4');heading.className='disaster-region-heading';heading.textContent=`${item.region} · ${(data.regionCounts?.[item.region]||groupCounts.get(item.region))}건`;list.append(heading);}
+           if(item.region!==activeRegion){activeRegion=item.region;const heading=document.createElement('h4');heading.className='disaster-region-heading';heading.textContent=`${item.region} · ${messageCount(data.regionCounts?.[item.region]||groupCounts.get(item.region))}`;list.append(heading);}
           const row=document.createElement('article');row.className='geochang-item';
           const meta=document.createElement('span');meta.className='geochang-meta';const time=document.createElement('span');time.textContent=item.createdAt;const agency=document.createElement('small');agency.textContent=item.agency;meta.append(time,agency);
           const main=document.createElement('div');main.className='geochang-item-main';const message=document.createElement('p');message.className='geochang-message';message.textContent=item.message;
           const actions=document.createElement('div');actions.className='geochang-item-actions';const details=document.createElement('details');details.className='geochang-easy';details.dataset.originalMessage=item.message;const summary=document.createElement('summary');summary.textContent='쉬운 말 보기';
-          const detailBody=document.createElement('div');detailBody.className='geochang-easy-body';const controls=document.createElement('div');controls.className='geochang-easy-controls';
-       const audienceLabel=document.createElement('label');audienceLabel.textContent='안내 대상';const audience=document.createElement('select');audience.className='geochang-audience';
-        [['child','초1 수준'],['general','쉬운 한국어'],['senior','어르신(65세 이상)']].forEach(([value,label])=>{const option=document.createElement('option');option.value=value;option.textContent=label;audience.append(option);});audienceLabel.append(audience);
-       controls.append(audienceLabel);const output=document.createElement('p');output.className='geochang-easy-output';output.dataset.noSiteTranslate='true';const easyStatus=document.createElement('p');easyStatus.className='geochang-easy-status';easyStatus.textContent='원문 보존 · 쉬운 표현 참고용';detailBody.append(controls,easyStatus,output);details.append(summary,detailBody);
+           const detailBody=document.createElement('div');detailBody.className='geochang-easy-body';const controls=document.createElement('div');controls.className='geochang-easy-controls';
+        const audienceLabel=document.createElement('label');audienceLabel.textContent=fixedUiText('안내 대상');const audience=document.createElement('select');audience.className='geochang-audience';
+         [['child','초1 수준'],['general','쉬운 한국어'],['senior','어르신(65세 이상)']].forEach(([value,label])=>{const option=document.createElement('option');option.value=value;option.textContent=fixedUiText(label);audience.append(option);});audienceLabel.append(audience);
+        controls.append(audienceLabel);const output=document.createElement('p');output.className='geochang-easy-output';output.dataset.noSiteTranslate='true';const easyStatus=document.createElement('p');easyStatus.className='geochang-easy-status';easyStatus.textContent=fixedUiText('원문 보존 · 쉬운 표현 참고용');detailBody.append(controls,easyStatus,output);details.append(summary,detailBody);
           details.addEventListener('toggle',()=>{if(!details.open)return;document.querySelectorAll('.geochang-easy[open]').forEach(other=>{if(other!==details)other.open=false;});renderGeochangEasy(item.message,details);});
           audience.addEventListener('change',()=>{languageLabel.hidden=audience.value!=='foreign';if(details.open)renderGeochangEasy(item.message,details);});
-          const source=document.createElement('a');source.className='geochang-source-link';source.href=item.sourceUrl;source.target='_blank';source.rel='noreferrer';source.textContent='공식 원문';actions.append(details,source);main.append(message,actions);row.append(meta,main);list.append(row);
+           const source=document.createElement('a');source.className='geochang-source-link';source.href=item.sourceUrl;source.target='_blank';source.rel='noreferrer';source.textContent=fixedUiText('공식 원문');actions.append(details,source);main.append(message,actions);row.append(meta,main);list.append(row);
         });
       }catch(error){
         if(requestId!==disasterRequestId)return;
-        disasterArchiveLoaded=false;status.textContent=error.message||'목록 불러오기 실패';const empty=document.createElement('div');empty.className='geochang-empty';empty.textContent='새로고침으로 다시 시도';list.append(empty);
+         disasterArchiveLoaded=false;status.textContent=fixedUiText('전국 재난문자 목록을 불러오지 못했어요.');const empty=document.createElement('div');empty.className='geochang-empty';empty.textContent=fixedUiText('새로고침으로 다시 시도');list.append(empty);
       }finally{if(requestId===disasterRequestId){reloadButton.disabled=false;searchButton.disabled=false;regionSelect.disabled=false;}}
     }
     document.getElementById('disasterReload').addEventListener('click',()=>loadDisasterMessages(true));
@@ -2302,9 +2310,9 @@
          const arrow=document.createElement('span');arrow.setAttribute('aria-hidden','true');arrow.textContent=' → ';
          const easy=document.createElement('span');easy.textContent=entry.easy;word.append(rank,hard,arrow,easy);
          const kind=document.createElement('small');kind.textContent=entry.kind||'어려운 말';word.append(kind);
-        const track=document.createElement('div');track.className='statistics-bar-track';track.setAttribute('role','img');track.setAttribute('aria-label',`${entry.hard}, ${count.toLocaleString()}건`);
+         const track=document.createElement('div');track.className='statistics-bar-track';track.setAttribute('role','img');track.setAttribute('aria-label',`${entry.hard}, ${fixedUiText('{count}건',siteLanguage,{count:count.toLocaleString(siteLanguage==='ko'?'ko-KR':siteLanguage)})}`);
         const bar=document.createElement('div');bar.className='statistics-bar';bar.style.width=`${Math.max(2,count/maxCount*100)}%`;track.append(bar);
-        const value=document.createElement('span');value.className='statistics-count';value.textContent=`${count.toLocaleString()}건`;
+         const value=document.createElement('span');value.className='statistics-count';const localizedCount=count.toLocaleString(siteLanguage==='ko'?'ko-KR':siteLanguage);value.textContent=siteLanguage==='ko'?`${localizedCount}건`:fixedUiText('{count}건',siteLanguage,{count:localizedCount});
         row.append(word,track,value);return row;
       }));
     }
@@ -2329,14 +2337,26 @@
       statisticsResult={allTerms,categories,total,hardMessages,totalWordsBefore,totalWordsAfter,meta};
       const rate=total?hardMessages/total*100:0;
       document.getElementById('statisticsRate').textContent=`${rate.toFixed(1)}%`;
-      document.getElementById('statisticsSummaryText').textContent=`${total.toLocaleString()}건 가운데 ${hardMessages.toLocaleString()}건에 사전 목록 또는 자동 감지한 어려운 표현이 한 개 이상 있었어요. 모든 어려운 말을 빠짐없이 찾는 수치는 아니에요.`;
+      document.getElementById('statisticsSummaryText').textContent=fixedUiText('{total}건 가운데 {hard}건에 사전 목록 또는 자동 감지한 어려운 표현이 한 개 이상 있었어요. 모든 어려운 말을 빠짐없이 찾는 수치는 아니에요.',siteLanguage,{total:total.toLocaleString(siteLanguage==='ko'?'ko-KR':siteLanguage),hard:hardMessages.toLocaleString(siteLanguage==='ko'?'ko-KR':siteLanguage)});
       document.getElementById('statisticsTotalMessages').textContent=total.toLocaleString();
       document.getElementById('statisticsDifficultMessages').textContent=hardMessages.toLocaleString();
       const wordsBefore=total?totalWordsBefore/total:0;const wordsAfter=total?totalWordsAfter/total:0;
-      document.getElementById('statisticsWordCountBefore').textContent=`${wordsBefore.toFixed(2)}개`;
-      document.getElementById('statisticsWordCountAfter').textContent=`${wordsAfter.toFixed(2)}개`;
-      document.getElementById('statisticsCoverage').textContent=`자료 범위: ${meta.startDate||'최근 1년'} ~ ${meta.endDate||'현재'} · ${total.toLocaleString()}건${meta.complete?' · 전체 수집':' · 일부 누락'}`;
+      document.getElementById('statisticsWordCountBefore').textContent=siteLanguage==='ko'?`${wordsBefore.toFixed(2)}개`:`${wordsBefore.toFixed(2)} ${fixedUiText('개')}`;
+      document.getElementById('statisticsWordCountAfter').textContent=siteLanguage==='ko'?`${wordsAfter.toFixed(2)}개`:`${wordsAfter.toFixed(2)} ${fixedUiText('개')}`;
+      document.getElementById('statisticsCoverage').textContent=fixedUiText('자료 범위: {startDate} ~ {endDate} · {total}건 · {completeness}',siteLanguage,{startDate:meta.startDate||fixedUiText('최근 1년'),endDate:meta.endDate||fixedUiText('현재'),total:total.toLocaleString(siteLanguage==='ko'?'ko-KR':siteLanguage),completeness:fixedUiText(meta.complete?'전체 수집':'일부 누락')});
       renderStatisticsChart();
+    }
+    function updateStatisticsLocalizedText(){
+      if(!statisticsResult)return;
+      const {total,hardMessages,totalWordsBefore,totalWordsAfter,meta}=statisticsResult;const numberLocale=siteLanguage==='ko'?'ko-KR':siteLanguage;
+      document.getElementById('statisticsSummaryText').textContent=fixedUiText('{total}건 가운데 {hard}건에 사전 목록 또는 자동 감지한 어려운 표현이 한 개 이상 있었어요. 모든 어려운 말을 빠짐없이 찾는 수치는 아니에요.',siteLanguage,{total:total.toLocaleString(numberLocale),hard:hardMessages.toLocaleString(numberLocale)});
+      const before=total?totalWordsBefore/total:0;const after=total?totalWordsAfter/total:0;
+      document.getElementById('statisticsWordCountBefore').textContent=siteLanguage==='ko'?`${before.toFixed(2)}개`:`${before.toFixed(2)} ${fixedUiText('개')}`;
+      document.getElementById('statisticsWordCountAfter').textContent=siteLanguage==='ko'?`${after.toFixed(2)}개`:`${after.toFixed(2)} ${fixedUiText('개')}`;
+      const completeLabel=fixedUiText(meta.complete?'전체 수집':'일부 누락');
+      document.getElementById('statisticsCoverage').textContent=fixedUiText('자료 범위: {startDate} ~ {endDate} · {total}건 · {completeness}',siteLanguage,{startDate:meta.startDate||fixedUiText('최근 1년'),endDate:meta.endDate||fixedUiText('현재'),total:total.toLocaleString(numberLocale),completeness:completeLabel});
+      const status=meta.complete?fixedUiText('분석 완료 · 최근 1년 {count}건 전체 확인',siteLanguage,{count:total.toLocaleString(numberLocale)}):fixedUiText('일부 자료로 분석했어요 · {count}/{total}건 · 빠진 묶음 {missing}개 · 다시 분석할 수 있어요',siteLanguage,{count:total.toLocaleString(numberLocale),total:Number(meta.expected||total).toLocaleString(numberLocale),missing:Number(meta.failed?.length||0).toLocaleString(numberLocale)});
+      document.getElementById('statisticsStatus').textContent=status;
     }
     async function requestStatisticsPage(page){
       let lastError;
@@ -2354,7 +2374,7 @@
       if(statisticsLoading||statisticsLoaded&&!force)return;
       statisticsLoading=true;statisticsLoaded=false;
       const status=document.getElementById('statisticsStatus');const progress=document.getElementById('statisticsProgress');const reload=document.getElementById('statisticsReload');
-      reload.disabled=true;progress.hidden=false;progress.value=0;status.textContent='어려운 말 목록과 최근 1년 재난문자를 불러오고 있어요.';
+      reload.disabled=true;progress.hidden=false;progress.value=0;status.textContent=fixedUiText('어려운 말 목록과 최근 1년 재난문자를 불러오고 있어요.');
       try{
          await Promise.all([difficultWordsPromise,dictionaryLoadPromise]);if(!difficultWords.length)throw new Error('difficult-words.json에 분석할 표현이 없어요.');
         const first=await requestStatisticsPage(1);const pageCount=Math.max(1,Number(first.pageCount)||1);const totalCount=Number(first.totalCount)||first.items?.length||0;
@@ -2363,7 +2383,7 @@
         async function worker(){
           while(cursor<pageNumbers.length){const page=pageNumbers[cursor++];try{const data=await requestStatisticsPage(page);pages.set(page,data.items||[]);}catch(error){failed.push(page);}
             finished+=1;progress.value=finished;
-            if(finished===pageCount||finished%8===0)status.textContent=`최근 1년 자료 불러오는 중 · ${finished.toLocaleString()}/${pageCount.toLocaleString()} 묶음 · ${totalCount.toLocaleString()}건 예상`;
+             if(finished===pageCount||finished%8===0)status.textContent=fixedUiText('최근 1년 자료 불러오는 중 · {finished}/{pages} 묶음 · {total}건 예상',siteLanguage,{finished:finished.toLocaleString(siteLanguage==='ko'?'ko-KR':siteLanguage),pages:pageCount.toLocaleString(siteLanguage==='ko'?'ko-KR':siteLanguage),total:totalCount.toLocaleString(siteLanguage==='ko'?'ko-KR':siteLanguage)});
           }
         }
         await Promise.all(Array.from({length:Math.min(8,pageNumbers.length)},worker));
@@ -2372,8 +2392,8 @@
         const complete=failed.length===0&&pages.size===pageCount&&messages.length>=totalCount&&first.complete!==false;
         writeStatisticsResult(messages,{startDate:first.startDate,endDate:first.endDate,complete,expected:totalCount,failed});
         statisticsLoaded=true;
-        status.textContent=complete?`분석 완료 · 최근 1년 ${messages.length.toLocaleString()}건 전체 확인`:`일부 자료로 분석했어요 · ${messages.length.toLocaleString()}/${totalCount.toLocaleString()}건 · 빠진 묶음 ${failed.length}개 · 다시 분석할 수 있어요`;
-      }catch(error){status.textContent=`통계를 불러오지 못했어요 · ${error.message||'잠시 후 다시 시도해 주세요.'}`;document.getElementById('statisticsChart').replaceChildren(Object.assign(document.createElement('p'),{className:'statistics-empty',textContent:'자료를 불러오지 못했어요. 다시 분석을 눌러 주세요.'}));}
+         status.textContent=complete?fixedUiText('분석 완료 · 최근 1년 {count}건 전체 확인',siteLanguage,{count:messages.length.toLocaleString(siteLanguage==='ko'?'ko-KR':siteLanguage)}):fixedUiText('일부 자료로 분석했어요 · {count}/{total}건 · 빠진 묶음 {missing}개 · 다시 분석할 수 있어요',siteLanguage,{count:messages.length.toLocaleString(siteLanguage==='ko'?'ko-KR':siteLanguage),total:totalCount.toLocaleString(siteLanguage==='ko'?'ko-KR':siteLanguage),missing:failed.length.toLocaleString(siteLanguage==='ko'?'ko-KR':siteLanguage)});
+       }catch(error){status.textContent=fixedUiText('통계를 불러오지 못했어요 · 잠시 후 다시 시도해 주세요.');document.getElementById('statisticsChart').replaceChildren(Object.assign(document.createElement('p'),{className:'statistics-empty',textContent:fixedUiText('자료를 불러오지 못했어요. 다시 분석을 눌러 주세요.')}));}
       finally{statisticsLoading=false;reload.disabled=false;progress.hidden=true;}
     }
     renderStatisticsFilters();
