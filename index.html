@@ -1994,28 +1994,65 @@
       const alertSignal=/(?:재난문자|안전안내문자|긴급재난문자|호우|폭우|홍수|침수|범람|하천|계곡|산사태|산불|화재|지진|해일|태풍|강풍|폭염|한파|대설|폭설|결빙|낙뢰|대피|출입금지|통제구간|통행금지|대피소|주의보|경보|재난안전)/;
       const actionSignal=/(?:대피|이동|피하|금지|통제|주의|조심|유의|바랍니다|하세요|주시기|접근|출입|우회|자제|확인하시|삼가|멀리|벗어나|신고|문의)/;
       const blockedLine=/^(?:\d{1,2}:\d{2}(?:\s*(?:AM|PM))?|(?:오전|오후)\s*\d{1,2}:\d{2}|\d{1,2}%$|\d+개의? 알림|알림 \d+개|방금 전|\d+분 전|\d+시간 전|오늘\s*\d{1,2}:\d{2}$|\d{4}년\s*\d{1,2}월\s*\d{1,2}일|(?:\d{1,2}:\d{2}\s+)?(?:[\d:%]+\s+)*(?:5G|LTE|Wi.?Fi|배터리|Battery)(?:\s|$).+|[←→↻⋮…⌕♡☆★]+)$/i;
-      const screenNoise=/(?:조회 기간|검색\s*\(|전체\s*\d[\d,]*\s*건|개\s*지역|표시\s*\d|쉬운말보기|공식\s*원문|쉬운 말 사전|어려운 말 통계|문자 순화|다크\s*모드|Language and text size|TAMIL)/i;
+      const screenNoise=/(?:조회 기간|조회기간|검색\s*\(|전체\s*\d[\d,]*\s*건|개\s*지역|표시\s*\d|쉬운말보기|공식\s*원문|쉬운 말 사전|어려운 말 통계|문자 순화|다크\s*모드|Language and text size|TAMIL|더보기\s*[+＋]|화재 발생시 이렇게 행동|대피장소 시설안내|재난문자\s*쉬운 말 보기)/i;
+      const guideNoise=/(?:비상소집을 합니다|화재경보가 울리면|불이 났는지 확인하려|소리를.{0,24}깨우고|대처방안에 따라|대피방법을 결정|손등으로 출입문 손잡이|손잡이가 따뜻하거나 뜨거우면|반대쪽에 불이 난|문을 열지 않습니다|연기 들어오는 방향|계단으로 나갈지|창문으로 구조를 요청|신속히 대피합니다|건물 밖으로 대피하는 방법)/;
       const rawLines=Array.isArray(ocr?.lines)?ocr.lines.map(line=>({text:String(line.text||'').replace(/\s+/g,' ').trim(),confidence:Number(line.confidence),bbox:line.bbox})):String(ocr?.text||ocr||'').split(/\r?\n/).map(text=>({text:text.replace(/\s+/g,' ').trim(),confidence:100,bbox:null}));
-      const screenCapture=rawLines.some(line=>screenNoise.test(line.text));
+      const dateRows=rawLines.filter(line=>/20\d{2}[/.\-]\d{1,2}[/.\-]\d{1,2}/.test(line.text));
+      const listHeader=rawLines.find(line=>/재난문자/.test(line.text)&&line.text.length<40);
+      const guideHeader=rawLines.find(line=>/(?:화재|재난|위험).{0,12}발생시.{0,12}행동하세요|대피장소\s*시설안내/.test(line.text));
+      const screenCapture=rawLines.filter(line=>screenNoise.test(line.text)).length>=2||dateRows.length>=2||(Boolean(listHeader&&guideHeader));
+      const contentY0=screenCapture&&listHeader?Number(listHeader.bbox?.y1):NaN;
+      const contentY1=screenCapture&&guideHeader?Number(guideHeader.bbox?.y0):NaN;
       const isRegionLabel=text=>/^[가-힣]{2,}(?:특별자치도|특별자치시|광역시|특별시|시|군|구|면|동|읍)(?:\s*["'”’])?$/.test(text);
-      const lines=rawLines.filter(line=>line.text&&(!Number.isFinite(line.confidence)||line.confidence>=25)&&!uiLine.test(line.text)&&!screenNoise.test(line.text)&&!blockedLine.test(line.text)&&!isRegionLabel(line.text));
-      const signalScore=line=>((alertSignal.test(line.text)?3:0)+(actionSignal.test(line.text)?2:0)+(/\d/.test(line.text)&&/(?:대피|발생|통제|경보|주의보|금지)/.test(line.text)?1:0));
-      const anchors=lines.map((line,index)=>({index,score:signalScore(line)})).filter(item=>item.score>=3);
+      const lines=rawLines.filter(line=>{const y=Number(line.bbox?.y0);const inMessageList=!screenCapture||!Number.isFinite(contentY0)||!Number.isFinite(y)||(y>=contentY0-8&&(!Number.isFinite(contentY1)||y<contentY1));return inMessageList&&line.text&&/[가-힣]/.test(line.text)&&(!Number.isFinite(line.confidence)||line.confidence>=25)&&!uiLine.test(line.text)&&!screenNoise.test(line.text)&&!guideNoise.test(line.text)&&!blockedLine.test(line.text)&&!isRegionLabel(line.text)&&!/20\d{2}[/.\-]\d{1,2}[/.\-]\d{1,2}/.test(line.text);});
+      const signalScore=line=>{
+        const text=line.text;let score=(alertSignal.test(text)?3:0)+(actionSignal.test(text)?2:0);
+        if(/(?:발생|발효|우려|위험|경보|주의보|통제|대피|누출|화재로)/.test(text))score+=3;
+        if(/(?:오늘|금일|어제)?\s*\d{1,2}(?::\d{2}|시\s*\d{1,2}분)/.test(text))score+=3;
+        if(/(?:[가-힣]+시|[가-힣]+군|[가-힣]+구|[가-힣]+동|[가-힣]+읍|[가-힣]+면|산\s*\d+|\d+-\d+)/.test(text))score+=1;
+        if(text.length>=30)score+=1;
+        return score;
+      };
+      const anchors=lines.map((line,index)=>({index,score:signalScore(line)})).filter(item=>item.score>=4);
       if(!anchors.length)return {text:'',confidence:'none',crop:null};
+      if(screenCapture&&dateRows.length>=2){
+        const firstTimestamp=lines.filter(line=>/\d{1,2}:\d{2}/.test(line.text)&&/[가-힣]/.test(line.text));
+        const firstIncident=anchors.map(anchor=>({...anchor,line:lines[anchor.index]})).filter(anchor=>/(?:오늘|금일|어제)\s*\d{1,2}:\d{2}/.test(anchor.line.text)&&/(?:화재|산불|침수|사고|발생|대피)/.test(anchor.line.text));
+        const preferred=firstIncident[0];
+        if(preferred){
+          const line=preferred.line;const crop=line.bbox?{x0:Math.max(0,line.bbox.x0-8),y0:Math.max(0,line.bbox.y0-5),x1:line.bbox.x1+8,y1:line.bbox.y1+5}:null;
+          return {text:line.text.replace(/^[^가-힣]*?(?=(?:오늘|금일|어제)\s*\d{1,2}:\d{2})/,'').replace(/\s*[.…]{1,3}\s*$/,'').trim(),confidence:'screen-row',crop,screenCapture:true};
+        }
+        if(firstTimestamp.length){const candidate=anchors.map(anchor=>lines[anchor.index]).find(line=>line.bbox&&line.bbox.y0>=contentY0-8&&line.bbox.y0<contentY1);if(candidate)return {text:candidate.text.replace(/\s*[.…]{1,3}\s*$/,'').trim(),confidence:'screen-row',crop:{x0:Math.max(0,candidate.bbox.x0-8),y0:Math.max(0,candidate.bbox.y0-5),x1:candidate.bbox.x1+8,y1:candidate.bbox.y1+5},screenCapture:true};}
+      }
       const groups=[];
-      anchors.forEach(anchor=>{const line=lines[anchor.index];const y=Number(line.bbox?.y0);let group=groups.find(item=>Number.isFinite(y)&&Number.isFinite(item.lastY)&&y-item.lastY<=105&&y>=item.lastY);if(!group){group={start:anchor.index,end:anchor.index,lastY:Number.isFinite(y)?y:null,score:0,anchors:0};groups.push(group);}group.start=Math.min(group.start,anchor.index);group.end=Math.max(group.end,anchor.index);group.lastY=Number.isFinite(y)?y:group.lastY;group.score+=anchor.score+(Number.isFinite(line.confidence)?line.confidence/100:0);group.anchors++;});
-      const selectedGroup=groups.sort((a,b)=>b.score-a.score||(Number(lines[a.start].bbox?.y0)||0)-(Number(lines[b.start].bbox?.y0)||0))[0];
+      anchors.forEach(anchor=>{const line=lines[anchor.index];const y=Number(line.bbox?.y0);const x=Number(line.bbox?.x0);const height=Number(line.bbox?.y1)-y;let group=groups.find(item=>Number.isFinite(y)&&Number.isFinite(item.lastY)&&y-item.lastY<=Math.max(48,(item.lastHeight||0)*1.8)&&y>=item.lastY&&Math.abs(x-item.lastX)<=100);if(!group){group={start:anchor.index,end:anchor.index,lastY:Number.isFinite(y)?y:null,lastX:Number.isFinite(x)?x:null,lastHeight:Number.isFinite(height)?height:0,score:0,anchors:0};groups.push(group);}group.start=Math.min(group.start,anchor.index);group.end=Math.max(group.end,anchor.index);group.lastY=Number.isFinite(y)?y:group.lastY;group.lastX=Number.isFinite(x)?x:group.lastX;group.lastHeight=Number.isFinite(height)?height:group.lastHeight;group.score+=anchor.score+(Number.isFinite(line.confidence)?line.confidence/100:0);group.anchors++;});
+      const selectedGroup=groups.sort((a,b)=>{
+        const timing=group=>/(?:오늘|금일|어제)?\s*\d{1,2}(?::\d{2}|시\s*\d{1,2}분)/.test(lines[group.start].text)?1:0;
+        const incident=group=>/(?:발생|발효|우려|통제|대피|누출)/.test(lines[group.start].text)?1:0;
+        return (timing(b)*5+incident(b)*2+b.score)-(timing(a)*5+incident(a)*2+a.score)||(Number(lines[a.start].bbox?.y0)||0)-(Number(lines[b.start].bbox?.y0)||0);
+      })[0];
       let start=selectedGroup.start;let end=selectedGroup.end;
-      const looksLikeMessageLine=line=>/[가-힣]/.test(line.text)&&line.text.length>=8&&!uiLine.test(line.text)&&!screenNoise.test(line.text)&&!blockedLine.test(line.text)&&!(/^[가-힣]{2,}(?:시|군|구|도|면|동|읍)$/.test(line.text));
-      for(let step=0;step<3&&start>0;step++){const previous=lines[start-1];const gap=Number(lines[start].bbox?.y0)-Number(previous.bbox?.y1);if(!looksLikeMessageLine(previous)||(Number.isFinite(gap)&&gap>55))break;start--;}
-      for(let step=0;step<3&&end<lines.length-1;step++){const next=lines[end+1];const gap=Number(next.bbox?.y0)-Number(lines[end].bbox?.y1);if(!looksLikeMessageLine(next)||(Number.isFinite(gap)&&gap>55))break;end++;}
-      const selected=lines.slice(start,end+1).filter(line=>!screenNoise.test(line.text)&&!blockedLine.test(line.text));
+      const looksLikeMessageLine=line=>/[가-힣]/.test(line.text)&&line.text.length>=8&&!uiLine.test(line.text)&&!screenNoise.test(line.text)&&!guideNoise.test(line.text)&&!blockedLine.test(line.text)&&!(/^[가-힣]{2,}(?:시|군|구|도|면|동|읍)$/.test(line.text));
+      if(!screenCapture){
+        for(let step=0;step<3&&start>0;step++){const previous=lines[start-1];const gap=Number(lines[start].bbox?.y0)-Number(previous.bbox?.y1);const sameColumn=Math.abs(Number(lines[start].bbox?.x0)-Number(previous.bbox?.x0))<100;if(!looksLikeMessageLine(previous)||!sameColumn||(Number.isFinite(gap)&&gap>42))break;start--;}
+        for(let step=0;step<3&&end<lines.length-1;step++){const next=lines[end+1];const gap=Number(next.bbox?.y0)-Number(lines[end].bbox?.y1);const sameColumn=Math.abs(Number(next.bbox?.x0)-Number(lines[end].bbox?.x0))<100;if(!looksLikeMessageLine(next)||!sameColumn||(Number.isFinite(gap)&&gap>42))break;end++;}
+      }
+      const selected=lines.slice(start,end+1).filter(line=>!screenNoise.test(line.text)&&!guideNoise.test(line.text)&&!blockedLine.test(line.text));
       const body=selected.map(line=>line.text).filter(text=>!/^(?:재난문자|안전안내문자|긴급재난문자)$/.test(text));
-      const text=body.join(' ').replace(/\s+/g,' ').trim();
+      let text=body.join(' ').replace(/\s+/g,' ').trim();let truncated=/(?:…|⋯|\.{3,})\s*$/.test(text);
+      if(screenCapture&&/20\d{2}[/.\-]\d{1,2}/.test(text)){
+        const alertStart=text.search(/(?:산불|산사태|호우|폭우|집중호우|침수|범람|하천|계곡|태풍|강풍|폭염|한파|대설|지진|해일|화재|이안류|너울성 파도)/);
+        if(alertStart>0)text=text.slice(alertStart).trim();
+      }
+      const timestampIndex=text.search(/(?:오늘|금일|어제)\s*\d{1,2}:\d{2}/);
+      if(timestampIndex>0)text=text.slice(timestampIndex);
+      if(screenCapture&&/(?:화기|발생으로|우회하고|접근금지|대피하세요|창문을|인|및)$/.test(text))truncated=true;
+      if(truncated){const complete=[...text.matchAll(/[^.!?。！？]+[.!?。！？]/g)].map(match=>match[0].trim());if(complete.length)text=complete.join(' ').trim();}
       const boxes=selected.map(line=>line.bbox).filter(box=>box&&[box.x0,box.y0,box.x1,box.y1].every(Number.isFinite));
-      const minimumX=boxes.length?Math.min(...boxes.map(box=>box.x0)):0;const bodyBoxes=boxes.filter(box=>box.x0>minimumX+100);const cropBoxes=screenCapture&&bodyBoxes.length?bodyBoxes:boxes;
+      const cropBoxes=boxes;
       const crop=boxes.length?{x0:Math.max(0,Math.min(...cropBoxes.map(box=>box.x0))-35),y0:Math.max(0,Math.min(...boxes.map(box=>box.y0))-10),x1:Math.max(...boxes.map(box=>box.x1))+12,y1:Math.max(...boxes.map(box=>box.y1))+8}:null;
-      return text?{text,confidence:selectedGroup.anchors>1?'matched':'single-signal',crop,screenCapture}:{text:'',confidence:'none',crop:null,screenCapture};
+      return text?{text,confidence:selectedGroup.anchors>1?'matched':'single-signal',crop,screenCapture,truncated}:{text:'',confidence:'none',crop:null,screenCapture,truncated:false};
     }
     async function recognizeDisasterCrop(file,crop,worker){
       if(!crop||!window.createImageBitmap)return null;
@@ -2032,8 +2069,12 @@
       try{
         const worker=await getTesseractWorker();const result=await worker.recognize(file);const extracted=extractDisasterMessageFromOcr(result.data);
         if(!extracted.text){imageOcrStatus.textContent='재난문자 본문을 찾지 못했어요 · 재난문자 부분만 잘라 다시 올려 주세요';return;}
-        const croppedData=await recognizeDisasterCrop(file,extracted.crop,worker).catch(()=>null);const cropped= croppedData?extractDisasterMessageFromOcr(croppedData).text:'';const preferred=extracted.screenCapture?(cropped||extracted.text):(cropped&&cropped.length>=8?cropped:extracted.text);const messageText=String(preferred).replace(/\s*\[[^\]]+\]\s*$/,'').replace(/\s+/g,' ').trim();
-        const message=document.getElementById('message');message.value=messageText;lastTranslationSource='';imageOcrStatus.textContent='재난문자 본문만 읽었어요 · 내용 확인 중…';message.dispatchEvent(new Event('input',{bubbles:true}));await renderTranslation();imageOcrStatus.textContent='재난문자 본문만 넣었어요 · 원문이 맞는지 확인해 주세요';
+        const croppedData=await recognizeDisasterCrop(file,extracted.crop,worker).catch(()=>null);const croppedResult=croppedData?extractDisasterMessageFromOcr(croppedData):null;const chosen=extracted.screenCapture?{...(croppedResult?.text?croppedResult:extracted),screenCapture:true}:croppedResult?.text&&croppedResult.text.length>=8?croppedResult:extracted;
+        let messageText=String(chosen.text).replace(/\s*\[[^\]]+\]\s*$/,'').replace(/\s+/g,' ').trim();
+        if(chosen.screenCapture){const alertStart=messageText.search(/(?:산불|산사태|호우|폭우|집중호우|침수|범람|하천|계곡|태풍|강풍|폭염|한파|대설|지진|해일|화재|이안류|너울성 파도)/);if(alertStart>0&&/20\d{2}[/.\-]\d{1,2}/.test(messageText.slice(0,alertStart)))messageText=messageText.slice(alertStart).trim();}
+        let wasTruncated=Boolean(chosen.truncated)||Boolean(chosen.screenCapture&&/(?:…|⋯|\.{3,}|화기|우회하고|발생으로|창문을|인)$/.test(messageText));
+        if(wasTruncated){const complete=[...messageText.matchAll(/[^.!?。！？]+[.!?。！？]/g)].map(match=>match[0].trim());if(complete.length)messageText=complete.join(' ');}
+        const message=document.getElementById('message');message.value=messageText;lastTranslationSource='';imageOcrStatus.textContent='재난문자 본문만 읽었어요 · 내용 확인 중…';message.dispatchEvent(new Event('input',{bubbles:true}));await renderTranslation();imageOcrStatus.textContent=wasTruncated?'목록에서 잘리지 않고 보이는 문장만 읽었어요 · 전체 내용이 보이게 캡처해 주세요':'재난문자 본문만 넣었어요 · 원문이 맞는지 확인해 주세요';
       }catch(error){imageOcrStatus.textContent='이미지 읽기 실패 · 다시 선택';}
       finally{messageImageButton.disabled=false;messageImageInput.value='';}
     });
