@@ -3610,6 +3610,12 @@
     let shelterListRequestId=0;
     let lastShelterSearch={lat:start[0],lon:start[1],areaName:''};
     const list=document.getElementById('placeList');
+    function geolocationErrorMessage(error){
+      if(error?.code===1)return '위치 권한이 꺼져 있어요. 브라우저 사이트 설정에서 위치를 허용하거나 지역을 검색해 주세요.';
+      if(error?.code===2)return '기기에서 위치를 가져오지 못했어요. 기기의 위치 서비스를 켜고 다시 시도하거나 지역을 검색해 주세요.';
+      if(error?.code===3)return '위치 확인 시간이 오래 걸렸어요. 잠시 후 다시 시도하거나 지역을 검색해 주세요.';
+      return '현재 위치를 확인하지 못했어요. 지도에서 지역을 검색해 주세요.';
+    }
     function locationAccuracyText(accuracy){
       if(!Number.isFinite(accuracy))return '정확도를 확인할 수 없어요.';
       const radius=Math.max(1,Math.round(accuracy));
@@ -3631,7 +3637,7 @@
         if(!navigator.geolocation){reject(new Error('이 브라우저에서는 현재 위치를 사용할 수 없어요.'));return;}
         navigator.geolocation.getCurrentPosition(position=>{
           userLocation={lat:position.coords.latitude,lon:position.coords.longitude,accuracy:position.coords.accuracy};userLocationAt=Date.now();resolve(userLocation);
-        },error=>reject(new Error(error.code===1?'사이트와 컴퓨터 설정에서 위치 권한을 허용해야 길을 안내할 수 있어요.':'컴퓨터 위치를 확인하지 못했어요. 주소나 지역을 검색해 주세요.')),{enableHighAccuracy:true,maximumAge:fresh?0:5000,timeout:30000});
+        },error=>reject(new Error(geolocationErrorMessage(error))),{enableHighAccuracy:true,maximumAge:fresh?0:5000,timeout:30000});
       });
     }
     function formatRouteDistance(meters){return meters<1000?`${Math.round(meters)} m`:`${(meters/1000).toFixed(1)} km`;}
@@ -3842,7 +3848,7 @@
       try{
         const position=await new Promise((resolve,reject)=>{
           if(!navigator.geolocation){reject(new Error('이 브라우저에서는 현재 위치를 사용할 수 없어요.'));return;}
-          navigator.geolocation.getCurrentPosition(resolve,error=>reject(new Error(error.code===1?'위치 권한을 허용하거나 지역을 검색해 주세요.':'현재 위치를 확인하지 못했어요. 지도에서 지역을 검색해 주세요.')),{enableHighAccuracy:true,maximumAge:0,timeout:20000});
+          navigator.geolocation.getCurrentPosition(resolve,error=>reject(new Error(geolocationErrorMessage(error))),{enableHighAccuracy:true,maximumAge:0,timeout:20000});
         });
         updateUserPosition(position,centerMap,{refreshShelters:false});
         hasExplicitShelterLocation=true;
@@ -3865,7 +3871,7 @@
       else if(hasExplicitShelterLocation){target={lat:lastShelterSearch.lat,lon:lastShelterSearch.lon,areaName:lastShelterSearch.areaName};}
       else{
         try{const location=await getCurrentLocation({fresh:true});target={lat:location.lat,lon:location.lon,areaName:''};userLocation=location;userLocationAt=Date.now();hasExplicitShelterLocation=true;map?.setView([target.lat,target.lon],Math.max(map.getZoom(),14));}
-        catch(error){document.getElementById('locationStatus').textContent='현재 위치를 찾지 못했어요. 지도로 지역을 검색해 주세요.';document.getElementById('map-section').scrollIntoView({behavior:'smooth'});return;}
+        catch(error){document.getElementById('locationStatus').textContent=error.message||'현재 위치를 찾지 못했어요. 지도로 지역을 검색해 주세요.';document.getElementById('map-section').scrollIntoView({behavior:'smooth'});return;}
       }
       document.getElementById('shelterType').value=type;
       document.getElementById('locationStatus').textContent=regionName?`${regionName} 문자 지역의 대피 안내를 찾고 있어요.`:'현재 지도 위치의 대피 안내를 찾고 있어요.';
