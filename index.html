@@ -3631,14 +3631,20 @@
       if(accuracy>300)return 12;
       return 15;
     }
+    function requestCurrentPosition({fresh=false,onFallback=()=>{}}={}){
+      if(!navigator.geolocation)return Promise.reject(new Error('이 브라우저에서는 현재 위치를 사용할 수 없어요.'));
+      const request=options=>new Promise((resolve,reject)=>navigator.geolocation.getCurrentPosition(resolve,reject,options));
+      return request({enableHighAccuracy:true,maximumAge:fresh?0:5000,timeout:12000}).catch(error=>{
+        if(error.code===1)throw error;
+        onFallback();
+        return request({enableHighAccuracy:false,maximumAge:fresh?0:30000,timeout:15000});
+      });
+    }
     function getCurrentLocation({fresh=false}={}){
       if(userLocation&&!fresh&&Date.now()-userLocationAt<30000)return Promise.resolve(userLocation);
-      return new Promise((resolve,reject)=>{
-        if(!navigator.geolocation){reject(new Error('이 브라우저에서는 현재 위치를 사용할 수 없어요.'));return;}
-        navigator.geolocation.getCurrentPosition(position=>{
-          userLocation={lat:position.coords.latitude,lon:position.coords.longitude,accuracy:position.coords.accuracy};userLocationAt=Date.now();resolve(userLocation);
-        },error=>reject(new Error(geolocationErrorMessage(error))),{enableHighAccuracy:true,maximumAge:fresh?0:5000,timeout:30000});
-      });
+      return requestCurrentPosition({fresh}).then(position=>{
+        userLocation={lat:position.coords.latitude,lon:position.coords.longitude,accuracy:position.coords.accuracy};userLocationAt=Date.now();return userLocation;
+      }).catch(error=>{throw new Error(geolocationErrorMessage(error));});
     }
     function formatRouteDistance(meters){return meters<1000?`${Math.round(meters)} m`:`${(meters/1000).toFixed(1)} km`;}
     function locationDistance(a,b){return map?map.distance([a.lat,a.lon],[b.lat,b.lon]):Infinity;}
@@ -3846,10 +3852,7 @@
     async function findSheltersAtCurrentLocation(centerMap){
       const status=document.getElementById('locationStatus');status.textContent='현재 위치를 새로 확인하고 있어요…';
       try{
-        const position=await new Promise((resolve,reject)=>{
-          if(!navigator.geolocation){reject(new Error('이 브라우저에서는 현재 위치를 사용할 수 없어요.'));return;}
-          navigator.geolocation.getCurrentPosition(resolve,error=>reject(new Error(geolocationErrorMessage(error))),{enableHighAccuracy:true,maximumAge:0,timeout:20000});
-        });
+        const position=await requestCurrentPosition({fresh:true,onFallback:()=>{status.textContent='정확한 위치를 바로 찾지 못해 다른 방법으로 다시 확인하고 있어요…';}}).catch(error=>{throw new Error(geolocationErrorMessage(error));});
         updateUserPosition(position,centerMap,{refreshShelters:false});
         hasExplicitShelterLocation=true;
          const searchRadius=Number(position.coords.accuracy)>1000?Math.min(30,8+Math.ceil(Number(position.coords.accuracy)/1000)):8;lastShelterSearch={lat:userLocation.lat,lon:userLocation.lon,areaName:'',radiusKm:searchRadius};lastShelterRefresh={...userLocation,at:Date.now()};
