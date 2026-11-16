@@ -285,7 +285,7 @@ function parseDisasterRows(html) {
 
 async function getDisasterMessages(url, response) {
   const page = Math.max(1, Math.min(10000, Number(url.searchParams.get('page')) || 1));
-  const pageSize = Math.max(10, Math.min(50, Number(url.searchParams.get('pageSize')) || 50));
+  const pageSize = Math.max(7, Math.min(50, Number(url.searchParams.get('pageSize')) || 50));
   const days = Math.max(1, Math.min(365, Number(url.searchParams.get('days')) || 30));
   const keyword = (url.searchParams.get('keyword') || '').trim().slice(0, 80);
   const region = (url.searchParams.get('region') || '').trim().slice(0, 80);
@@ -525,12 +525,27 @@ async function getDirections(url, response) {
       sendJson(response, 404, { error: '이 위치 사이의 길을 찾지 못했어요. 다른 대피소를 선택해 주세요.' });
       return;
     }
+    const formatStepDistance = meters => meters < 1000
+      ? `${Math.max(10, Math.round(meters / 10) * 10)}미터`
+      : `${(meters / 1000).toFixed(1)}킬로미터`;
     const steps = (route.legs || []).flatMap(leg => leg.steps || []).map(step => {
       const maneuver = step.maneuver || {};
-      const direction = maneuver.modifier === 'left' ? '왼쪽으로' : maneuver.modifier === 'right' ? '오른쪽으로' : maneuver.modifier?.includes('left') ? '왼쪽으로' : maneuver.modifier?.includes('right') ? '오른쪽으로' : '';
-      const instruction = maneuver.type === 'depart' ? '출발하세요' : maneuver.type === 'arrive' ? '목적지에 도착했어요' : maneuver.type === 'turn' ? `${direction || '앞으로'} 가세요` : maneuver.type === 'roundabout' || maneuver.type === 'rotary' ? '회전교차로를 지나가세요' : maneuver.type === 'merge' ? '길에 합류하세요' : maneuver.type === 'fork' ? `${direction || '안내된 방향으로'} 가세요` : maneuver.type === 'continue' ? '계속 곧장 가세요' : '안내된 길을 따라가세요';
+      const modifier = maneuver.modifier || '';
+      const direction = modifier.includes('left') ? '왼쪽' : modifier.includes('right') ? '오른쪽' : modifier === 'straight' ? '직진' : '';
       const name = typeof step.name === 'string' ? step.name.trim() : '';
-      return name ? `${name}에서 ${instruction}` : instruction;
+      const distance = Number(step.distance) > 20 ? formatStepDistance(Number(step.distance)) : '';
+      if (maneuver.type === 'arrive') return '목적지에 도착했어요.';
+      if (maneuver.type === 'depart') return `${name ? `${name} 방향으로 ` : ''}출발하세요${distance ? `. ${distance} 정도 가세요.` : '.'}`;
+      if (maneuver.type === 'roundabout' || maneuver.type === 'rotary') {
+        const exit = Number(maneuver.exit);
+        return `${exit ? `회전교차로에서 ${exit}번째 출구로 나가세요` : '회전교차로를 지나가세요'}${name ? ` (${name})` : ''}.`;
+      }
+      if (maneuver.type === 'merge') return `${name ? `${name} 방향으로 ` : ''}길에 합류하세요${distance ? ` (${distance})` : ''}.`;
+      if (maneuver.type === 'fork') return `${direction || '안내된 방향'} 갈림길로 가세요${name ? ` (${name})` : ''}${distance ? `, ${distance} 정도` : ''}.`;
+      if (maneuver.type === 'turn' || maneuver.type === 'end of road') return `${direction || '앞쪽'}으로 돌아가세요${name ? ` (${name})` : ''}${distance ? `, ${distance} 정도` : ''}.`;
+      if (maneuver.type === 'on ramp') return `${name ? `${name} 방향 ` : ''}진입로로 들어가세요${distance ? `, ${distance} 정도` : ''}.`;
+      if (maneuver.type === 'off ramp') return `${name ? `${name} 방향 ` : ''}진출로로 빠져나가세요${distance ? `, ${distance} 정도` : ''}.`;
+      return `${name ? `${name} 길을 따라 ` : ''}${distance ? `${distance} ` : ''}직진하세요.`;
     }).slice(0, 30);
     sendJson(response, 200, {
       distanceMeters: route.distance,
