@@ -391,8 +391,8 @@
         <div class="statistics-metric-grid statistics-content">
           <article class="statistics-metric"><span class="statistics-metric-label">분석한 재난문자</span><strong class="statistics-metric-value" id="statisticsTotalMessages">—</strong><span class="statistics-metric-note">최근 1년 · 원문 기준</span></article>
           <article class="statistics-metric"><span class="statistics-metric-label">어려운 말이 나온 문자</span><strong class="statistics-metric-value" id="statisticsDifficultMessages">—</strong><span class="statistics-metric-note">사전 목록·자동 감지 기준</span></article>
-          <article class="statistics-metric"><span class="statistics-metric-label">순화 전 어려운 말 수</span><strong class="statistics-metric-value" id="statisticsWordCountBefore">—</strong><span class="statistics-metric-note">문자 한 건당 평균</span></article>
-          <article class="statistics-metric"><span class="statistics-metric-label">순화 후 어려운 말 수</span><strong class="statistics-metric-value" id="statisticsWordCountAfter">—</strong><span class="statistics-metric-note">문자 한 건당 평균</span></article>
+          <article class="statistics-metric"><span class="statistics-metric-label">순화 전 재난문자 평균 길이</span><strong class="statistics-metric-value" id="statisticsAverageLengthBefore">—</strong><span class="statistics-metric-note">최근 1년 문자 한 건당 평균 글자 수 · 공백 제외</span></article>
+          <article class="statistics-metric"><span class="statistics-metric-label">순화 후 안내문 평균 길이</span><strong class="statistics-metric-value" id="statisticsAverageLengthAfter">—</strong><span class="statistics-metric-note">같은 문자 표본 한 건당 평균 · 공백 제외</span></article>
         </div>
         <section class="statistics-chart-panel" aria-labelledby="statisticsChartTitle">
           <div class="statistics-chart-head"><div><h3 id="statisticsChartTitle">재난 유형별 어려운 말</h3><p>막대는 해당 유형 문자 중 그 말을 포함한 문자 수예요. 자주 나온 말 10개를 보여드려요.</p></div><button class="statistics-category-button" id="statisticsReload" type="button">다시 분석</button></div>
@@ -2406,11 +2406,11 @@
     }
     function writeStatisticsResult(messages,meta){
       const allTerms=new Map();const categories=new Map(statisticsCategories.map(category=>[category,{messages:0,terms:new Map()}]));
-      let hardMessages=0,totalWordsBefore=0,totalWordsAfter=0,total=0;
+      let hardMessages=0,totalCharactersBefore=0,totalCharactersAfter=0,total=0;
       messages.forEach(message=>{
         const text=String(message||'').replace(/\s*\[[^\]]+\]\s*$/,'').trim();if(!text)return;
         total+=1;
-        const matches=matchDifficultWords(text);const difficultBefore=findCountableDifficultWords(text);if(difficultBefore.length)hardMessages+=1;totalWordsBefore+=difficultBefore.length;
+        const matches=matchDifficultWords(text);const difficultBefore=findCountableDifficultWords(text);if(difficultBefore.length)hardMessages+=1;totalCharactersBefore+=Array.from(text.replace(/\s/g,'')).length;
         const types=classifyStatisticsMessage(text);const groups=new Set([...types,'공통']);
         groups.forEach(category=>{const group=categories.get(category);if(group)group.messages+=1;});
         matches.forEach(entry=>{
@@ -2420,27 +2420,27 @@
             group.terms.set(entry,(group.terms.get(entry)||0)+1);
           });
         });
-        const simplified=applyStatisticsWordList(text);totalWordsAfter+=findCountableDifficultWords(simplified).length;
+        const simplified=applyStatisticsWordList(text);totalCharactersAfter+=Array.from(simplified.replace(/\s/g,'')).length;
       });
-      statisticsResult={allTerms,categories,total,hardMessages,totalWordsBefore,totalWordsAfter,meta};
+      statisticsResult={allTerms,categories,total,hardMessages,totalCharactersBefore,totalCharactersAfter,meta};
       const rate=total?hardMessages/total*100:0;
       document.getElementById('statisticsRate').textContent=`${rate.toFixed(1)}%`;
       document.getElementById('statisticsSummaryText').textContent=fixedUiText('{total}건 가운데 {hard}건에 사전 목록 또는 자동 감지한 어려운 표현이 한 개 이상 있었어요. 모든 어려운 말을 빠짐없이 찾는 수치는 아니에요.',siteLanguage,{total:total.toLocaleString(siteLanguage==='ko'?'ko-KR':siteLanguage),hard:hardMessages.toLocaleString(siteLanguage==='ko'?'ko-KR':siteLanguage)});
       document.getElementById('statisticsTotalMessages').textContent=total.toLocaleString();
       document.getElementById('statisticsDifficultMessages').textContent=hardMessages.toLocaleString();
-      const wordsBefore=total?totalWordsBefore/total:0;const wordsAfter=total?totalWordsAfter/total:0;
-      document.getElementById('statisticsWordCountBefore').textContent=siteLanguage==='ko'?`${wordsBefore.toFixed(2)}개`:`${wordsBefore.toFixed(2)} ${fixedUiText('개')}`;
-      document.getElementById('statisticsWordCountAfter').textContent=siteLanguage==='ko'?`${wordsAfter.toFixed(2)}개`:`${wordsAfter.toFixed(2)} ${fixedUiText('개')}`;
+      const averageBefore=total?totalCharactersBefore/total:0;const averageAfter=total?totalCharactersAfter/total:0;
+      document.getElementById('statisticsAverageLengthBefore').textContent=siteLanguage==='ko'?`${averageBefore.toFixed(1)}자`:`${averageBefore.toFixed(1)} ${fixedUiText('자')}`;
+      document.getElementById('statisticsAverageLengthAfter').textContent=siteLanguage==='ko'?`${averageAfter.toFixed(1)}자`:`${averageAfter.toFixed(1)} ${fixedUiText('자')}`;
       document.getElementById('statisticsCoverage').textContent=fixedUiText('자료 범위: {startDate} ~ {endDate} · {total}건 · {completeness}',siteLanguage,{startDate:meta.startDate||fixedUiText('최근 1년'),endDate:meta.endDate||fixedUiText('현재'),total:total.toLocaleString(siteLanguage==='ko'?'ko-KR':siteLanguage),completeness:fixedUiText(meta.complete?'전체 수집':'일부 누락')});
       renderStatisticsChart();
     }
     function updateStatisticsLocalizedText(){
       if(!statisticsResult)return;
-      const {total,hardMessages,totalWordsBefore,totalWordsAfter,meta}=statisticsResult;const numberLocale=siteLanguage==='ko'?'ko-KR':siteLanguage;
+      const {total,hardMessages,totalCharactersBefore,totalCharactersAfter,meta}=statisticsResult;const numberLocale=siteLanguage==='ko'?'ko-KR':siteLanguage;
       document.getElementById('statisticsSummaryText').textContent=fixedUiText('{total}건 가운데 {hard}건에 사전 목록 또는 자동 감지한 어려운 표현이 한 개 이상 있었어요. 모든 어려운 말을 빠짐없이 찾는 수치는 아니에요.',siteLanguage,{total:total.toLocaleString(numberLocale),hard:hardMessages.toLocaleString(numberLocale)});
-      const before=total?totalWordsBefore/total:0;const after=total?totalWordsAfter/total:0;
-      document.getElementById('statisticsWordCountBefore').textContent=siteLanguage==='ko'?`${before.toFixed(2)}개`:`${before.toFixed(2)} ${fixedUiText('개')}`;
-      document.getElementById('statisticsWordCountAfter').textContent=siteLanguage==='ko'?`${after.toFixed(2)}개`:`${after.toFixed(2)} ${fixedUiText('개')}`;
+      const before=total?totalCharactersBefore/total:0;const after=total?totalCharactersAfter/total:0;
+      document.getElementById('statisticsAverageLengthBefore').textContent=siteLanguage==='ko'?`${before.toFixed(1)}자`:`${before.toFixed(1)} ${fixedUiText('자')}`;
+      document.getElementById('statisticsAverageLengthAfter').textContent=siteLanguage==='ko'?`${after.toFixed(1)}자`:`${after.toFixed(1)} ${fixedUiText('자')}`;
       const completeLabel=fixedUiText(meta.complete?'전체 수집':'일부 누락');
       document.getElementById('statisticsCoverage').textContent=fixedUiText('자료 범위: {startDate} ~ {endDate} · {total}건 · {completeness}',siteLanguage,{startDate:meta.startDate||fixedUiText('최근 1년'),endDate:meta.endDate||fixedUiText('현재'),total:total.toLocaleString(numberLocale),completeness:completeLabel});
       const status=meta.complete?fixedUiText('분석 완료 · 최근 1년 {count}건 전체 확인',siteLanguage,{count:total.toLocaleString(numberLocale)}):fixedUiText('일부 자료로 분석했어요 · {count}/{total}건 · 빠진 묶음 {missing}개 · 다시 분석할 수 있어요',siteLanguage,{count:total.toLocaleString(numberLocale),total:Number(meta.expected||total).toLocaleString(numberLocale),missing:Number(meta.failed?.length||0).toLocaleString(numberLocale)});
