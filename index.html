@@ -3636,22 +3636,11 @@
     const list=document.getElementById('placeList');
     function geolocationErrorMessage(error){
       if(error?.code===1)return '위치 권한이 꺼져 있어요. 브라우저 사이트 설정에서 위치를 허용하거나 지역을 검색해 주세요.';
-      if(error?.code===2)return '기기에서 위치를 가져오지 못했어요. 기기의 위치 서비스를 켜고 다시 시도하거나 지역을 검색해 주세요.';
-      if(error?.code===3)return '위치 확인 시간이 오래 걸렸어요. 잠시 후 다시 시도하거나 지역을 검색해 주세요.';
-      return '현재 위치를 확인하지 못했어요. 지도에서 지역을 검색해 주세요.';
-    }
-    async function approximateLocationFromNetwork(){
-      let response;
-      try{response=await fetch('https://ipwho.is/',{signal:AbortSignal.timeout(8000)});}catch(error){throw new Error('GPS와 인터넷 연결 위치를 확인하지 못했어요. 지도에서 지역을 검색해 주세요.');}
-      if(!response.ok)throw new Error('인터넷 연결 위치를 확인하지 못했어요. 지역을 검색해 주세요.');
-      const place=await response.json();
-      if(!place.success||!Number.isFinite(Number(place.latitude))||!Number.isFinite(Number(place.longitude)))throw new Error('인터넷 연결 위치를 확인하지 못했어요. 지역을 검색해 주세요.');
-      if(place.country_code!=='KR')throw new Error('한국 안의 인터넷 위치를 확인하지 못했어요. 지역을 검색해 주세요.');
-      const koreanRegions={'11':'서울특별시','26':'부산광역시','27':'대구광역시','28':'인천광역시','29':'광주광역시','30':'대전광역시','31':'울산광역시','36':'세종특별자치시','41':'경기도','42':'강원특별자치도','43':'충청북도','44':'충청남도','45':'전북특별자치도','46':'전라남도','47':'경상북도','48':'경상남도','49':'제주특별자치도','51':'강원특별자치도','52':'전북특별자치도'};
-      return {coords:{latitude:Number(place.latitude),longitude:Number(place.longitude),accuracy:50000},source:'network',areaName:koreanRegions[place.region_code]||place.region||'인터넷 연결 위치'};
+      if(error?.code===2)return '기기에서 GPS 위치를 받지 못했어요. 위치 기능과 GPS 신호를 확인한 뒤 다시 눌러 주세요.';
+      if(error?.code===3)return 'GPS 위치 확인에 시간이 오래 걸렸어요. 창가나 야외에서 다시 시도해 주세요.';
+      return 'GPS 위치를 확인하지 못했어요. 다시 시도하거나 지도에서 지역을 검색해 주세요.';
     }
     function locationAccuracyText(accuracy,source='gps'){
-      if(source==='network')return '인터넷 연결 위치로 대략 찾았어요. 실제 위치와 크게 다를 수 있으니 지역을 검색해 확인해 주세요.';
       if(!Number.isFinite(accuracy))return '정확도를 확인할 수 없어요.';
       const radius=Math.max(1,Math.round(accuracy));
       if(radius<=100)return `위치가 약 ${radius}m 안에 있어요.`;
@@ -3666,18 +3655,13 @@
       if(accuracy>300)return 12;
       return 15;
     }
-    function requestCurrentPosition({fresh=false,onFallback=()=>{}}={}){
+    function requestCurrentPosition({fresh=false}={}){
       if(!navigator.geolocation)return Promise.reject(new Error('이 브라우저에서는 현재 위치를 사용할 수 없어요.'));
-      const request=options=>new Promise((resolve,reject)=>navigator.geolocation.getCurrentPosition(resolve,reject,options));
-      return request({enableHighAccuracy:true,maximumAge:fresh?0:5000,timeout:8000}).catch(error=>{
-        if(error.code===1)throw error;
-        onFallback('기기 위치를 바로 받지 못해 다른 방법으로 확인하고 있어요…');
-        return request({enableHighAccuracy:false,maximumAge:fresh?0:30000,timeout:8000}).catch(retryError=>{
-          if(retryError.code===1)throw retryError;
-          onFallback('GPS 응답이 없어 인터넷 연결 위치로 대략 찾고 있어요…');
-          return approximateLocationFromNetwork();
-        });
-      });
+      return new Promise((resolve,reject)=>navigator.geolocation.getCurrentPosition(position=>{
+        const {latitude,longitude,accuracy}=position.coords;
+        if(!Number.isFinite(latitude)||!Number.isFinite(longitude)||!Number.isFinite(accuracy)||Math.abs(latitude)>90||Math.abs(longitude)>180){reject(new Error('기기에서 올바른 GPS 위치를 받지 못했어요. 다시 시도해 주세요.'));return;}
+        resolve(position);
+      },reject,{enableHighAccuracy:true,maximumAge:0,timeout:60000}));
     }
     function getCurrentLocation({fresh=false}={}){
       if(userLocation&&!fresh&&Date.now()-userLocationAt<30000)return Promise.resolve(userLocation);
@@ -3688,7 +3672,7 @@
     function formatRouteDistance(meters){return meters<1000?`${Math.round(meters)} m`:`${(meters/1000).toFixed(1)} km`;}
     function locationDistance(a,b){return map?map.distance([a.lat,a.lon],[b.lat,b.lon]):Infinity;}
     function updateUserPosition(position,follow=false,{refreshShelters=true}={}){
-      const next={lat:position.coords.latitude,lon:position.coords.longitude,accuracy:position.coords.accuracy,source:position.source||'gps',areaName:position.areaName||''};userLocation=next;userLocationAt=Date.now();
+       const next={lat:position.coords.latitude,lon:position.coords.longitude,accuracy:position.coords.accuracy,source:'gps',areaName:''};userLocation=next;userLocationAt=Date.now();
       hasExplicitShelterLocation=true;
        lastShelterSearch={lat:next.lat,lon:next.lon,areaName:next.areaName||'',source:next.source,radiusKm:Number(next.accuracy)>1000?Math.min(30,8+Math.ceil((Number(next.accuracy)||0)/1000)):8};
       if(map){
@@ -3722,7 +3706,7 @@
       try{
         locationWatchId=navigator.geolocation.watchPosition(position=>{
           updateUserPosition(position,true);
-          document.getElementById('locationStatus').textContent=`실시간 위치를 따라가고 있어요. ${locationAccuracyText(position.coords.accuracy,position.source)} 이동하면 주변 시설과 선택한 경로도 갱신돼요.`;
+          document.getElementById('locationStatus').textContent=`GPS 기반 기기 위치를 따라가고 있어요. ${locationAccuracyText(position.coords.accuracy)} 이동하면 주변 시설과 선택한 경로도 갱신돼요.`;
         },error=>{
           if(error.code===1)stopLocationTracking('위치 권한을 허용해야 실시간 추적을 사용할 수 있어요.');
           else document.getElementById('locationStatus').textContent='위치를 확인하지 못했어요. GPS와 인터넷 연결을 확인해 주세요.';
@@ -3740,9 +3724,7 @@
        const panel=document.getElementById('routePanel');const status=document.getElementById('routeStatus');const summary=document.getElementById('routeSummary');const steps=document.getElementById('routeSteps');
        const mode=document.getElementById('routeMode').value;panel.hidden=false;summary.textContent='';steps.replaceChildren();status.textContent='경로 검색 중…';if(button)button.disabled=true;
        try{
-         if(lastShelterSearch.source==='network')throw new Error('인터넷 연결 위치는 부정확해 길 안내 출발점으로 쓰지 않아요. 지역을 검색하거나 지도에서 출발점을 길게 눌러 선택해 주세요.');
          const origin=lastShelterSearch.source==='manual'?{lat:lastShelterSearch.lat,lon:lastShelterSearch.lon,accuracy:0,source:'manual'}:await getCurrentLocation({fresh:true});if(requestId!==routeRequestId)return;
-       if(origin.source==='network')throw new Error('인터넷 연결 위치는 부정확해 길 안내 출발점으로 쓰지 않아요. 지역을 검색하거나 지도에서 출발점을 길게 눌러 선택해 주세요.');
         lastRouteRefresh={...origin,at:Date.now()};
         if(map){if(currentMarker){currentMarker.setLatLng([origin.lat,origin.lon]);currentMarker.setPopupContent('현재 위치');}else currentMarker=L.marker([origin.lat,origin.lon]).addTo(map).bindPopup('현재 위치');if(Number.isFinite(origin.accuracy)&&origin.accuracy>75){if(currentAccuracyCircle)currentAccuracyCircle.setLatLng([origin.lat,origin.lon]).setRadius(origin.accuracy);else currentAccuracyCircle=L.circle([origin.lat,origin.lon],{radius:origin.accuracy,color:'#536fa3',weight:1,fillColor:'#7f9ed3',fillOpacity:.12,interactive:false}).addTo(map);}}
         const params=new URLSearchParams({originLat:String(origin.lat),originLon:String(origin.lon),destLat:String(place.lat),destLon:String(place.lon),mode});
@@ -3759,7 +3741,7 @@
         document.getElementById('routeModeLabel').textContent=mode==='foot'?'도보 경로':'차량 경로';
         summary.textContent=`${formatRouteDistance(data.distanceMeters)} · 약 ${minutes}분`;
         data.steps.forEach(instruction=>{const item=document.createElement('li');item.textContent=instruction;steps.append(item);});
-          status.textContent=origin.source==='manual'?'선택한 지도 위치에서 경로를 표시해요. 실제 출발 위치와 선택한 지점이 다르면 경로도 달라질 수 있어요.':`경로 표시 · ${locationAccuracyText(origin.accuracy,origin.source)} 현장 안내 우선`;
+          status.textContent=origin.source==='manual'?'선택한 지도 위치에서 경로를 표시해요. 실제 출발 위치와 선택한 지점이 다르면 경로도 달라질 수 있어요.':`경로 표시 · GPS 기반 기기 위치 · ${locationAccuracyText(origin.accuracy)} 현장 안내 우선`;
       }catch(error){
         if(requestId!==routeRequestId)return;
         status.textContent=error.message||'경로를 불러오지 못했어요. 인터넷 연결을 확인해 주세요.';
@@ -3893,12 +3875,12 @@
     async function findSheltersAtCurrentLocation(centerMap){
       const status=document.getElementById('locationStatus');status.textContent='현재 위치를 새로 확인하고 있어요…';
       try{
-        const position=await requestCurrentPosition({fresh:true,onFallback:message=>{status.textContent=message;}}).catch(error=>{throw new Error(error.message||geolocationErrorMessage(error));});
+        const position=await requestCurrentPosition({fresh:true}).catch(error=>{throw new Error(geolocationErrorMessage(error));});
         updateUserPosition(position,centerMap,{refreshShelters:false});
         hasExplicitShelterLocation=true;
-         const searchRadius=position.source==='network'?30:Number(position.coords.accuracy)>1000?Math.min(30,8+Math.ceil(Number(position.coords.accuracy)/1000)):8;lastShelterSearch={lat:userLocation.lat,lon:userLocation.lon,areaName:position.areaName||'',radiusKm:searchRadius};lastShelterRefresh={...userLocation,at:Date.now()};
-          status.textContent=position.source==='network'?`${position.areaName||'인터넷 연결 위치'}를 바탕으로 약 ${searchRadius}km 안의 대피소를 대략 찾아요. GPS 위치가 아니므로 실제 위치와 다를 수 있어요. 정확한 곳은 지역을 검색해 주세요.`:Number(position.coords.accuracy)>1000?`컴퓨터 위치의 오차가 커서 약 ${searchRadius}km 범위로 대략 찾아요. 정확한 위치는 주소나 지역을 검색해 주세요. ${locationAccuracyText(position.coords.accuracy)}`:`현재 위치를 기준으로 주변 8km를 찾고 있어요. ${locationAccuracyText(position.coords.accuracy)}`;
-         await findShelters(userLocation.lat,userLocation.lon,{areaName:position.areaName||'',radiusKm:searchRadius,source:position.source||'gps'});
+         const searchRadius=Number(position.coords.accuracy)>1000?Math.min(30,8+Math.ceil(Number(position.coords.accuracy)/1000)):8;lastShelterSearch={lat:userLocation.lat,lon:userLocation.lon,areaName:'',radiusKm:searchRadius};lastShelterRefresh={...userLocation,at:Date.now()};
+          status.textContent=Number(position.coords.accuracy)>1000?`GPS 위치의 오차가 커서 약 ${searchRadius}km 범위로 주변 대피소를 찾아요. ${locationAccuracyText(position.coords.accuracy)}`:`GPS 기반 기기 위치 주변 8km를 찾고 있어요. ${locationAccuracyText(position.coords.accuracy)}`;
+         await findShelters(userLocation.lat,userLocation.lon,{areaName:'',radiusKm:searchRadius,source:'gps'});
       }catch(error){status.textContent=error.message||'현재 위치를 확인하지 못했어요. 지역을 검색해 주세요.';list.replaceChildren(Object.assign(document.createElement('div'),{className:'empty-list',textContent:'지도 위 지역 검색이나 길게 눌러 주변 대피소를 찾을 수 있어요.'}));}
     }
     document.getElementById('nearbyBtn').addEventListener('click',()=>findSheltersAtCurrentLocation(true));
