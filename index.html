@@ -615,6 +615,7 @@
     let easyDictionary=[];
     let orderedEasyDictionary=[];
     let easyDictionaryByHard=new Map();
+    let knownEasyWords=new Set();let unknownHardCandidates=[];let unknownHardPatterns=[];let unknownSuffixPattern=null;
     const dictionaryVariantTerms=new Set(['대피','저지대','하천','접근 금지','우회','외출 자제','접근 삼가','접근 자제','야외활동 자제','활동 자제','이동 자제','주민','기온','필요','이상','낙뢰','낙상','안전거리 확보','안전거리','통행 제한','교통통제','안전조치 완료','대피 종료','계량기','귀소','및','발효','재난대응체계','비상대응체계','수위급증','수위 급증','지정','준수','점검','실시','확보','발령','폐쇄','지속','유의']);
     let activeDictionaryCategory='전체';
     const statisticsCategories=['호우','산불','지진','폭염','한파','태풍·강풍','민방위','공통','기타'];
@@ -624,17 +625,25 @@
     let statisticsLoading=false;
     let statisticsResult=null;
     let difficultWordMatchers=[];
+    let difficultWordTrie={next:new Map(),entries:[]};
     const difficultWordsPromise=fetch('/difficult-words.json').then(response=>{if(!response.ok)throw new Error('어려운 말 목록을 불러오지 못했어요.');return response.json();}).then(entries=>{
       if(!Array.isArray(entries))throw new Error('어려운 말 목록 형식이 올바르지 않아요.');
       difficultWords=entries.filter(entry=>entry&&typeof entry.hard==='string'&&typeof entry.easy==='string'&&Array.isArray(entry.tags));
       difficultWordMatchers=[...difficultWords].sort((a,b)=>b.hard.length-a.hard.length).map(entry=>({entry,test:new RegExp(entry.hard==='실시'?'실시(?!간)':escapeRegExp(entry.hard)),replace:new RegExp(escapeRegExp(entry.hard),'g')}));
+      difficultWordTrie={next:new Map(),entries:[]};
+      difficultWords.forEach(entry=>{let node=difficultWordTrie;for(const character of entry.hard){if(!node.next.has(character))node.next.set(character,{next:new Map(),entries:[]});node=node.next.get(character);}node.entries.push(entry);});
       return difficultWords;
     });
     const dictionaryLoadPromise=fetch('/dictionary.json').then(response=>{if(!response.ok)throw new Error('사전 파일을 불러오지 못했어요.');return response.json();}).then(entries=>{
       if(!Array.isArray(entries))throw new Error('사전 파일 형식이 올바르지 않아요.');
        easyDictionary=entries.filter(entry=>entry&&typeof entry.hard==='string'&&typeof entry.easy==='string'&&typeof entry.reason==='string'&&Array.isArray(entry.tags));
-       orderedEasyDictionary=[...easyDictionary].sort((a,b)=>b.hard.length-a.hard.length);
-       easyDictionaryByHard=new Map(easyDictionary.map(entry=>[entry.hard,entry]));
+        orderedEasyDictionary=[...easyDictionary].sort((a,b)=>b.hard.length-a.hard.length);
+        easyDictionaryByHard=new Map(easyDictionary.map(entry=>[entry.hard,entry]));
+        knownEasyWords=new Set(easyDictionary.map(entry=>entry.hard));
+        unknownHardCandidates=[...new Set([...uncoveredHardWords,...difficultWords.map(entry=>entry.hard)])].filter(word=>!knownEasyWords.has(word));
+        unknownSuffixPattern=new RegExp(`^[가-힣]{2,}(?:${difficultWordSuffixes.map(escapeRegExp).join('|')})$`);
+        const unknownParticles='(?:에서|으로|부터|까지|은|는|이|가|을|를|에|로|의|와|과|도|만|중|됨|된|할|한|할까요)?';
+        unknownHardPatterns=unknownHardCandidates.map(word=>({word,pattern:new RegExp(`(^|[^가-힣])(${escapeRegExp(word)})(?=${unknownParticles}(?:$|[^가-힣]))`,'g')}));
       renderDictionaryFilters();renderDictionary();
       return easyDictionary;
     }).catch(error=>{document.getElementById('dictionaryCount').textContent=error.message;return [];});
@@ -1280,21 +1289,15 @@
     const difficultWordSuffixes=['주의보','경보','특보','대응체계','비상대응','위기경보','취약계층','행동요령','안전수칙','통제구간','위험지역','급경사지','저지대','시설물','대피소','인명피해','재산피해','화재예방','산불예방','영농부산물','화기소지','기온급강하','기온강하','기상악화','강수량','적설량','수위상승','동파방지','급수중단','통행제한','출입통제','침수우려','화재발생','산불발생','주의사항','안전관리','체온유지','수분섭취','안부연락','영하권','특별상황발생','주불진화','주불','잔불정리','잔불','초진','완진','재발화','진화','귀소','실화자','형사처벌','과태료','연기확산','하상도로','가시거리','세월교','누적강수량','집중호우','농업부산물','연접지','인파밀집','차량전복','교통혼잡','선행강수','옹벽','축대','적치물','발령','발효','발생','통제','제한','조치','대책','수칙','시설','피해','예방','현황','점검','실시','해제','수위','강하','강우','강설','적설','소지','소각','입산','통행','취약','급수','확보','예찰','진입','산림','인명','보행','준수','유의','요망','당부','폐쇄','가동','결빙','낙상','동파','침수','범람','낙뢰','낙석','인근','관내','기온','기상','정전','누출','주의','상승','하락','급증','급감','저하','지속','중단','중지','자제','운행','대응','방지','확인','예정','가동','신고','지원','요령','전파','확산','강화','냉해','결빙','단수','정전','영하','특보','화기','소지','접근','통행','출입','이용','시설','계획','지침','정보','안내','운영','전문','대응','비상','긴급','절차','변경','조정','관측','연계','사전','현장'];
     const difficultWordParticles=/(?:으로부터|으로|에서|부터|까지|에게|께서|이라면|이라서|이므로|이라고|이라고는|하며|하고|되어|되고|하는|하면|한|은|는|이|가|을|를|에|의|와|과|도|만|로|중|임|됨|된|할|및|등)+$/;
     function findUnknownDifficultWords(line){
-      const knownWords=new Set(easyDictionary.map(entry=>entry.hard));const candidates=new Set(uncoveredHardWords.filter(word=>!knownWords.has(word)));
-      difficultWords.forEach(entry=>{if(!knownWords.has(entry.hard))candidates.add(entry.hard);});
-      const suffixPattern=new RegExp(`^[가-힣]{2,}(?:${difficultWordSuffixes.map(escapeRegExp).join('|')})$`);
+      const matches=[];
+      unknownHardPatterns.forEach(({word,pattern})=>{pattern.lastIndex=0;let match;while((match=pattern.exec(line))){const start=match.index+match[1].length;matches.push({start,end:start+word.length,kind:'suggestion',word});}});
       for(const match of line.matchAll(/[가-힣]{2,}/g)){
         const token=match[0];const core=token.replace(difficultWordParticles,'');
-        if(core.length<2||knownWords.has(core)||!suffixPattern.test(core))continue;
-        candidates.add(core);
+        if(core.length<2||knownEasyWords.has(core)||!unknownSuffixPattern?.test(core))continue;
+        const start=match.index;matches.push({start,end:start+core.length,kind:'suggestion',word:core});
       }
-      const matches=[];
-      candidates.forEach(word=>{
-        const particles='(?:에서|으로|부터|까지|은|는|이|가|을|를|에|로|의|와|과|도|만|중|됨|된|할|한|할까요)?';
-        const pattern=new RegExp(`(^|[^가-힣])(${escapeRegExp(word)})(?=${particles}(?:$|[^가-힣]))`,'g');let match;
-        while((match=pattern.exec(line))){const start=match.index+match[1].length;matches.push({start,end:start+word.length,kind:'suggestion',word});}
-      });
-      return matches;
+      const unique=new Map();matches.forEach(match=>unique.set(`${match.start}:${match.word}`,match));
+      return [...unique.values()];
     }
     function listUnknownDifficultWords(text){
       return [...new Set(String(text).split(/\n+/).flatMap(line=>findUnknownDifficultWords(line).map(match=>match.word)))];
@@ -1311,6 +1314,7 @@
       const entryFor=hard=>easyDictionaryByHard.get(hard)||easyDictionary.find(entry=>entry.hard===hard);
       const replacePhrase=(hard,pattern,makeEasy)=>{
         const entry=entryFor(hard);if(!entry)return;
+        if(pattern instanceof RegExp&&pattern.source.includes(escapeRegExp(hard))&&!output.includes(hard))return;
         output=output.replace(pattern,(...args)=>{const easy=makeEasy(...args);applied.push({hard:entry.hard,easy:entry.easy,display:easy});return easy;});
       };
       replacePhrase('산불 주불 진화 완료',/산불\s*주불\s*진화\s*완료(?:되었습니다|됐습니다)?(?:\.\s*(?:현재\s*)?잔불\s*정리\s*중)?/g,whole=>/잔불\s*정리/.test(whole)?'산불의 큰 불길은 잡았어요. 아직 남은 작은 불을 끄고 있어요.':'산불의 큰 불길을 잡았어요.');
@@ -2562,7 +2566,17 @@
       categories.push('기타');
       return categories;
     }
-     function matchDifficultWords(text){return difficultWordMatchers.filter(item=>item.test.test(text)).map(item=>item.entry);}
+      function matchDifficultWords(text){
+        const source=String(text);const found=new Set();
+        for(let start=0;start<source.length;start++){
+          let node=difficultWordTrie;
+          for(let index=start;index<source.length;index++){
+            node=node.next.get(source[index]);if(!node)break;
+            if(node.entries.length)node.entries.forEach(entry=>{if(entry.hard!=='실시'||source[index+1]!=='간')found.add(entry);});
+          }
+        }
+        return [...found].sort((a,b)=>b.hard.length-a.hard.length);
+      }
     function applyStatisticsWordList(text){
       return applyEasyDictionary(simplifyDisasterMessage(text,'general'),text).text;
     }
@@ -2653,7 +2667,7 @@
     async function writeStatisticsResultIncrementally(messages,meta){
       const allTerms=new Map();const categories=new Map(statisticsCategories.map(category=>[category,{messages:0,terms:new Map()}]));
       let hardMessages=0,totalWordsBefore=0,totalWordsAfter=0,totalCharactersBefore=0,totalCharactersAfter=0,total=0;
-      const simplifiedCache=new Map();const status=document.getElementById('statisticsStatus');
+      const residualCountCache=new Map();const status=document.getElementById('statisticsStatus');
       for(let index=0;index<messages.length;index++){
         const text=String(messages[index]||'').replace(/\s*\[[^\]]+\]\s*$/,'').trim();if(!text)continue;
         total+=1;
@@ -2664,10 +2678,10 @@
           allTerms.set(entry,(allTerms.get(entry)||0)+1);
           groups.forEach(category=>{const group=categories.get(category);if(!group||!(entry.tags.includes(category)||entry.tags.includes('공통')))return;group.terms.set(entry,(group.terms.get(entry)||0)+1);});
         });
-        let simplified=simplifiedCache.get(text);
-        if(simplified===undefined){simplified=applyStatisticsWordList(text);if(simplifiedCache.size<20000)simplifiedCache.set(text,simplified);}
-        totalWordsAfter+=findCountableDifficultWords(simplified).length;totalCharactersAfter+=Array.from(simplified.replace(/\s/g,'')).length;
-        if((index+1)%8===0){status.textContent=fixedUiText('문자 {done}/{total}건의 순화 결과를 나누어 분석하고 있어요.',siteLanguage,{done:(index+1).toLocaleString(siteLanguage==='ko'?'ko-KR':siteLanguage),total:messages.length.toLocaleString(siteLanguage==='ko'?'ko-KR':siteLanguage)});await new Promise(resolve=>setTimeout(resolve,0));}
+        let simplifiedMetrics=residualCountCache.get(text);
+        if(!simplifiedMetrics){const simplified=applyStatisticsWordList(text);simplifiedMetrics={residualCount:findCountableDifficultWords(simplified).length,characterCount:Array.from(simplified.replace(/\s/g,'')).length};if(residualCountCache.size<20000)residualCountCache.set(text,simplifiedMetrics);}
+        totalWordsAfter+=simplifiedMetrics.residualCount;totalCharactersAfter+=simplifiedMetrics.characterCount;
+        if((index+1)%64===0){status.textContent=fixedUiText('문자 {done}/{total}건의 순화 결과를 나누어 분석하고 있어요.',siteLanguage,{done:(index+1).toLocaleString(siteLanguage==='ko'?'ko-KR':siteLanguage),total:messages.length.toLocaleString(siteLanguage==='ko'?'ko-KR':siteLanguage)});await new Promise(resolve=>setTimeout(resolve,0));}
       }
       statisticsResult={allTerms,categories,total,hardMessages,totalWordsBefore,totalWordsAfter,totalCharactersBefore,totalCharactersAfter,meta};
       const rate=total?hardMessages/total*100:0;
