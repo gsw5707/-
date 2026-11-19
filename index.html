@@ -888,6 +888,10 @@
       const easy=simplifyDisasterMessage(text,'general');
       return {type,easy,changed:easy!==original};
     }
+    function simplifyForStandardView(text){
+      const summary=easySummary(text);const dictionaryResult=applyEasyDictionary(summary.easy,text);const easy=refineNationwideMessage(text,dictionaryResult.text,'child');
+      return {...summary,easy,dictionary:dictionaryResult.applied,changed:easy!==String(text).trim().replace(/\s*\[[^\]]+\]\s*$/,'')};
+    }
     function shelterTypeForMessage(text){
       const type=hazardTypeForMessage(text);
       return type==='generic'?'':shelterTypeForHazard(type);
@@ -2232,7 +2236,7 @@
       lastTranslationSource=text;
       if(speechUtterance)stopSpeech('읽기를 멈췄어요.');
       status.textContent='쉬운 말로 바꾸고 있어요…';await dictionaryLoadPromise;if(requestId!==translationRequestId)return;
-       const summary=easySummary(text);const dictionaryResult=applyEasyDictionary(summary.easy,text);summary.easy=refineNationwideMessage(text,dictionaryResult.text,'child');lastSimplifiedKorean=summary.easy;document.getElementById('addCoreValidationButton').disabled=!summary.easy||summary.easy==='—';summary.dictionary=dictionaryResult.applied;summary.changed=summary.easy!==text.trim().replace(/\s*\[[^\]]+\]\s*$/,'');resetEasyFeedback();updateShelterRecommendationButton(text);updateActionGuideView();document.getElementById('easyText').dataset.noSiteTranslate='true';document.getElementById('easyText').textContent=text;
+       const summary=simplifyForStandardView(text);lastSimplifiedKorean=summary.easy;document.getElementById('addCoreValidationButton').disabled=!summary.easy||summary.easy==='—';resetEasyFeedback();updateShelterRecommendationButton(text);updateActionGuideView();document.getElementById('easyText').dataset.noSiteTranslate='true';document.getElementById('easyText').textContent=text;
       originalSpeechText=text;easySpeechText='';easySpeechLanguage=selectedLang;updateSpeechButtons(false);
       const labels=resultLabels[selectedLang];
       document.getElementById('resultLang').lang=selectedLang;document.getElementById('translatedText').lang=selectedLang;
@@ -3772,18 +3776,19 @@
       if(audience==='senior')simple=simple.replace(/([.!?])\s*/g,'$1\n');
       return simple.trim();
     }
-    async function renderGeochangEasy(message,details){
+     async function renderGeochangEasy(message,details){
       const audience=details.querySelector('.geochang-audience').value;
       const language=siteLanguage==='ko'?(audience==='foreign'?selectedLang:'ko'):siteLanguage;
       const output=details.querySelector('.geochang-easy-output');const status=details.querySelector('.geochang-easy-status');
       details.classList.toggle('audience-child',audience==='child');details.classList.toggle('audience-senior',audience==='senior');
       const requestId=Number(details.dataset.requestId||0)+1;details.dataset.requestId=String(requestId);
-      const base=simplifyDisasterMessage(message,audience);
-      status.textContent='쉬운 말 사전을 살펴보고 있어요…';
-      await dictionaryLoadPromise;
-      if(details.dataset.requestId!==String(requestId)||!details.open)return;
-      const dictionaryResult=applyEasyDictionary(base,message);
-      const simple=refineNationwideMessage(message,dictionaryResult.text,audience);
+       const base=audience==='child'?null:simplifyDisasterMessage(message,audience);
+       status.textContent='쉬운 말 사전을 살펴보고 있어요…';
+       await dictionaryLoadPromise;
+       if(details.dataset.requestId!==String(requestId)||!details.open)return;
+       const standard=audience==='child'?simplifyForStandardView(message):null;
+       const dictionaryResult=standard?{applied:standard.dictionary}:applyEasyDictionary(base,message);
+       const simple=standard?standard.easy:refineNationwideMessage(message,dictionaryResult.text,audience);
       if(language==='ko'){
         output.textContent=simple;
         const audienceName=audience==='child'?'초1 수준':audience==='senior'?'어르신용 큰 글자':'쉬운 한국어';
