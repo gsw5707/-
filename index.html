@@ -890,6 +890,7 @@
     }
     function simplifyForStandardView(text){
       const summary=easySummary(text);const dictionaryResult=applyEasyDictionary(summary.easy,text);const easy=refineNationwideMessage(text,dictionaryResult.text,'child');
+      summary.easy=easy;summary.dictionary=dictionaryResult.applied;
       return {...summary,easy,dictionary:dictionaryResult.applied,changed:easy!==String(text).trim().replace(/\s*\[[^\]]+\]\s*$/,'')};
     }
     function shelterTypeForMessage(text){
@@ -2236,7 +2237,7 @@
       lastTranslationSource=text;
       if(speechUtterance)stopSpeech('읽기를 멈췄어요.');
       status.textContent='쉬운 말로 바꾸고 있어요…';await dictionaryLoadPromise;if(requestId!==translationRequestId)return;
-       const summary=simplifyForStandardView(text);lastSimplifiedKorean=summary.easy;document.getElementById('addCoreValidationButton').disabled=!summary.easy||summary.easy==='—';resetEasyFeedback();updateShelterRecommendationButton(text);updateActionGuideView();document.getElementById('easyText').dataset.noSiteTranslate='true';document.getElementById('easyText').textContent=text;
+         const summary=simplifyForStandardView(text);lastSimplifiedKorean=summary.easy;document.getElementById('addCoreValidationButton').disabled=!summary.easy||summary.easy==='—';resetEasyFeedback();updateShelterRecommendationButton(text);updateActionGuideView();document.getElementById('easyText').dataset.noSiteTranslate='true';document.getElementById('easyText').textContent=text;
       originalSpeechText=text;easySpeechText='';easySpeechLanguage=selectedLang;updateSpeechButtons(false);
       const labels=resultLabels[selectedLang];
       document.getElementById('resultLang').lang=selectedLang;document.getElementById('translatedText').lang=selectedLang;
@@ -3772,7 +3773,7 @@
       ];
       phrases.sort((a,b)=>b[0].length-a[0].length).forEach(([from,to])=>{simple=simple.replaceAll(from,to);});
       simple=simple.replaceAll('▲','\n• ');
-      if(audience==='child')simple=simple.replaceAll('산불 위험이 높아요','산불이 날 수 있어요').replaceAll('하세요','해요').replaceAll('해주세요','해요').replaceAll('해 주세요','해요');
+       if(audience==='child')simple=simple.replaceAll('산불 위험이 높아요','산불이 날 수 있어요').replaceAll('하세요','해요').replaceAll('해주세요','해요').replaceAll('해 주세요','해요');
       if(audience==='senior')simple=simple.replace(/([.!?])\s*/g,'$1\n');
       return simple.trim();
     }
