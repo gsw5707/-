@@ -50,6 +50,16 @@ function extractMessageRegion(message) {
   const hazardAt = body.search(/(?:산불|산사태|호우|폭염|한파|대설|강풍|태풍|침수|화재|지진|범람|대피|실종|발생|주의보|경보|통제)/);
   const locationBody = hazardAt >= 0 ? body.slice(0, Math.min(body.length, hazardAt + 90)) : body.slice(0, 150);
   const candidates = [];
+  const parentheticalAreas=[...locationBody.matchAll(/[가-힣]{1,}(?:도|남|북)\s*\(([^)]{1,100})\)/g)].map(match=>match[1]);
+  const municipalityNames=[...validDisasterRegions].filter(value=>/(?:시|군|구)$/.test(value)&&!/(?:특별시|광역시)$/.test(value)).sort((a,b)=>b.length-a.length);
+  const parentheticalRegions=new Set();
+  for(const area of parentheticalAreas){
+    for(const name of municipalityNames){
+      const stem=name.replace(/(?:시|군|구)$/,'');
+      if(new RegExp(`(?:^|[,，\s])${stem}(?:${name.slice(stem.length)}|(?=[(（,，\s)]|$))`).test(area))parentheticalRegions.add(name);
+    }
+  }
+  if(parentheticalRegions.size===1)candidates.push({value:[...parentheticalRegions][0],score:1500});
   const official = /(?:서울특별시|부산광역시|대구광역시|인천광역시|전남광주통합특별시|광주광역시|대전광역시|울산광역시|세종특별자치시|제주특별자치도|전북특별자치도|강원특별자치도|경기도|충청북도|충청남도|전라남도|경상북도|경상남도|[가-힣]{2,}(?:시|군|구))/g;
   for (const match of locationBody.matchAll(official)) {
     const value = match[0];
@@ -273,7 +283,8 @@ function parseDisasterRows(html) {
     if (!number || !subject || !createdAt) continue;
     const message = decodeHtml(subject[2]);
     const agency = message.match(/\[([^\]]+)\]\s*$/)?.[1]?.trim() || '';
-    const region = extractMessageRegion(message);
+    const extractedRegion = extractMessageRegion(message);
+    const region = extractedRegion==='전국'&&validDisasterRegions.has(agency)?agency:extractedRegion;
     entries.push({
       id: decodeHtml(number),
       region,
