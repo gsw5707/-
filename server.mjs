@@ -30,6 +30,7 @@ let coreValidationRecords = null;
 let coreValidationSaveQueue = Promise.resolve();
 const siteTranslationMemory = new Map();
 const civilShelterCache = new Map();
+const disasterSearchCache = new Map();
 const nonLocalAgencyWords = /(?:한국도로공사|한국철도공사|공항철도|경찰청|경찰서|소방서|소방본부|소방재난본부|산불방지대책본부|산림청|산림항공본부|행정안전부|국토교통부|기상청|해양경찰청|해경|군부대|공군|육군|해군|교육청|농어촌공사|공단|보건소|병원|문화재단|전력공사|한전|가스공사)/;
 const nonRegionPhrases = /(?:하시|주시|주십시|받으시|바라시|발생시|사용시|입산시|운행시|보행시|이동시|대피시|우천시|강우시|강설시|점검시|필요시|도착시|신고시|통제시|지속시|우리군|누수복구)$/;
 // Names verified against Korea's 2026-10-01 administrative-dong boundaries.
@@ -291,42 +292,56 @@ async function getDisasterMessages(url, response) {
   const region = (url.searchParams.get('region') || '').trim().slice(0, 80);
   const endDate = getKoreanDate(new Date());
   const startDate = getKoreanDate(new Date(Date.now() - (days - 1) * 86400000));
-  const sourceKeyword = region && region !== '전국' ? region : keyword;
-  const sourceUrl = new URL(disasterSource);
-  sourceUrl.searchParams.set('currentPage', String(page));
-  sourceUrl.searchParams.set('cntPerPage', String(pageSize));
-  sourceUrl.searchParams.set('pageSize', String(pageSize));
-  sourceUrl.searchParams.set('searchStartDttm', startDate);
-  sourceUrl.searchParams.set('searchEndDttm', endDate);
-  sourceUrl.searchParams.set('keyword', sourceKeyword);
-
   try {
-    const upstream = await fetch(sourceUrl, {
-      headers: { 'User-Agent': 'Mozilla/5.0 (compatible; DisasterMessageReader/1.0)' },
-      redirect: 'follow',
-      signal: AbortSignal.timeout(15000),
-    });
-    if (!upstream.ok) {
-      sendJson(response, 502, { error: '공식 재난문자 목록에 연결하지 못했어요.' });
-      return;
+    const filteredSearch = Boolean((region && region !== '전국') || keyword);
+    const sourceKeyword = region && region !== '전국' ? region : keyword;
+    const cacheKey = `${startDate}|${endDate}|${region}|${keyword}`;
+    let sourceData = disasterSearchCache.get(cacheKey);
+    if (sourceData && sourceData.expiresAt <= Date.now()) { disasterSearchCache.delete(cacheKey); sourceData = null; }
+    if (!sourceData) {
+      const fetchSourcePage = async (sourcePage, sourcePageSize) => {
+        const sourceUrl = new URL(disasterSource);
+        sourceUrl.searchParams.set('currentPage', String(sourcePage));
+        sourceUrl.searchParams.set('cntPerPage', String(sourcePageSize));
+        sourceUrl.searchParams.set('pageSize', String(sourcePageSize));
+        sourceUrl.searchParams.set('searchStartDttm', startDate);
+        sourceUrl.searchParams.set('searchEndDttm', endDate);
+        sourceUrl.searchParams.set('keyword', sourceKeyword);
+        const upstream = await fetch(sourceUrl, {headers:{'User-Agent':'Mozilla/5.0 (compatible; DisasterMessageReader/1.0)'},redirect:'follow',signal:AbortSignal.timeout(15000)});
+        if (!upstream.ok) throw new Error('upstream');
+        const html = await upstream.text();
+        const matchTotal = html.match(/<span[^>]*>([\d,]+)<\/span>\s*건의 게시물이 검색되었습니다/);
+        return {items:parseDisasterRows(html),total:Number((matchTotal?.[1]||'0').replace(/,/g,''))};
+      };
+      const first = await fetchSourcePage(1, filteredSearch ? 50 : pageSize);
+      if (filteredSearch) {
+        const sourcePages = Math.max(1,Math.ceil(first.total/50));
+        const sourcePageItems=new Map([[1,first.items]]);let cursor=2;
+        async function worker(){
+          while(cursor<=sourcePages){const nextPage=cursor++;const result=await fetchSourcePage(nextPage,50);sourcePageItems.set(nextPage,result.items);}
+        }
+        await Promise.all(Array.from({length:Math.min(4,sourcePages-1)},worker));
+        const seenIds=new Set();const allItems=[...sourcePageItems.keys()].sort((a,b)=>a-b).flatMap(sourcePage=>sourcePageItems.get(sourcePage)||[]).filter(item=>{if(seenIds.has(item.id))return false;seenIds.add(item.id);return true;});
+        sourceData={items:allItems.filter(item=>(!region||region==='전국'||item.region===region)&&(!keyword||item.message.includes(keyword))),sourceTotal:first.total,expiresAt:Date.now()+120000};
+        disasterSearchCache.set(cacheKey,sourceData);while(disasterSearchCache.size>40)disasterSearchCache.delete(disasterSearchCache.keys().next().value);
+      } else {
+        sourceData={items:first.items,sourceTotal:first.total,expiresAt:Date.now()+120000};
+      }
     }
-    const html = await upstream.text();
-    const matchTotal = html.match(/<span[^>]*>([\d,]+)<\/span>\s*건의 게시물이 검색되었습니다/);
-    const sourceTotal = Number((matchTotal?.[1] || '0').replace(/,/g, ''));
-    let items = parseDisasterRows(html);
-    if (region && region !== '전국') items = items.filter(item => item.region === region && (!keyword || item.message.includes(keyword)));
-    else if (keyword) items = items.filter(item => item.message.includes(keyword));
+    const sourceTotal=sourceData.sourceTotal;
+    const totalCount=filteredSearch?sourceData.items.length:sourceTotal;
+    const pageCount=Math.max(1,Math.ceil(totalCount/pageSize));
+    const pageItems=filteredSearch?sourceData.items.slice((page-1)*pageSize,page*pageSize):sourceData.items;
+    const items=pageItems;
     const regionCounts = {};
-    items.forEach(item => { regionCounts[item.region] = (regionCounts[item.region] || 0) + 1; });
-    const totalCount = region && region !== '전국' || keyword ? items.length : sourceTotal;
-    const pageCount = Math.max(1, Math.ceil(totalCount / pageSize));
+    (filteredSearch?sourceData.items:items).forEach(item => { regionCounts[item.region] = (regionCounts[item.region] || 0) + 1; });
     sendJson(response, 200, {
       page,
       pageSize,
       pageCount,
       totalCount,
-      nationalCount: sourceTotal,
-      collectedCount: sourceTotal,
+      nationalCount: totalCount,
+      collectedCount: filteredSearch?totalCount:sourceTotal,
       complete: true,
       startDate,
       endDate,
