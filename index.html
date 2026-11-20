@@ -3288,6 +3288,17 @@
     }
       function refineNationwideMessage(message,translated,audience){
         const original=String(message||'');let result=refineNationwideMessageCore(original,translated,audience);
+        if(/습설로 인해 적설하중이 증가하면서 수목\s*전도가 다수 발생/.test(original)){
+          const lead=original.replace(/\s*\[[^\]]+\]\s*$/,'').match(/^(.*?)(?:현재\s*)?습설로 인해/)?.[1]?.trim()||'';
+          const lines=[`${lead?`${lead} `:''}습하고 무거운 눈이 쌓여 눈 무게가 커지고 있어요.`,'나무가 여러 곳에서 쓰러지고 있어요.'];
+          const facilities=[];if(/비닐하우스/.test(original))facilities.push('비닐하우스');if(/축사/.test(original))facilities.push('축사');if(/노후\s*가설건축물/.test(original))facilities.push('오래된 임시 건물');
+          if(facilities.length)lines.push(`${facilities.join(', ')} 같은 시설이 무너지거나 사고가 날 수 있어요.`);
+          if(/시설물.*점검|점검.*시설물/.test(original))lines.push('시설을 꼼꼼히 살펴봐 주세요.');
+          if(/지속적인\s*순찰|순찰과 관리/.test(original))lines.push('자주 둘러보고 잘 관리해 주세요.');
+          const originalNumbers=[...original.matchAll(/\d+(?:,\d{3})*(?:\.\d+)?/g)].map(match=>match[0].replace(/,/g,''));
+          const proposed=lines.join(' ');const proposedNumbers=[...proposed.matchAll(/\d+(?:,\d{3})*(?:\.\d+)?/g)].map(match=>match[0].replace(/,/g,''));
+          if(originalNumbers.length===proposedNumbers.length&&originalNumbers.every((value,index)=>value===proposedNumbers[index]))result=proposed;
+        }
         const foundMissing=original.replace(/\s*\[[^\]]+\]\s*$/,'').match(/^(.*?)실종자(?:를|가)?\s*(?:안전하게\s*)?발견(?:하였습니다|했습니다|되었(?:습니다|어요)|됐습니다|됐어요)([.。]?)\s*(.*)$/);
         if(foundMissing){
           const lead=foundMissing[1].trim();const tail=foundMissing[3].trim().replace(/^[.。\s]+/,'');
