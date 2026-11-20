@@ -295,7 +295,7 @@ async function getDisasterMessages(url, response) {
   try {
     const filteredSearch = Boolean((region && region !== '전국') || keyword);
     const sourceKeyword = region && region !== '전국' ? region : keyword;
-    const cacheKey = `${startDate}|${endDate}|${region}|${keyword}`;
+    const cacheKey = `${startDate}|${endDate}|${region}|${keyword}|${filteredSearch?'all':`page-${page}`}`;
     let sourceData = disasterSearchCache.get(cacheKey);
     if (sourceData && sourceData.expiresAt <= Date.now()) { disasterSearchCache.delete(cacheKey); sourceData = null; }
     if (!sourceData) {
@@ -313,7 +313,7 @@ async function getDisasterMessages(url, response) {
         const matchTotal = html.match(/<span[^>]*>([\d,]+)<\/span>\s*건의 게시물이 검색되었습니다/);
         return {items:parseDisasterRows(html),total:Number((matchTotal?.[1]||'0').replace(/,/g,''))};
       };
-      const first = await fetchSourcePage(1, filteredSearch ? 50 : pageSize);
+      const first = await fetchSourcePage(filteredSearch ? 1 : page, filteredSearch ? 50 : pageSize);
       if (filteredSearch) {
         const sourcePages = Math.max(1,Math.ceil(first.total/50));
         const sourcePageItems=new Map([[1,first.items]]);let cursor=2;
