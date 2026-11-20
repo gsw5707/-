@@ -2809,6 +2809,22 @@
         return spellUnits(oneParagraph(tidy));
       };
 
+      if(/(?:습설|적설하중)/.test(source)&&/(?:수목\s*전도|취약시설|가설건축물)/.test(source)){
+        const prefix=source.match(/^(.*?)(?=현재\s*습설|습설|적설하중)/)?.[1]?.replace(/[,，\s]+$/,'').trim()||'';
+        const lines=[];
+        lines.push(`${prefix?`${prefix} `:''}습하고 무거운 눈이 쌓여 눈 무게가 커지고 있어요.`);
+        if(/수목\s*전도/.test(source))lines.push('나무가 여러 곳에서 쓰러지고 있어요.');
+        const facilities=[];
+        if(/비닐하우스/.test(source))facilities.push('비닐하우스');
+        if(/축사/.test(source))facilities.push('가축을 기르는 곳');
+        if(/노후\s*가설건축물|가설건축물/.test(source))facilities.push('오래된 임시 건물');
+        if(facilities.length)lines.push(`${facilities.join(', ')} 같은 시설이 무너지거나 사고가 날 수 있어요.`);
+        if(/시설물.*점검|점검.*시설물/.test(source))lines.push('시설을 꼼꼼히 살펴봐 주세요.');
+        if(/지속적인\s*순찰|순찰과 관리|순찰.*관리/.test(source))lines.push('자주 둘러보고 잘 관리해 주세요.');
+        else if(/관리/.test(source))lines.push('계속 살펴보고 관리해 주세요.');
+        return preserveNumbers(lines.join(' '));
+      }
+
       if(/(?:도로결빙|도로 결빙|도로가 얼|빙판길|살얼음)/.test(source)&&/(?:안전거리|차간거리|감속운전|감속 운전|보행 시|미끄럼 사고|한파|한랭질환)/.test(source)&&/(?:빙판길 안전사고|동파.*냉해|미끄럼 사고 예방)/.test(source)){
         const warning=source.match(/(한파주의보|한파경보|한파특보)/);const lead=warning?source.slice(0,warning.index).replace(/[./,，\s]+$/,'').trim():'';const time=source.match(/(오늘(?:\(\d+일\))?\s*\d{1,2}시(?:\s*\d{1,2}분)?부터|금일\s*\d{1,2}시부터)/)?.[1]?.replace(/금일/g,'오늘');const lines=[];
         const header=lead||time||'';
