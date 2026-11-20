@@ -2528,7 +2528,7 @@
     function updateDisasterRegionOptions(regions,selected=''){
       const select=document.getElementById('disasterRegion');const total=Object.values(disasterRegionCounts).reduce((sum,count)=>sum+Number(count||0),0);
       select.replaceChildren(new Option(`${fixedUiText('전체 지역')} · ${Number(total).toLocaleString(siteLanguage==='ko'?'ko-KR':siteLanguage)}건`,''),...regions.map(region=>{
-        const count=disasterRegionCounts[region];const label=count===undefined&&!disasterRegionCountsLoaded?`${region} · 집계 중`:`${region} · ${Number(count||0).toLocaleString(siteLanguage==='ko'?'ko-KR':siteLanguage)}건`;
+        const count=disasterRegionCounts[region];const label=count===undefined&&!disasterRegionCountsLoaded?region:`${region} · ${Number(count||0).toLocaleString(siteLanguage==='ko'?'ko-KR':siteLanguage)}건`;
         const option=new Option(label,region);option.dataset.noSiteTranslate='true';return option;
       }));
       select.value=selected;
