@@ -32,6 +32,7 @@ const siteTranslationMemory = new Map();
 const civilShelterCache = new Map();
 const disasterSearchCache = new Map();
 const disasterRegionCountCache = new Map();
+const disasterAllMessageCache = new Map();
 const displayDisasterRegion = region => region === '전국' ? '기타' : region;
 const nonLocalAgencyWords = /(?:한국도로공사|한국철도공사|공항철도|경찰청|경찰서|소방서|소방본부|소방재난본부|산불방지대책본부|산림청|산림항공본부|행정안전부|국토교통부|기상청|해양경찰청|해경|군부대|공군|육군|해군|교육청|농어촌공사|공단|보건소|병원|문화재단|전력공사|한전|가스공사)/;
 const nonRegionPhrases = /(?:하시|주시|주십시|받으시|바라시|발생시|사용시|입산시|운행시|보행시|이동시|대피시|우천시|강우시|강설시|점검시|필요시|도착시|신고시|통제시|지속시|우리군|누수복구)$/;
@@ -44,22 +45,28 @@ const validDisasterRegions = new Set([
   '강원특별자치도', '경상남도', '광주시', '부산광역시', '서울특별시',
   '인천광역시', '전남광주통합특별시', '제주시', '제주특별자치도', '충청북도',
 ]);
+const regionAliases=new Map();
+for(const region of validDisasterRegions){
+  if(!/(?:시|군|구)$/.test(region)||/(?:특별시|광역시)$/.test(region))continue;
+  const stem=region.replace(/(?:시|군|구)$/,'');
+  if(!regionAliases.has(stem))regionAliases.set(stem,region);
+  else if(regionAliases.get(stem)!==region)regionAliases.set(stem,null);
+}
+function regionAliasPattern(alias){
+  return new RegExp(`(?:^|[,，\\s])${alias}(?:(?:군|시|구)(?=[()（）,，.。\\s]|$)|(?:[가-힣]{1,8}(?:읍|면|동))(?=[)）,，.。\\s]|$)|(?=[(（,，])|(?=\\s*(?:인근|지역|방면|일대|전역|주민))|$)`);
+}
 
-function extractMessageRegion(message) {
+function extractMessageRegions(message) {
   const body = String(message).replace(/\s*\[[^\]]+\]\s*$/, '').replace(/20\d{2}[/.\-]\d{1,2}[/.\-]\d{1,2}\s+\d{1,2}:\d{2}:\d{2}/g, ' ');
   const hazardAt = body.search(/(?:산불|산사태|호우|폭염|한파|대설|강풍|태풍|침수|화재|지진|범람|대피|실종|발생|주의보|경보|통제)/);
   const locationBody = hazardAt >= 0 ? body.slice(0, Math.min(body.length, hazardAt + 90)) : body.slice(0, 150);
   const candidates = [];
-  const parentheticalAreas=[...locationBody.matchAll(/[가-힣]{1,}(?:도|남|북)\s*\(([^)]{1,100})\)/g)].map(match=>match[1]);
-  const municipalityNames=[...validDisasterRegions].filter(value=>/(?:시|군|구)$/.test(value)&&!/(?:특별시|광역시)$/.test(value)).sort((a,b)=>b.length-a.length);
+  const parentheticalAreas=[...locationBody.matchAll(/[가-힣]{1,}(?:도|남|북)\s*\(([^)]{1,150})\)/g)].map(match=>match[1]);
   const parentheticalRegions=new Set();
   for(const area of parentheticalAreas){
-    for(const name of municipalityNames){
-      const stem=name.replace(/(?:시|군|구)$/,'');
-      if(new RegExp(`(?:^|[,，\s])${stem}(?:${name.slice(stem.length)}|(?=[(（,，\s)]|$))`).test(area))parentheticalRegions.add(name);
-    }
+    for(const [alias,region]of regionAliases){if(region&&regionAliasPattern(alias).test(area))parentheticalRegions.add(region);}
   }
-  if(parentheticalRegions.size===1)candidates.push({value:[...parentheticalRegions][0],score:1500});
+  if(parentheticalRegions.size)return [...parentheticalRegions];
   const official = /(?:서울특별시|부산광역시|대구광역시|인천광역시|전남광주통합특별시|광주광역시|대전광역시|울산광역시|세종특별자치시|제주특별자치도|전북특별자치도|강원특별자치도|경기도|충청북도|충청남도|전라남도|경상북도|경상남도|[가-힣]{2,}(?:시|군|구))/g;
   for (const match of locationBody.matchAll(official)) {
     const value = match[0];
@@ -73,9 +80,14 @@ function extractMessageRegion(message) {
   if (regionFirst && validDisasterRegions.has(regionFirst[1]) && !nonLocalAgencyWords.test(regionFirst[1]) && !nonRegionPhrases.test(regionFirst[1])) candidates.push({ value: regionFirst[1], score: 1200 });
   const directional = locationBody.match(/([가-힣]{2,}(?:시|군)?\s*(?:동부|서부|남부|북부|동북부|서북부|남부지역|북부지역))/);
   if (directional && validDisasterRegions.has(directional[1].replace(/\s+/g, '')) && !nonLocalAgencyWords.test(directional[1]) && !nonRegionPhrases.test(directional[1])) candidates.push({ value: directional[1].replace(/\s+/g, ''), score: 1300 });
-  const specific = candidates.filter(item => !/(?:특별자치도|특별시|광역시|도)$/.test(item.value)).sort((a, b) => b.score - a.score)[0];
-  const region = specific?.value || candidates.sort((a, b) => b.score - a.score)[0]?.value;
-  return region || '전국';
+  for(const [alias,region]of regionAliases){
+    if(!region)continue;
+    if(regionAliasPattern(alias).test(locationBody))candidates.push({value:region,score:1400});
+  }
+  const specific=[...new Set(candidates.filter(item=>!/(?:특별자치도|특별시|광역시|도)$/.test(item.value)).sort((a,b)=>a.score-b.score).map(item=>item.value))];
+  if(specific.length)return specific;
+  const provinces=[...new Set(candidates.sort((a,b)=>a.score-b.score).map(item=>item.value))];
+  return provinces.length?provinces:['전국'];
 }
 
 function sendJson(response, status, payload) {
@@ -283,11 +295,13 @@ function parseDisasterRows(html) {
     if (!number || !subject || !createdAt) continue;
     const message = decodeHtml(subject[2]);
     const agency = message.match(/\[([^\]]+)\]\s*$/)?.[1]?.trim() || '';
-    const extractedRegion = extractMessageRegion(message);
-    const region = extractedRegion==='전국'&&validDisasterRegions.has(agency)?agency:extractedRegion;
+    const extractedRegions = extractMessageRegions(message);
+    const regions = extractedRegions.length===1&&extractedRegions[0]==='전국'&&validDisasterRegions.has(agency)?[agency]:extractedRegions;
+    const region = regions[0] || '전국';
     entries.push({
       id: decodeHtml(number),
       region,
+      regions,
       createdAt: decodeHtml(createdAt),
       agency,
       message,
@@ -302,15 +316,23 @@ async function getDisasterMessages(url, response) {
   const pageSize = Math.max(7, Math.min(50, Number(url.searchParams.get('pageSize')) || 50));
   const days = Math.max(1, Math.min(365, Number(url.searchParams.get('days')) || 30));
   const keyword = (url.searchParams.get('keyword') || '').trim().slice(0, 80);
-  const region = (url.searchParams.get('region') || '').trim().slice(0, 80);
+  const requestedRegion = (url.searchParams.get('region') || '').trim().slice(0, 80);
+  const region = regionAliases.get(requestedRegion)||requestedRegion;
   const endDate = getKoreanDate(new Date());
   const startDate = getKoreanDate(new Date(Date.now() - (days - 1) * 86400000));
   try {
     const filteredSearch = Boolean((region && region !== '전국') || keyword);
-    const sourceKeyword = region && region !== '전국' && region !== '기타' ? region : keyword;
+    const sourceKeyword = keyword;
     const cacheKey = `${startDate}|${endDate}|${region}|${keyword}|${filteredSearch?'all':`page-${page}`}`;
     let sourceData = disasterSearchCache.get(cacheKey);
     if (sourceData && sourceData.expiresAt <= Date.now()) { disasterSearchCache.delete(cacheKey); sourceData = null; }
+    if(!sourceData&&filteredSearch&&!keyword){
+      const allData=disasterAllMessageCache.get(`${startDate}|${endDate}`);
+      if(allData&&allData.expiresAt>Date.now()){
+        const matches=allData.items.filter(item=>(region==='기타'?item.regions.includes('전국'):item.regions.includes(region)));
+        sourceData={items:matches,sourceTotal:matches.length,expiresAt:allData.expiresAt};disasterSearchCache.set(cacheKey,sourceData);
+      }
+    }
     if (!sourceData) {
       const fetchSourcePage = async (sourcePage, sourcePageSize) => {
         const sourceUrl = new URL(disasterSource);
@@ -335,7 +357,8 @@ async function getDisasterMessages(url, response) {
         }
         await Promise.all(Array.from({length:Math.min(4,sourcePages-1)},worker));
         const seenIds=new Set();const allItems=[...sourcePageItems.keys()].sort((a,b)=>a-b).flatMap(sourcePage=>sourcePageItems.get(sourcePage)||[]).filter(item=>{if(seenIds.has(item.id))return false;seenIds.add(item.id);return true;});
-        sourceData={items:allItems.filter(item=>((!region||region==='전국')||(region==='기타'?item.region==='전국':item.region===region))&&(!keyword||item.message.includes(keyword))),sourceTotal:first.total,expiresAt:Date.now()+120000};
+        if(!keyword){disasterAllMessageCache.set(`${startDate}|${endDate}`,{items:allItems,total:first.total,expiresAt:Date.now()+120000});while(disasterAllMessageCache.size>3)disasterAllMessageCache.delete(disasterAllMessageCache.keys().next().value);}
+        sourceData={items:allItems.filter(item=>((!region||region==='전국')||(region==='기타'?item.regions.includes('전국'):item.regions.includes(region)))&&(!keyword||item.message.includes(keyword))),sourceTotal:first.total,expiresAt:Date.now()+120000};
         disasterSearchCache.set(cacheKey,sourceData);while(disasterSearchCache.size>40)disasterSearchCache.delete(disasterSearchCache.keys().next().value);
       } else {
         sourceData={items:first.items,sourceTotal:first.total,expiresAt:Date.now()+120000};
@@ -347,7 +370,7 @@ async function getDisasterMessages(url, response) {
     const pageItems=filteredSearch?sourceData.items.slice((page-1)*pageSize,page*pageSize):sourceData.items;
     const items=pageItems;
     const regionCounts = {};
-    (filteredSearch?sourceData.items:items).forEach(item => { const displayRegion=displayDisasterRegion(item.region);regionCounts[displayRegion] = (regionCounts[displayRegion] || 0) + 1; });
+    (filteredSearch?sourceData.items:items).forEach(item => { for(const regionName of item.regions){const displayRegion=displayDisasterRegion(regionName);regionCounts[displayRegion] = (regionCounts[displayRegion] || 0) + 1;} });
     sendJson(response, 200, {
       page,
       pageSize,
@@ -360,7 +383,7 @@ async function getDisasterMessages(url, response) {
       endDate,
       regions: [...observedDisasterRegions].map(displayDisasterRegion).filter((value,index,array)=>array.indexOf(value)===index).sort((a, b) => a.localeCompare(b, 'ko')),
       regionCounts,
-      items: items.map(item=>item.region==='전국'?{...item,region:'기타'}:item),
+      items: items.map(item=>({...item,region:displayDisasterRegion(item.region),regions:item.regions.map(displayDisasterRegion)})),
     });
   } catch {
     sendJson(response, 502, { error: '공식 재난문자 목록을 불러오지 못했어요. 잠시 후 다시 시도해 주세요.' });
@@ -381,9 +404,10 @@ async function getDisasterRegionCounts(url, response) {
     const first=await fetchSourcePage(1);const sourcePages=Math.max(1,Math.ceil(first.total/50));const pages=new Map([[1,first.items]]);const failed=[];let cursor=2;
     async function worker(){while(cursor<=sourcePages){const page=cursor++;let success=false;for(let attempt=0;attempt<2&&!success;attempt++){try{pages.set(page,(await fetchSourcePage(page)).items);success=true}catch(error){if(attempt===1)failed.push(page);}}}}
     await Promise.all(Array.from({length:Math.min(8,sourcePages-1)},worker));
-    const seen=new Set();const counts={};let collected=0;
-    [...pages.keys()].sort((a,b)=>a-b).forEach(page=>(pages.get(page)||[]).forEach(item=>{if(seen.has(item.id))return;seen.add(item.id);collected++;const region=displayDisasterRegion(item.region);counts[region]=(counts[region]||0)+1;}));
-    const result={startDate,endDate,expected:first.total,collected,complete:failed.length===0&&collected>=first.total,failedPages:failed,counts};
+    const seen=new Set();const counts={};const allItems=[];let collected=0,multiRegionMessages=0,regionAssignments=0;
+    [...pages.keys()].sort((a,b)=>a-b).forEach(page=>(pages.get(page)||[]).forEach(item=>{if(seen.has(item.id))return;seen.add(item.id);allItems.push(item);collected++;const regions=item.regions||[item.region||'전국'];if(regions.length>1)multiRegionMessages++;for(const regionName of regions){const region=displayDisasterRegion(regionName);counts[region]=(counts[region]||0)+1;regionAssignments++;}}));
+    disasterAllMessageCache.set(key,{items:allItems,total:first.total,expiresAt:Date.now()+120000});while(disasterAllMessageCache.size>3)disasterAllMessageCache.delete(disasterAllMessageCache.keys().next().value);
+    const result={startDate,endDate,expected:first.total,collected,regionAssignments,multiRegionMessages,complete:failed.length===0&&collected>=first.total,failedPages:failed,counts};
     disasterRegionCountCache.set(key,{data:result,expiresAt:Date.now()+120000});
     sendJson(response,200,result);
   }catch(error){sendJson(response,502,{error:'지역별 재난문자 수를 불러오지 못했어요. 다시 시도해 주세요.'});}

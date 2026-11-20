@@ -2524,9 +2524,9 @@
     let disasterPage=1;
     let disasterRequestId=0;
     let disasterArchiveLoaded=false;
-    let disasterRegionCounts={};let disasterRegionCountsPeriod='';let disasterRegionCountsRequest=0;let disasterRegionCountsLoaded=false;
+    let disasterRegionCounts={};let disasterRegionCountsTotal=0;let disasterRegionCountsAssignments=0;let disasterRegionCountsMultiRegion=0;let disasterRegionCountsPeriod='';let disasterRegionCountsRequest=0;let disasterRegionCountsLoaded=false;
     function updateDisasterRegionOptions(regions,selected=''){
-      const select=document.getElementById('disasterRegion');const total=Object.values(disasterRegionCounts).reduce((sum,count)=>sum+Number(count||0),0);
+      const select=document.getElementById('disasterRegion');const total=disasterRegionCountsTotal;
       select.replaceChildren(new Option(`${fixedUiText('전체 지역')} · ${Number(total).toLocaleString(siteLanguage==='ko'?'ko-KR':siteLanguage)}건`,''),...regions.map(region=>{
         const count=disasterRegionCounts[region];const label=count===undefined&&!disasterRegionCountsLoaded?region:`${region} · ${Number(count||0).toLocaleString(siteLanguage==='ko'?'ko-KR':siteLanguage)}건`;
         const option=new Option(label,region);option.dataset.noSiteTranslate='true';return option;
@@ -2535,12 +2535,12 @@
     }
     async function loadDisasterRegionCounts(days,regions){
       const request=++disasterRegionCountsRequest;disasterRegionCountsPeriod=String(days);
-      disasterRegionCounts={};disasterRegionCountsLoaded=false;updateDisasterRegionOptions(regions,document.getElementById('disasterRegion').value);
+      disasterRegionCounts={};disasterRegionCountsTotal=0;disasterRegionCountsAssignments=0;disasterRegionCountsMultiRegion=0;disasterRegionCountsLoaded=false;updateDisasterRegionOptions(regions,document.getElementById('disasterRegion').value);
       try{
         const response=await fetch(localApiUrl(`/api/disaster-region-counts?days=${encodeURIComponent(days)}`),{cache:'no-store',signal:AbortSignal.timeout(120000)});const data=await response.json();if(!response.ok)throw new Error(data.error||'지역별 건수를 불러오지 못했어요.');if(request!==disasterRegionCountsRequest)return;
-        disasterRegionCounts=data.counts||{};disasterRegionCountsLoaded=true;const select=document.getElementById('disasterRegion');updateDisasterRegionOptions(regions,select.value);
+        disasterRegionCounts=data.counts||{};disasterRegionCountsTotal=Number(data.collected)||Number(data.expected)||0;disasterRegionCountsAssignments=Number(data.regionAssignments)||disasterRegionCountsTotal;disasterRegionCountsMultiRegion=Number(data.multiRegionMessages)||0;disasterRegionCountsLoaded=true;const select=document.getElementById('disasterRegion');updateDisasterRegionOptions(regions,select.value);
         document.querySelectorAll('.disaster-region-heading').forEach(heading=>{const match=heading.dataset.region;if(match)heading.textContent=`${match} · ${(disasterRegionCounts[match]??0).toLocaleString(siteLanguage==='ko'?'ko-KR':siteLanguage)}${siteLanguage==='ko'?'건':` ${fixedUiText('건')}`}`;});
-      }catch(error){if(request===disasterRegionCountsRequest){disasterRegionCounts={};disasterRegionCountsLoaded=false;disasterRegionCountsPeriod='';const select=document.getElementById('disasterRegion');updateDisasterRegionOptions(regions,select.value);}}
+      }catch(error){if(request===disasterRegionCountsRequest){disasterRegionCounts={};disasterRegionCountsTotal=0;disasterRegionCountsAssignments=0;disasterRegionCountsMultiRegion=0;disasterRegionCountsLoaded=false;disasterRegionCountsPeriod='';const select=document.getElementById('disasterRegion');updateDisasterRegionOptions(regions,select.value);}}
     }
     async function loadDisasterMessages(resetPage=false){
       if(resetPage)disasterPage=1;
@@ -2563,15 +2563,17 @@
          const first=data.totalCount?(data.page-1)*data.pageSize+1:0;const last=first+data.items.length-1;
          const locale=siteLanguage==='ko'?'ko-KR':siteLanguage;const messageCount=value=>siteLanguage==='ko'?`${Number(value).toLocaleString(locale)}건`:fixedUiText('{count}건',siteLanguage,{count:Number(value).toLocaleString(locale)});
          const completeness=data.complete?fixedUiText('전체 {count}건',siteLanguage,{count:Number(data.nationalCount).toLocaleString(locale)}):fixedUiText('{collected}/{total}건 · 일부 누락',siteLanguage,{collected:Number(data.collectedCount).toLocaleString(locale),total:Number(data.nationalCount).toLocaleString(locale)});
-         const regionSummary=region?`${region}${disasterRegionCounts[region]!==undefined?` · ${messageCount(disasterRegionCounts[region])}`:''} · `:siteLanguage==='ko'?`${availableRegions.length}개 지역 · `:`${availableRegions.length} ${fixedUiText('개 지역')} · `;
-         status.textContent=`${completeness} · ${regionSummary}${fixedUiText(keyword?'검색':'기간')} ${messageCount(data.totalCount)} · ${fixedUiText('{first}~{last} 표시',siteLanguage,{first:first.toLocaleString(locale),last:last.toLocaleString(locale)})}`;
+          const regionSummary=region?`${region}${disasterRegionCounts[region]!==undefined?` · ${messageCount(disasterRegionCounts[region])}`:''} · `:siteLanguage==='ko'?`${availableRegions.length}개 지역 · `:`${availableRegions.length} ${fixedUiText('개 지역')} · `;
+          const overlapNote=disasterRegionCountsMultiRegion?` · 여러 지역 문자 ${disasterRegionCountsMultiRegion}건은 해당 지역마다 포함`:'';
+          status.textContent=`${completeness} · ${regionSummary}${fixedUiText(keyword?'검색':'기간')} ${messageCount(data.totalCount)} · ${fixedUiText('{first}~{last} 표시',siteLanguage,{first:first.toLocaleString(locale),last:last.toLocaleString(locale)})}${overlapNote}`;
         const pagination=document.getElementById('disasterPagination');pagination.hidden=data.pageCount<=1;
          document.getElementById('disasterPageInfo').textContent=fixedUiText('{page} / {pages} · {count}건',siteLanguage,{page:data.page.toLocaleString(locale),pages:data.pageCount.toLocaleString(locale),count:Number(data.totalCount).toLocaleString(locale)});
         previousButton.disabled=data.page<=1;nextButton.disabled=data.page>=data.pageCount;
          if(!data.items.length){const empty=document.createElement('div');empty.className='geochang-empty';empty.textContent=fixedUiText(keyword?'검색 결과 없음':'해당 기간 기록 없음');list.append(empty);return;}
-        const groupCounts=new Map();data.items.forEach(item=>groupCounts.set(item.region,(groupCounts.get(item.region)||0)+1));let activeRegion='';
-        data.items.forEach(item=>{
-            if(item.region!==activeRegion){activeRegion=item.region;const heading=document.createElement('h4');heading.className='disaster-region-heading';heading.dataset.region=item.region;const count=disasterRegionCounts[item.region]??data.regionCounts?.[item.region]??groupCounts.get(item.region);heading.textContent=`${item.region} · ${messageCount(count)}`;list.append(heading);}
+         const groupCounts=new Map();data.items.forEach(item=>groupCounts.set(item.region,(groupCounts.get(item.region)||0)+1));let activeRegion='';
+         data.items.forEach(item=>{
+             const displayRegions=[...new Set(item.regions||[item.region])];const regionKey=displayRegions.join('·');
+             if(regionKey!==activeRegion){activeRegion=regionKey;const heading=document.createElement('h4');heading.className='disaster-region-heading';heading.dataset.region=item.region;const countLabels=displayRegions.map(name=>`${name} · ${messageCount(disasterRegionCounts[name]??data.regionCounts?.[name]??groupCounts.get(name)??0)}`);heading.textContent=countLabels.join(' / ');list.append(heading);}
           const row=document.createElement('article');row.className='geochang-item';
           const meta=document.createElement('span');meta.className='geochang-meta';const time=document.createElement('span');time.textContent=item.createdAt;const agency=document.createElement('small');agency.textContent=item.agency;meta.append(time,agency);
           const main=document.createElement('div');main.className='geochang-item-main';const message=document.createElement('p');message.className='geochang-message';message.textContent=item.message;
