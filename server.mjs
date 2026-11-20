@@ -31,6 +31,7 @@ let coreValidationSaveQueue = Promise.resolve();
 const siteTranslationMemory = new Map();
 const civilShelterCache = new Map();
 const disasterSearchCache = new Map();
+const disasterRegionCountCache = new Map();
 const nonLocalAgencyWords = /(?:한국도로공사|한국철도공사|공항철도|경찰청|경찰서|소방서|소방본부|소방재난본부|산불방지대책본부|산림청|산림항공본부|행정안전부|국토교통부|기상청|해양경찰청|해경|군부대|공군|육군|해군|교육청|농어촌공사|공단|보건소|병원|문화재단|전력공사|한전|가스공사)/;
 const nonRegionPhrases = /(?:하시|주시|주십시|받으시|바라시|발생시|사용시|입산시|운행시|보행시|이동시|대피시|우천시|강우시|강설시|점검시|필요시|도착시|신고시|통제시|지속시|우리군|누수복구)$/;
 // Names verified against Korea's 2026-10-01 administrative-dong boundaries.
@@ -352,6 +353,28 @@ async function getDisasterMessages(url, response) {
   } catch {
     sendJson(response, 502, { error: '공식 재난문자 목록을 불러오지 못했어요. 잠시 후 다시 시도해 주세요.' });
   }
+}
+
+async function getDisasterRegionCounts(url, response) {
+  const days=Math.max(1,Math.min(365,Number(url.searchParams.get('days'))||30));
+  const endDate=getKoreanDate(new Date());const startDate=getKoreanDate(new Date(Date.now()-(days-1)*86400000));
+  const key=`${startDate}|${endDate}`;const cached=disasterRegionCountCache.get(key);
+  if(cached&&cached.expiresAt>Date.now()){sendJson(response,200,cached.data);return;}
+  try{
+    const fetchSourcePage=async page=>{
+      const sourceUrl=new URL(disasterSource);sourceUrl.searchParams.set('currentPage',String(page));sourceUrl.searchParams.set('cntPerPage','50');sourceUrl.searchParams.set('pageSize','50');sourceUrl.searchParams.set('searchStartDttm',startDate);sourceUrl.searchParams.set('searchEndDttm',endDate);sourceUrl.searchParams.set('keyword','');
+      const upstream=await fetch(sourceUrl,{headers:{'User-Agent':'Mozilla/5.0 (compatible; DisasterMessageReader/1.0)'},redirect:'follow',signal:AbortSignal.timeout(15000)});if(!upstream.ok)throw new Error(`upstream_${upstream.status}`);
+      const html=await upstream.text();const totalMatch=html.match(/<span[^>]*>([\d,]+)<\/span>\s*건의 게시물이 검색되었습니다/);return {items:parseDisasterRows(html),total:Number((totalMatch?.[1]||'0').replace(/,/g,''))};
+    };
+    const first=await fetchSourcePage(1);const sourcePages=Math.max(1,Math.ceil(first.total/50));const pages=new Map([[1,first.items]]);const failed=[];let cursor=2;
+    async function worker(){while(cursor<=sourcePages){const page=cursor++;let success=false;for(let attempt=0;attempt<2&&!success;attempt++){try{pages.set(page,(await fetchSourcePage(page)).items);success=true}catch(error){if(attempt===1)failed.push(page);}}}}
+    await Promise.all(Array.from({length:Math.min(8,sourcePages-1)},worker));
+    const seen=new Set();const counts={};let collected=0;
+    [...pages.keys()].sort((a,b)=>a-b).forEach(page=>(pages.get(page)||[]).forEach(item=>{if(seen.has(item.id))return;seen.add(item.id);collected++;counts[item.region]=(counts[item.region]||0)+1;}));
+    const result={startDate,endDate,expected:first.total,collected,complete:failed.length===0&&collected>=first.total,failedPages:failed,counts};
+    disasterRegionCountCache.set(key,{data:result,expiresAt:Date.now()+120000});
+    sendJson(response,200,result);
+  }catch(error){sendJson(response,502,{error:'지역별 재난문자 수를 불러오지 못했어요. 다시 시도해 주세요.'});}
 }
 
 function distanceKm(a, b) {
@@ -818,6 +841,10 @@ createServer(async (request, response) => {
     }
     if (request.method === 'GET' && url.pathname === '/api/disaster-messages') {
       await getDisasterMessages(url, response);
+      return;
+    }
+    if (request.method === 'GET' && url.pathname === '/api/disaster-region-counts') {
+      await getDisasterRegionCounts(url, response);
       return;
     }
     if (request.method === 'GET' && url.pathname === '/api/shelters') {
