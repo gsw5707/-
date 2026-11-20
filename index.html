@@ -2812,16 +2812,18 @@
       if(/(?:습설|적설하중)/.test(source)&&/(?:수목\s*전도|취약시설|가설건축물)/.test(source)){
         const prefix=source.match(/^(.*?)(?=현재\s*습설|습설|적설하중)/)?.[1]?.replace(/[,，\s]+$/,'').trim()||'';
         const lines=[];
-        lines.push(`${prefix?`${prefix} `:''}습하고 무거운 눈이 쌓여 눈 무게가 커지고 있어요.`);
-        if(/수목\s*전도/.test(source))lines.push('나무가 여러 곳에서 쓰러지고 있어요.');
+        lines.push(`${prefix?`${prefix} `:''}눈이 물기를 많이 머금어 무거워지면서, 쌓인 눈의 무게가 커지고 있어요.`);
+        if(/수목\s*전도/.test(source))lines.push(/다수|여러 곳|곳곳/.test(source)?'눈 무게 때문에 나무가 여러 곳에서 쓰러지고 있어요.':'눈 무게 때문에 나무가 쓰러질 수 있어요.');
         const facilities=[];
         if(/비닐하우스/.test(source))facilities.push('비닐하우스');
         if(/축사/.test(source))facilities.push('가축을 기르는 곳');
-        if(/노후\s*가설건축물|가설건축물/.test(source))facilities.push('오래된 임시 건물');
-        if(facilities.length)lines.push(`${facilities.join(', ')} 같은 시설이 무너지거나 사고가 날 수 있어요.`);
-        if(/시설물.*점검|점검.*시설물/.test(source))lines.push('시설을 꼼꼼히 살펴봐 주세요.');
-        if(/지속적인\s*순찰|순찰과 관리|순찰.*관리/.test(source))lines.push('자주 둘러보고 잘 관리해 주세요.');
-        else if(/관리/.test(source))lines.push('계속 살펴보고 관리해 주세요.');
+        if(/노후\s*가설건축물/.test(source))facilities.push('오래된 임시 건물');
+        else if(/가설건축물/.test(source))facilities.push('임시로 지은 건물');
+        if(facilities.length)lines.push(`${facilities.join(', ')} 같은 시설은 눈 무게로 무너질 수 있고, 사람이 다칠 수도 있어요.`);
+        if(/시설물.*점검|점검.*시설물/.test(source))lines.push('시설물이 안전한지 꼼꼼히 점검해 주세요.');
+        if(/지속적인\s*순찰/.test(source))lines.push('계속 둘러보며 안전한지 살펴 주세요.');
+        else if(/순찰/.test(source))lines.push('자주 둘러보며 안전한지 살펴 주세요.');
+        if(/관리/.test(source))lines.push('위험한 곳이 없는지 잘 관리해 주세요.');
         return preserveNumbers(lines.join(' '));
       }
 
@@ -3292,7 +3294,7 @@
           const lead=original.replace(/\s*\[[^\]]+\]\s*$/,'').match(/^(.*?)(?:현재\s*)?습설로 인해/)?.[1]?.trim()||'';
           const lines=[`${lead?`${lead} `:''}습하고 무거운 눈이 쌓여 눈 무게가 커지고 있어요.`,'나무가 여러 곳에서 쓰러지고 있어요.'];
           const facilities=[];if(/비닐하우스/.test(original))facilities.push('비닐하우스');if(/축사/.test(original))facilities.push('축사');if(/노후\s*가설건축물/.test(original))facilities.push('오래된 임시 건물');
-          if(facilities.length)lines.push(`${facilities.join(', ')} 같은 시설이 무너지거나 사고가 날 수 있어요.`);
+        if(facilities.length)lines.push(`${facilities.join(', ')} 같은 시설이 무너질 수 있고, 사람이 다칠 수도 있어요.`);
           if(/시설물.*점검|점검.*시설물/.test(original))lines.push('시설을 꼼꼼히 살펴봐 주세요.');
           if(/지속적인\s*순찰|순찰과 관리/.test(original))lines.push('자주 둘러보고 잘 관리해 주세요.');
           const originalNumbers=[...original.matchAll(/\d+(?:,\d{3})*(?:\.\d+)?/g)].map(match=>match[0].replace(/,/g,''));
