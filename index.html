@@ -2809,6 +2809,19 @@
         return spellUnits(oneParagraph(tidy));
       };
 
+      if(/한파주의보/.test(source)&&/(?:야외활동|외출)/.test(source)&&/(?:방한용품|따뜻하게)/.test(source)&&/(?:어린이|노약자|어르신)/.test(source)){
+        const placeTime=source.match(/^(.*?)(?=한파주의보)/)?.[1]?.trim().replace(/\s*$/,'')||'';
+        const lines=[];
+        lines.push(`${placeTime?`${placeTime} `:''}한파주의보가 내려졌어요.`);
+        if(/야외활동\s*자제|야외 활동\s*자제/.test(source))lines.push('밖에서 하는 활동을 줄여 주세요.');
+        if(/외출/.test(source)&&/방한용품/.test(source))lines.push('외출할 때는 따뜻한 옷과 장갑, 모자처럼 추위를 막는 것을 챙겨 입으세요.');
+        else if(/외출/.test(source))lines.push('외출할 때 따뜻하게 입으세요.');
+        if(/어린이/.test(source)&&/(?:노약자|어르신)/.test(source))lines.push('특히 어린이와 어르신, 몸이 약한 분은 추위에 더 조심해 주세요.');
+        else if(/어린이/.test(source))lines.push('어린이는 추위에 특히 조심해 주세요.');
+        else if(/노약자|어르신/.test(source))lines.push('어르신과 몸이 약한 분은 추위에 더 조심해 주세요.');
+        return preserveNumbers(lines.join(' '));
+      }
+
       if(/(?:습설|적설하중)/.test(source)&&/(?:수목\s*전도|취약시설|가설건축물)/.test(source)){
         const prefix=source.match(/^(.*?)(?=현재\s*습설|습설|적설하중)/)?.[1]?.replace(/[,，\s]+$/,'').trim()||'';
         const lines=[];
@@ -2839,7 +2852,10 @@
         if(/수도(?:계량기|관)?\s*동파|수도관/.test(source))lines.push('수도관이나 수도 계량기가 얼어 터지지 않게 해 주세요.');
         if(/외출\s*시 보온|외출시 보온/.test(source))lines.push('밖에 나갈 때 따뜻하게 입으세요.');
         if(/농작물|농축산물|냉해/.test(source))lines.push('농작물과 가축이 추위에 상하지 않게 살펴 주세요.');
-        if(/노약자|취약계층/.test(source))lines.push('어르신과 도움이 필요한 분의 건강을 살펴 주세요.');
+        if(/노약자|취약계층|어린이/.test(source)){
+          const protectedGroups=[];if(/어린이/.test(source))protectedGroups.push('어린이');if(/노약자|어르신/.test(source))protectedGroups.push('어르신과 몸이 약한 분');if(/취약계층/.test(source)&&!protectedGroups.length)protectedGroups.push('도움이 필요한 분');
+          lines.push(`${protectedGroups.join(', ')}은 추위에 더 조심해 주세요.`);
+        }
         if(/안부연락|안부 확인|안부확인/.test(source))lines.push('가족과 이웃이 잘 지내는지 연락해 보세요.');
         return preserveNumbers(lines.join(' '));
       }
