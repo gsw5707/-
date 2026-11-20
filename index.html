@@ -1068,6 +1068,23 @@
       }
       throw lastError||new Error('translation unavailable');
     }
+    let translationQueue=Promise.resolve();
+    function queueTranslateText(text,lang,source='ko',cacheable=false){
+      const request=translationQueue.then(()=>translateText(text,lang,source,cacheable));
+      translationQueue=request.catch(()=>{});
+      return request;
+    }
+    async function translateTextBatch(texts,lang,source='ko'){
+      if(texts.length===1)return [await queueTranslateText(texts[0],lang,source)];
+      const markers=texts.map((_,index)=>`ZZI18N${index}ZZ`);
+      const batch=[...texts.map((text,index)=>`${markers[index]}\n${text}`),'ZZI18NENDZZ'].join('\n\n');
+      const translated=await queueTranslateText(batch,lang,source);
+      const parts=translated.split(/ZZI18N(?:\d+|END)ZZ/);
+      if(parts.length!==texts.length+2||parts[0].trim()||parts.at(-1).trim())throw new Error('translation batch markers were not preserved');
+      const results=parts.slice(1,-1).map(part=>part.trim());
+      if(results.some(result=>!result))throw new Error('translation batch returned an empty entry');
+      return results;
+    }
     const originalSiteText=new WeakMap();
     const originalSiteBlocks=new WeakMap();
     const translatedSiteBlocks=new WeakMap();
@@ -1075,12 +1092,13 @@
     const originalSiteAttributes=new WeakMap();
     const siteAttributeElements=new Set();
     const siteTranslationCache=new Map();
+    const siteTranslationInFlight=new Map();
     const siteTranslationStorageKey='ansimgil-site-translations-v8';
     let uiTranslationCatalog={};
     const uiTranslationCatalogPromise=Promise.all([fetch('/ui-translations.json',{cache:'no-cache'}).then(response=>{if(!response.ok)throw new Error('UI translation catalog unavailable');return response.json();}),fetch('/ui-label-overrides.json',{cache:'no-cache'}).then(response=>response.ok?response.json():({}))]).then(([data,overrides])=>{
       uiTranslationCatalog=data?.languages||{};
       Object.entries(overrides||{}).forEach(([language,entries])=>{uiTranslationCatalog[language]??={};Object.assign(uiTranslationCatalog[language],entries);});
-      if(typeof siteLanguage!=='undefined'){syncLanguageButtons(siteLanguage);if(siteLanguage!=='ko')updateActionGuideView();}
+      if(typeof siteLanguage!=='undefined'){syncLanguageButtons(siteLanguage);if(siteLanguage!=='ko'){renderDictionaryFilters();renderDictionary();renderStatisticsFilters();updateActionGuideView();}}
       return uiTranslationCatalog;
     }).catch(()=>({}));
     const originalDocumentTitle=document.title;
@@ -1109,7 +1127,7 @@
     function isSiteTextSkipped(element){return !element||Boolean(element.closest(siteSkipSelector));}
     function isSiteSourceContent(entry){
       const element=entry.kind==='text'?entry.node.parentElement:entry.element;
-      return Boolean(element?.closest('.dictionary-hard,.dictionary-easy,.dictionary-reason,.statistics-word,.geochang-message,.geochang-meta,.disaster-region-heading,.core-validation-source-text'));
+      return Boolean(element?.closest('.geochang-message,.geochang-meta,.disaster-region-heading,.core-validation-source-text'));
     }
     function rememberSiteText(node){
       if(!originalSiteText.has(node))originalSiteText.set(node,node.nodeValue);
@@ -1193,7 +1211,7 @@
     async function translateSiteEntries(roots,language,version){
       await uiTranslationCatalogPromise;
       if(version!==siteTranslationVersion)return 0;
-      let failures=0;const unseen=new Set();
+      let failures=0;const pendingEntries=new Map();
       for(const entry of collectSiteTranslationEntries(roots)){
         const normalized=entry.original.replace(/\s+/g,' ').trim();
         const cacheKey=`${entry.source}|${language}|${normalized}`;
@@ -1202,9 +1220,35 @@
         if(fixedTranslation){applySiteTranslation(entry,fixedTranslation,version);continue;}
         if(siteTranslationCache.has(cacheKey)){applySiteTranslation(entry,siteTranslationCache.get(cacheKey),version);continue;}
         if(isSiteSourceContent(entry)){applySiteTranslation(entry,entry.original,version);continue;}
-        if(unseen.has(cacheKey))continue;
-        unseen.add(cacheKey);failures+=1;
-        applySiteTranslation(entry,entry.original,version);
+        if(!pendingEntries.has(cacheKey))pendingEntries.set(cacheKey,{entry,entries:[]});
+        pendingEntries.get(cacheKey).entries.push(entry);
+      }
+      const groups=[...pendingEntries.entries()];const sourceGroups=new Map();
+      groups.forEach(([cacheKey,group])=>{if(!sourceGroups.has(group.entry.source))sourceGroups.set(group.entry.source,[]);sourceGroups.get(group.entry.source).push([cacheKey,group]);});
+      for(const [source,sourceEntries] of sourceGroups){
+        const batches=[];let batch=[];let batchLength=0;
+        for(const item of sourceEntries){const length=item[1].entry.original.length;if(batch.length&&(batch.length>=18||batchLength+length>3800)){batches.push(batch);batch=[];batchLength=0;}batch.push(item);batchLength+=length;}
+        if(batch.length)batches.push(batch);
+        for(const entries of batches){
+          const fresh=entries.filter(([cacheKey])=>!siteTranslationInFlight.has(cacheKey));
+          if(fresh.length){
+            const request=translateTextBatch(fresh.map(([,group])=>group.entry.original),language,source);
+            fresh.forEach(([cacheKey],index)=>{
+              let pending=request.then(results=>{const translated=results[index];siteTranslationCache.set(cacheKey,translated);persistSiteTranslations();return translated;});
+              pending=pending.finally(()=>{if(siteTranslationInFlight.get(cacheKey)===pending)siteTranslationInFlight.delete(cacheKey);});
+              siteTranslationInFlight.set(cacheKey,pending);
+            });
+          }
+          await Promise.all(entries.map(async([cacheKey,group])=>{
+            try{
+              const translated=siteTranslationCache.get(cacheKey)||await siteTranslationInFlight.get(cacheKey);
+              if(version===siteTranslationVersion)group.entries.forEach(entry=>applySiteTranslation(entry,translated,version));
+            }catch(error){
+              failures+=1;
+              if(version===siteTranslationVersion)group.entries.forEach(entry=>applySiteTranslation(entry,entry.original,version));
+            }
+          }));
+        }
       }
       return failures;
     }
@@ -2427,10 +2471,7 @@
       const loadingStep=document.createElement('li');loadingStep.textContent=labels.loading;actionList.append(loadingStep);
       status.textContent='번역 중…';
       try{
-        const [summaryResult,...translatedSteps]=await Promise.all([
-          translateText(summary.easy,selectedLang),
-          ...sourceSteps.map(step=>translateText(step,selectedLang))
-        ]);
+        const [summaryResult,...translatedSteps]=await translateTextBatch([summary.easy,...sourceSteps],selectedLang);
         if(requestId!==translationRequestId)return;
         easySpeechText=summaryResult;updateSpeechButtons(false);
         renderEasyLines(translated,summaryResult,summary.dictionary);
@@ -4046,7 +4087,7 @@
       const cacheKey=`${message}|${language}`;
       status.textContent='번역 중…';output.textContent=simple;
       try{
-        const translated=disasterEasyCache.get(cacheKey)||await translateText(simple,language);
+        const translated=disasterEasyCache.get(cacheKey)||await queueTranslateText(simple,language);
         disasterEasyCache.set(cacheKey,translated);
         if(details.dataset.requestId!==String(requestId)||!details.open)return;
         output.textContent=translated;status.textContent='쉬운 말로 정리 · 원문·공식 안내 확인';
