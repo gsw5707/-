@@ -1685,7 +1685,13 @@
          if(level12Vocabulary.has(entry.hard)&&!dictionaryVariantTerms.has(entry.hard))return;
          if(!output.includes(entry.hard)&&!dictionaryVariantTerms.has(entry.hard))return;
         const replace=(pattern,easy)=>{const globalPattern=new RegExp(pattern.source,pattern.flags.includes('g')?pattern.flags:`${pattern.flags}g`);output=output.replace(globalPattern,()=>{applied.push({hard:entry.hard,easy:entry.easy,display:easy});return easy;});};
-        if(entry.hard==='대피'){
+        if(entry.hard==='실종'){
+          replace(/실종자를/g,'행방을 찾는 사람을');
+          replace(/실종자가/g,'행방을 찾는 사람이');
+          replace(/실종자는/g,'행방을 찾는 사람은');
+          replace(/실종자/g,'행방을 찾는 사람');
+          replace(/실종된/g,'찾고 있는');
+        }else if(entry.hard==='대피'){
           replace(/안전한 곳으로 대피하시기 바랍니다/g,'안전한 곳으로 이동하세요');
           replace(/안전한 곳으로 대피하시고/g,'안전한 곳으로 가시고');
           replace(/안전한 곳으로 대피하세요/g,'안전한 곳으로 가세요');
@@ -3264,9 +3270,17 @@
        simple=simple.replace(/(?:이용해)?해요\b/g,'이용해요').replace(/해주세요 부탁드립니다/g,'해주세요').replace(/주세요 부탁드립니다/g,'주세요').replace(/(위험하지 않은 곳으로|안전한 곳으로)\s+\1/g,'$1').replace(/\s+([,.])/g,'$1').replace(/,{2,}/g,',').replace(/\.{2,}/g,'.');
       return preserveNumbers(simple);
     }
-     function refineNationwideMessage(message,translated,audience){
-       const original=String(message||'');let result=refineNationwideMessageCore(original,translated,audience);
-       if(/호우주의보/.test(original))result=result.replace(/^비가 많이 오는 주의 알림\.\s*/,'').replace(/많은 비 조심 알림이 내려졌어요/g,'비가 많이 올 수 있다는 알림이 나왔어요');
+      function refineNationwideMessage(message,translated,audience){
+        const original=String(message||'');let result=refineNationwideMessageCore(original,translated,audience);
+        const foundMissing=original.replace(/\s*\[[^\]]+\]\s*$/,'').match(/^(.*?)실종자(?:를|가)?\s*(?:안전하게\s*)?발견(?:하였습니다|했습니다|되었(?:습니다|어요)|됐습니다|됐어요)([.。]?)\s*(.*)$/);
+        if(foundMissing){
+          const lead=foundMissing[1].trim();const tail=foundMissing[3].trim().replace(/^[.。\s]+/,'');
+          result=`${lead?`${lead} `:''}찾던 분을 안전하게 발견했어요.${tail?` ${tail}`:''}`.replace(/\s+/g,' ').replace(/\s+([,.!?。])/g,'$1').replace(/([.!?。])\s*\1+/g,'$1').trim();
+        }else{
+          result=result.replace(/사람을 찾지 못하고 있음자/g,'찾고 있는 사람');
+          if(/실종자/.test(original)&&/찾습니다|찾고 있습니다/.test(original))result=result.replace(/찾고 있는 사람(?:을|가)?\s*찾습니다/g,'사람을 찾고 있어요.').replace(/찾고 있는 사람(?:을|가)?\s*찾고 있습니다/g,'사람을 찾고 있어요.');
+        }
+        if(/호우주의보/.test(original))result=result.replace(/^비가 많이 오는 주의 알림\.\s*/,'').replace(/많은 비 조심 알림이 내려졌어요/g,'비가 많이 올 수 있다는 알림이 나왔어요');
        if(/저지대\s*주민/.test(original))result=result.replace(/낮은 땅 그 지역에 사는 분은/g,'낮은 곳에 사는 분은');
        return result.replace(/(위험하지 않은 곳으로|안전한 곳으로)\s+\1/g,'$1');
      }
