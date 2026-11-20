@@ -632,6 +632,7 @@
     let statisticsResult=null;
     let difficultWordMatchers=[];
     let difficultWordTrie={next:new Map(),entries:[]};
+    const disasterVocabularyAdditionsPromise=fetch('/disaster-vocabulary-additions.json').then(response=>{if(!response.ok)throw new Error('재난 표현 보완 목록을 불러오지 못했어요.');return response.json();}).then(entries=>Array.isArray(entries)?entries.filter(entry=>entry&&typeof entry.hard==='string'&&typeof entry.easy==='string'&&Array.isArray(entry.tags)):[]).catch(error=>{console.warn('재난 표현 보완 목록을 불러오지 못했어요.',error);return [];});
     const difficultWordsPromise=fetch('/difficult-words.json').then(response=>{if(!response.ok)throw new Error('어려운 말 목록을 불러오지 못했어요.');return response.json();}).then(entries=>{
       if(!Array.isArray(entries))throw new Error('어려운 말 목록 형식이 올바르지 않아요.');
       difficultWords=entries.filter(entry=>entry&&typeof entry.hard==='string'&&typeof entry.easy==='string'&&Array.isArray(entry.tags));
@@ -649,7 +650,18 @@
         easyDictionary.forEach(entry=>{let node=easyDictionaryTrie;for(const character of entry.hard){if(!node.next.has(character))node.next.set(character,{next:new Map(),entries:[]});node=node.next.get(character);}node.entries.push(entry);});
         dictionaryVariantEntries=orderedEasyDictionary.filter(entry=>dictionaryVariantTerms.has(entry.hard));
         knownEasyWords=new Set(easyDictionary.map(entry=>entry.hard));
-        await Promise.all([difficultWordsPromise,level12VocabularyPromise]);rebuildUnknownHardIndex();
+        const [loadedDifficultWords,,loadedVocabularyAdditions]=await Promise.all([difficultWordsPromise,level12VocabularyPromise,disasterVocabularyAdditionsPromise]);
+        const knownHard=new Set(easyDictionary.map(entry=>entry.hard));
+        const newEntries=loadedVocabularyAdditions.filter(entry=>!knownHard.has(entry.hard));
+        easyDictionary.push(...newEntries.map(entry=>({...entry,reason:entry.reason||`${entry.easy}라는 뜻이에요.`})));
+        const knownDifficult=new Set(loadedDifficultWords.map(entry=>entry.hard));
+        const newDifficult=newEntries.filter(entry=>!knownDifficult.has(entry.hard)).map(entry=>({hard:entry.hard,easy:entry.easy,kind:'재난 표현',tags:entry.tags}));
+        difficultWords.push(...newDifficult);
+        difficultWordMatchers=[...difficultWords].sort((a,b)=>b.hard.length-a.hard.length).map(entry=>({entry,test:new RegExp(entry.hard==='실시'?'실시(?!간)':escapeRegExp(entry.hard)),replace:new RegExp(escapeRegExp(entry.hard),'g')}));
+        difficultWordTrie={next:new Map(),entries:[]};difficultWords.forEach(entry=>{let node=difficultWordTrie;for(const character of entry.hard){if(!node.next.has(character))node.next.set(character,{next:new Map(),entries:[]});node=node.next.get(character);}node.entries.push(entry);});
+        orderedEasyDictionary=[...easyDictionary].sort((a,b)=>b.hard.length-a.hard.length);easyDictionaryByHard=new Map(easyDictionary.map(entry=>[entry.hard,entry]));
+        easyDictionaryTrie={next:new Map(),entries:[]};easyDictionary.forEach(entry=>{let node=easyDictionaryTrie;for(const character of entry.hard){if(!node.next.has(character))node.next.set(character,{next:new Map(),entries:[]});node=node.next.get(character);}node.entries.push(entry);});
+        newEntries.forEach(entry=>dictionaryVariantTerms.add(entry.hard));dictionaryVariantEntries=orderedEasyDictionary.filter(entry=>dictionaryVariantTerms.has(entry.hard));knownEasyWords=new Set(easyDictionary.map(entry=>entry.hard));rebuildUnknownHardIndex();
        renderDictionaryFilters();renderDictionary();
        return easyDictionary;
      }).catch(error=>{document.getElementById('dictionaryCount').textContent=error.message;return [];});
@@ -2537,7 +2549,7 @@
       const request=++disasterRegionCountsRequest;disasterRegionCountsPeriod=String(days);
       disasterRegionCounts={};disasterRegionCountsTotal=0;disasterRegionCountsAssignments=0;disasterRegionCountsMultiRegion=0;disasterRegionCountsLoaded=false;updateDisasterRegionOptions(regions,document.getElementById('disasterRegion').value);
       try{
-        const response=await fetch(localApiUrl(`/api/disaster-region-counts?days=${encodeURIComponent(days)}`),{cache:'no-store',signal:AbortSignal.timeout(120000)});const data=await response.json();if(!response.ok)throw new Error(data.error||'지역별 건수를 불러오지 못했어요.');if(request!==disasterRegionCountsRequest)return;
+        const response=await fetch(localApiUrl(`/api/disaster-region-counts?days=${encodeURIComponent(days)}`),{cache:'no-store',signal:AbortSignal.timeout(240000)});const data=await response.json();if(!response.ok)throw new Error(data.error||'지역별 건수를 불러오지 못했어요.');if(request!==disasterRegionCountsRequest)return;
         disasterRegionCounts=data.counts||{};disasterRegionCountsTotal=Number(data.collected)||Number(data.expected)||0;disasterRegionCountsAssignments=Number(data.regionAssignments)||disasterRegionCountsTotal;disasterRegionCountsMultiRegion=Number(data.multiRegionMessages)||0;disasterRegionCountsLoaded=true;const select=document.getElementById('disasterRegion');updateDisasterRegionOptions(regions,select.value);
         document.querySelectorAll('.disaster-region-heading').forEach(heading=>{const match=heading.dataset.region;if(match)heading.textContent=`${match} · ${(disasterRegionCounts[match]??0).toLocaleString(siteLanguage==='ko'?'ko-KR':siteLanguage)}${siteLanguage==='ko'?'건':` ${fixedUiText('건')}`}`;});
       }catch(error){if(request===disasterRegionCountsRequest){disasterRegionCounts={};disasterRegionCountsTotal=0;disasterRegionCountsAssignments=0;disasterRegionCountsMultiRegion=0;disasterRegionCountsLoaded=false;disasterRegionCountsPeriod='';const select=document.getElementById('disasterRegion');updateDisasterRegionOptions(regions,select.value);}}
@@ -3852,6 +3864,13 @@
       ];
       phrases.sort((a,b)=>b[0].length-a[0].length).forEach(([from,to])=>{simple=simple.replaceAll(from,to);});
       simple=simple.replaceAll('▲','\n• ');
+       simple=simple.replace(/대설경보 발효 중/g,'눈이 매우 많이 온다는 위험 알림이 내려졌어요.')
+         .replace(/적설하중(?:이)? 증가(?:가)? 예상됩니다?/g,'눈의 무게가 더 커질 수 있어요')
+         .replace(/구조물 파손 우려/g,'건물이나 시설이 망가질 수 있어요')
+         .replace(/붕괴 우려/g,'무너질 수 있어요')
+         .replace(/사고 발생 위험/g,'사고가 날 위험')
+         .replace(/시설물 관리에 만전을 기해 주시기 바랍니다/g,'시설물이 안전한지 잘 살펴봐 주세요')
+         .replace(/취약시설/g,'눈 무게에 약한 시설');
        if(audience==='child')simple=simple.replaceAll('산불 위험이 높아요','산불이 날 수 있어요').replaceAll('하세요','해요').replaceAll('해주세요','해요').replaceAll('해 주세요','해요');
       if(audience==='senior')simple=simple.replace(/([.!?])\s*/g,'$1\n');
       return simple.trim();
