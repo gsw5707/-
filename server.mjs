@@ -732,6 +732,27 @@ function hasTranslationScript(text, target) {
   return target === 'ko' || (hangulShare < 0.15 && requiredScript);
 }
 
+function classifyGeminiQuotaError(status, body) {
+  const providerStatus = String(body?.error?.status || 'UNKNOWN');
+  const details = Array.isArray(body?.error?.details) ? body.error.details : [];
+  const violations = details.flatMap(detail => Array.isArray(detail?.violations) ? detail.violations : []);
+  const quotaText = violations.map(item => `${item.quotaId || ''} ${item.quotaMetric || ''} ${item.description || ''}`).join(' ').toLowerCase();
+  const message = String(body?.error?.message || '').toLowerCase();
+  const hasRetryInfo = details.some(detail => /RetryInfo$/.test(String(detail?.['@type'] || '')));
+  const retryDelay = details.find(detail => /RetryInfo$/.test(String(detail?.['@type'] || '')))?.retryDelay;
+  const retryMatch = typeof retryDelay === 'string' ? retryDelay.match(/([\d.]+)s/) : null;
+  const retryAfterSeconds = retryMatch ? Math.ceil(Number(retryMatch[1])) : null;
+  const dailyQuota = /per[_ -]?day|daily|free[_ -]?tier|monthly|billing|perday/.test(quotaText) || /current quota|daily quota|billing details|quota.*exceed/.test(message);
+  const shortRateLimit = hasRetryInfo || /per[_ -]?(minute|second)|requests?[_ -]?per[_ -]?(minute|second)|tokens?[_ -]?per[_ -]?(minute|second)|rate[_ -]?limit/.test(quotaText);
+  const reason = status === 429 && dailyQuota ? 'allocation_exhausted'
+    : status === 429 && shortRateLimit ? 'temporary_rate_limit'
+      : status === 429 ? 'rate_or_quota_unspecified'
+        : status === 400 && /api key not valid|invalid api key/.test(message) ? 'invalid_api_key'
+          : status === 403 ? 'permission_or_billing'
+            : `provider_http_${status}`;
+  return { httpStatus: status, providerStatus, reason, retryAfterSeconds };
+}
+
 async function translateText(request, response) {
   let payload;
   try {
@@ -764,6 +785,7 @@ async function translateText(request, response) {
     let lastStatus = 502;
     let retryAfterSeconds = 2;
     let rateLimited = false;
+    let geminiDiagnostic = null;
     const models = ['gemini-2.5-flash-lite', 'gemini-2.5-flash', 'gemini-3.1-flash-lite-preview', 'gemini-3-flash-preview'];
     for (const model of apiKey ? models : []) {
       for (let attempt = 0; attempt < 2; attempt += 1) {
@@ -780,8 +802,11 @@ async function translateText(request, response) {
           });
           if (!upstream.ok) {
             lastStatus = upstream.status;
+            let providerError = null;
+            try { providerError = await upstream.json(); } catch {}
+            geminiDiagnostic = classifyGeminiQuotaError(upstream.status, providerError);
             if (upstream.status === 429) {
-              retryAfterSeconds = Math.max(1, Math.min(60, Number(upstream.headers.get('retry-after')) || retryAfterSeconds));
+              retryAfterSeconds = Math.max(1, Math.min(86400, Number(upstream.headers.get('retry-after')) || geminiDiagnostic.retryAfterSeconds || retryAfterSeconds));
               rateLimited = true;
             }
             throw new Error(`gemini_${upstream.status}`);
@@ -808,7 +833,7 @@ async function translateText(request, response) {
     }
     if (!translatedText) {
       const error = { error: '번역을 완료하지 못했어요. 잠시 후 다시 시도해 주세요.' };
-      sendJson(response, 502, error);
+      sendJson(response, 502, geminiDiagnostic ? { ...error, diagnostic: geminiDiagnostic } : error);
       return;
     }
     const translated = [[[translatedText, text, null, null]]];
