@@ -762,7 +762,7 @@ function classifyGeminiQuotaError(status, body) {
   const retryDelay = details.find(detail => /RetryInfo$/.test(String(detail?.['@type'] || '')))?.retryDelay;
   const retryMatch = typeof retryDelay === 'string' ? retryDelay.match(/([\d.]+)s/) : null;
   const retryAfterSeconds = retryMatch ? Math.ceil(Number(retryMatch[1])) : null;
-  const dailyQuota = /per[_ -]?day|daily|free[_ -]?tier|monthly|billing|perday/.test(quotaText) || /current quota|daily quota|billing details|quota.*exceed/.test(message);
+  const dailyQuota = /per[_ -]?day|daily|monthly|perday/.test(quotaText) || /daily quota|billing details|quota.*exceed/.test(message);
   const shortRateLimit = hasRetryInfo || /per[_ -]?(minute|second)|requests?[_ -]?per[_ -]?(minute|second)|tokens?[_ -]?per[_ -]?(minute|second)|rate[_ -]?limit/.test(quotaText);
   const reason = status === 429 && dailyQuota ? 'allocation_exhausted'
     : status === 429 && shortRateLimit ? 'temporary_rate_limit'
@@ -789,7 +789,7 @@ async function pacedGeminiFetch(url, options) {
       error.diagnostic = geminiCooldownDiagnostic;
       throw error;
     }
-    const wait = Math.max(0, 4000 - (Date.now() - geminiLastRequestAt));
+    const wait = Math.max(0, 5000 - (Date.now() - geminiLastRequestAt));
     if (wait) await new Promise(resolve => setTimeout(resolve, wait));
     geminiLastRequestAt = Date.now();
     return await fetch(url, options);
