@@ -212,7 +212,7 @@
     @media(max-width:390px){.action-grid:not(.is-filtered) .guide-visual{height:124px!important}.action-grid.is-filtered .guide-visual{height:220px!important}.action-pictogram-grid li{min-height:128px}.action-pictogram-grid svg{width:54px;height:54px}}
     :root[data-theme="dark"] .action-pictogram-grid li{background:#242b26;color:var(--ink);border-color:var(--line)}:root[data-theme="dark"] .action-pictogram-grid svg{color:#d6ded8}
     .language-row .lang-chip,.result-translation,.geochang-easy-output{font-family:system-ui,sans-serif}.language-row .lang-chip{font-size:15px;font-weight:600;line-height:1.35;letter-spacing:normal;text-rendering:optimizeLegibility;color:#26342c!important;opacity:1!important;filter:none;text-shadow:none;background:#fffdf8;border-color:#aeb7ad}
-     .language-row .lang-chip.active{background:#303934;border-color:#303934;color:#fff!important}
+      .language-row .lang-chip.active{background:#303934;border-color:#303934;color:#fff!important}.language-row select{min-height:40px;padding:0 30px 0 10px;border:1px solid #aeb7ad;border-radius:4px;background:#fffdf8;color:#26342c;font-size:14px}
      .result-translation{display:block!important}.easy-line{display:inline!important}.easy-line-marker{display:none!important}.easy-line-text{white-space:normal}
     :root[data-theme="dark"]{--paper:#151916;--white:#1e2520;--mint:#252c27;--line:#3c433e}:root[data-theme="dark"] .topbar{background:#151916f5}:root[data-theme="dark"] .bottom-tabs{background:#1a201cf5}:root[data-theme="dark"] .result-panel{background:#202722}:root[data-theme="dark"] .language-row .lang-chip{background:#202722;border-color:#68736b;color:#f0f2f0!important}:root[data-theme="dark"] .language-row .lang-chip.active{background:#39423c;border-color:#879389;color:#fff!important}
     @media(max-width:760px){.guide-visual{height:80px!important}}
@@ -1305,6 +1305,7 @@
     function syncLanguageButtons(language){
       document.querySelectorAll('.lang-chip').forEach(button=>{const active=button.dataset.lang===selectedLang;button.classList.toggle('active',active);button.setAttribute('aria-pressed',String(active));});
       document.querySelectorAll('.side-language-option').forEach(button=>{const active=button.dataset.sideLanguage===siteLanguage;button.classList.toggle('active',active);button.setAttribute('aria-pressed',String(active));});
+      const outputLanguageSelect=document.getElementById('messageOutputLanguage');if(outputLanguageSelect)outputLanguageSelect.value=selectedLang;
       const button=document.querySelector(`.lang-chip[data-lang="${selectedLang}"]`);
       if(button){const resultLanguage=document.getElementById('resultLang');resultLanguage.textContent=uiTranslationCatalog[language]?.[button.dataset.name]||button.dataset.name;resultLanguage.lang=selectedLang;document.getElementById('translatedText').lang=selectedLang;}
     }
@@ -1363,7 +1364,11 @@
     }
     function setTranslationLanguage(language){
       if(!supportedLanguages.includes(language))return;
-      setSiteLanguage(language);
+      selectedLang=language;translationLanguageChosen=true;
+      try{localStorage.setItem('ansimgil-translation-language',language);}catch(error){}
+      syncLanguageButtons(siteLanguage);
+      if(document.getElementById('message').value.trim())renderTranslation();
+      else clearTranslationResult('문자 입력 필요');
     }
     let siteMutationTimer;
     let pendingSiteNodes=[];
@@ -2532,12 +2537,10 @@
       }
     }
      const messageLanguageRow=document.querySelector('.language-row');
-     messageLanguageRow.querySelectorAll('.lang-chip').forEach(button=>{button.id=`messageLanguage-${button.dataset.lang}`;button.type='button';});
-     messageLanguageRow.addEventListener('click',event=>{
-       const button=event.target.closest('.lang-chip');
-       if(!button||!messageLanguageRow.contains(button))return;
-       event.preventDefault();setTranslationLanguage(button.dataset.lang);
-     });
+     messageLanguageRow.querySelectorAll('.lang-chip').forEach(button=>{button.id=`messageLanguage-${button.dataset.lang}`;button.type='button';button.addEventListener('click',()=>setTranslationLanguage(button.dataset.lang));});
+     const messageOutputLanguage=document.createElement('select');messageOutputLanguage.id='messageOutputLanguage';messageOutputLanguage.setAttribute('aria-label','순화 결과 언어');
+     supportedLanguages.forEach(language=>{const chip=messageLanguageRow.querySelector(`.lang-chip[data-lang="${language}"]`);if(chip)messageOutputLanguage.add(new Option(chip.dataset.name,language));});
+     messageOutputLanguage.value=selectedLang;messageOutputLanguage.addEventListener('change',()=>setTranslationLanguage(messageOutputLanguage.value));messageLanguageRow.prepend(messageOutputLanguage);
     document.querySelectorAll('.side-language-option').forEach(button=>button.addEventListener('click',()=>setSiteLanguage(button.dataset.sideLanguage)));
     document.getElementById('message').addEventListener('input',event=>{
       const text=event.currentTarget.value.trim();

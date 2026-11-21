@@ -828,50 +828,43 @@ async function translateText(request, response) {
     let retryAfterSeconds = 2;
     let rateLimited = false;
     let geminiDiagnostic = null;
-    const models = ['gemini-2.5-flash-lite', 'gemini-2.5-flash', 'gemini-3.1-flash-lite-preview', 'gemini-3-flash-preview'];
-    for (const model of apiKey ? models : []) {
-      for (let attempt = 0; attempt < 2; attempt += 1) {
-        try {
-          const modelUrl = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${encodeURIComponent(apiKey)}`;
-          const upstream = await pacedGeminiFetch(modelUrl, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-              contents: [{ parts: [{ text: prompt }] }],
-              generationConfig: { maxOutputTokens: Math.max(512, Math.min(3072, text.length * 2)), temperature: 0, ...(model.startsWith('gemini-3') ? { thinkingConfig: { thinkingLevel: 'MINIMAL' } } : {}) },
-            }),
-            signal: AbortSignal.timeout(25000),
-          });
-          if (!upstream.ok) {
-            lastStatus = upstream.status;
-            let providerError = null;
-            try { providerError = await upstream.json(); } catch {}
-            geminiDiagnostic = classifyGeminiQuotaError(upstream.status, providerError);
-            if (upstream.status === 429) {
-              retryAfterSeconds = Math.max(1, Math.min(86400, Number(upstream.headers.get('retry-after')) || geminiDiagnostic.retryAfterSeconds || retryAfterSeconds));
-              rateLimited = true;
-              geminiCooldownUntil = Date.now() + retryAfterSeconds * 1000;
-              geminiCooldownDiagnostic = { ...geminiDiagnostic, retryAfterSeconds };
-            }
-            throw new Error(`gemini_${upstream.status}`);
+    if (apiKey) {
+      try {
+        const model = 'gemini-3.5-flash-lite';
+        const modelUrl = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${encodeURIComponent(apiKey)}`;
+        const upstream = await pacedGeminiFetch(modelUrl, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            contents: [{ parts: [{ text: prompt }] }],
+            generationConfig: { maxOutputTokens: Math.max(512, Math.min(3072, text.length * 2)), temperature: 0 },
+          }),
+          signal: AbortSignal.timeout(20000),
+        });
+        if (!upstream.ok) {
+          lastStatus = upstream.status;
+          let providerError = null;
+          try { providerError = await upstream.json(); } catch {}
+          geminiDiagnostic = classifyGeminiQuotaError(upstream.status, providerError);
+          if (upstream.status === 429) {
+            retryAfterSeconds = Math.max(1, Math.min(86400, Number(upstream.headers.get('retry-after')) || geminiDiagnostic.retryAfterSeconds || retryAfterSeconds));
+            rateLimited = true;
+            geminiCooldownUntil = Date.now() + retryAfterSeconds * 1000;
+            geminiCooldownDiagnostic = { ...geminiDiagnostic, retryAfterSeconds };
           }
+        } else {
           const result = await upstream.json();
           const candidate = result.candidates?.[0]?.content?.parts?.map(part => part.text || '').join('').trim() || '';
-          if (candidate && hasTranslationScript(candidate, target)) { translatedText = candidate; break; }
-          lastStatus = 502;
-        } catch (error) {
-          if (error.code === 'gemini_quota_cooldown') {
-            lastStatus = 429;
-            rateLimited = true;
-            geminiDiagnostic = error.diagnostic;
-            retryAfterSeconds = Math.max(1, Math.ceil((geminiCooldownUntil - Date.now()) / 1000));
-          }
-          if (!error.name || error.name !== 'TimeoutError') lastStatus = Number(String(error.message).match(/gemini_(\d+)/)?.[1]) || lastStatus;
+          if (candidate && hasTranslationScript(candidate, target)) translatedText = candidate;
         }
-        if (rateLimited || [400, 401, 403].includes(lastStatus)) break;
-        if (attempt === 0) await new Promise(resolve => setTimeout(resolve, 300));
+      } catch (error) {
+        if (error.code === 'gemini_quota_cooldown') {
+          lastStatus = 429;
+          rateLimited = true;
+          geminiDiagnostic = error.diagnostic;
+          retryAfterSeconds = Math.max(1, Math.ceil((geminiCooldownUntil - Date.now()) / 1000));
+        }
       }
-      if (translatedText || rateLimited || [400, 401, 403].includes(lastStatus)) break;
     }
     if (!translatedText && !rateLimited && geminiDiagnostic?.reason !== 'allocation_exhausted') {
       try {
