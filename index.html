@@ -1110,7 +1110,7 @@
       while(siteTranslationCache.size>6000)siteTranslationCache.delete(siteTranslationCache.keys().next().value);
       try{localStorage.setItem(siteTranslationStorageKey,JSON.stringify([...siteTranslationCache]));}catch(error){}
     }
-    const siteSkipSelector='script,style,noscript,svg,code,pre,[hidden],.language-start-dialog,.lang-chip,.side-language-option,.geochang-easy-output,.geochang-message,#translatedText,.result-original,.leaflet-control-zoom,.leaflet-control-attribution,[data-no-site-translate],#libraryOriginal,#resultLang,.library-original,.core-validation-source-text';
+       const siteSkipSelector='script,style,noscript,svg,code,pre,[hidden],.language-start-dialog,.lang-chip,.side-language-option,.geochang-easy-output,#translatedText,.result-original,.leaflet-control-zoom,.leaflet-control-attribution,[data-no-site-translate],#libraryOriginal,#resultLang,.library-original,.core-validation-source-text';
     let siteTranslationVersion=0;
     function sourceLanguage(text){
       if(/^(?:A[+-]|(?:dictionary|difficult-words|ui-translations|ui-label-overrides)\.json|km|mm)$/i.test(text.trim()))return null;
@@ -1127,7 +1127,7 @@
     function isSiteTextSkipped(element){return !element||Boolean(element.closest(siteSkipSelector));}
     function isSiteSourceContent(entry){
       const element=entry.kind==='text'?entry.node.parentElement:entry.element;
-      return Boolean(element?.closest('.geochang-message,.geochang-meta,.disaster-region-heading,.core-validation-source-text'));
+        return Boolean(element?.closest('.geochang-meta'));
     }
     function rememberSiteText(node){
       if(!originalSiteText.has(node))originalSiteText.set(node,node.nodeValue);
@@ -1227,7 +1227,7 @@
       groups.forEach(([cacheKey,group])=>{if(!sourceGroups.has(group.entry.source))sourceGroups.set(group.entry.source,[]);sourceGroups.get(group.entry.source).push([cacheKey,group]);});
       for(const [source,sourceEntries] of sourceGroups){
         const batches=[];let batch=[];let batchLength=0;
-        for(const item of sourceEntries){const length=item[1].entry.original.length;if(batch.length&&(batch.length>=18||batchLength+length>3800)){batches.push(batch);batch=[];batchLength=0;}batch.push(item);batchLength+=length;}
+        for(const item of sourceEntries){const length=item[1].entry.original.length;if(batch.length&&(batch.length>=40||batchLength+length>3800)){batches.push(batch);batch=[];batchLength=0;}batch.push(item);batchLength+=length;}
         if(batch.length)batches.push(batch);
         for(const entries of batches){
           const fresh=entries.filter(([cacheKey])=>!siteTranslationInFlight.has(cacheKey));
@@ -1256,6 +1256,10 @@
       if(siteLanguage==='ko')return Promise.resolve(0);
       const slide=document.getElementById(slideId);const roots=[slide,document.querySelector('.topbar'),document.querySelector('.accessibility-rail'),document.getElementById('bottomTabs')].filter(Boolean);
       return translateSiteEntries(roots,siteLanguage,version);
+    }
+    function translateAllSiteText(version=siteTranslationVersion){
+      if(siteLanguage==='ko')return Promise.resolve(0);
+      return translateSiteEntries([...appSlideSections,document.querySelector('.topbar'),document.querySelector('.accessibility-rail'),document.getElementById('bottomTabs')].filter(Boolean),siteLanguage,version);
     }
     function restoreSiteLanguage(){
       siteBlockElements.forEach(element=>{const original=originalSiteBlocks.get(element);if(element.isConnected&&original){translatedSiteBlocks.delete(element);element.innerHTML=original.html;element.classList.remove('site-translated-title');}});
@@ -1318,10 +1322,8 @@
        applyGlobalCopy(language);
       applyGlobalCopy(language);
       renderTranslation();
-      document.querySelectorAll('.geochang-easy[open]').forEach(details=>{
-        renderGeochangEasy(details.dataset.originalMessage,details);
-      });
-      translateVisibleSlide(activeSlideId,version).then(async failures=>{
+       const easyTranslations=Promise.all([...document.querySelectorAll('.geochang-easy[open]')].map(details=>renderGeochangEasy(details.dataset.originalMessage,details)));
+        Promise.all([easyTranslations,translateAllSiteText(version)]).then(async([,failures])=>{
         if(version!==siteTranslationVersion)return;
         document.title=uiTranslationCatalog[language]?.[originalDocumentTitle]||originalDocumentTitle;
          renderDictionaryFilters();renderDictionary();renderStatisticsFilters();if(statisticsResult){renderStatisticsChart(activeStatisticsCategory);updateStatisticsLocalizedText();}if(document.getElementById('coreValidationCounts')){renderCoreValidationRecords();coreValidationStatus.textContent=coreValidationRecordStatus(coreValidationRecords.length);}updateActionGuideView();
@@ -1336,18 +1338,21 @@
     let pendingSiteNodes=[];
     new MutationObserver(records=>{
       if(siteLanguage==='ko')return;
-      records.forEach(record=>record.addedNodes.forEach(node=>{
-        if(node.nodeType===Node.ELEMENT_NODE){pendingSiteNodes.push(node);return;}
-        if(node.nodeType!==Node.TEXT_NODE)return;
-        const heading=node.parentElement?.closest('h1,h2,h3');
-        if(heading){if(heading.textContent.trim()!==translatedSiteBlocks.get(heading))pendingSiteNodes.push(heading);}
-        else pendingSiteNodes.push(node);
-      }));
+       records.forEach(record=>{
+         if(record.type==='attributes'){if(!record.target.hidden)pendingSiteNodes.push(record.target);return;}
+         record.addedNodes.forEach(node=>{
+           if(node.nodeType===Node.ELEMENT_NODE){pendingSiteNodes.push(node);return;}
+           if(node.nodeType!==Node.TEXT_NODE)return;
+           const heading=node.parentElement?.closest('h1,h2,h3');
+           if(heading){if(heading.textContent.trim()!==translatedSiteBlocks.get(heading))pendingSiteNodes.push(heading);}
+           else pendingSiteNodes.push(node);
+         });
+       });
       if(!pendingSiteNodes.length)return;
       clearTimeout(siteMutationTimer);siteMutationTimer=setTimeout(()=>{
         const roots=pendingSiteNodes;pendingSiteNodes=[];translateSiteEntries(roots,siteLanguage,siteTranslationVersion);
       },80);
-    }).observe(document.body,{childList:true,subtree:true});
+     }).observe(document.body,{childList:true,subtree:true,attributes:true,attributeFilter:['hidden']});
     let lastTranslationSource='';
     let imageRegionOverride='';
     let settingOcrMessage=false;
@@ -1362,12 +1367,12 @@
        const unknownParticles='(?:에서|으로|부터|까지|은|는|이|가|을|를|에|로|의|와|과|도|만|중|됨|된|할|한|할까요)?';
        unknownHardPatterns=unknownHardCandidates.map(word=>({word,pattern:new RegExp(`(^|[^가-힣])(${escapeRegExp(word)})(?=${unknownParticles}(?:$|[^가-힣]))`,'g')}));
      }
-    function findUnknownDifficultWords(line){
-      const matches=[];
-      unknownHardPatterns.forEach(({word,pattern})=>{pattern.lastIndex=0;let match;while((match=pattern.exec(line))){const start=match.index+match[1].length;matches.push({start,end:start+word.length,kind:'suggestion',word});}});
-      for(const match of line.matchAll(/[가-힣]{2,}/g)){
-        const token=match[0];const core=token.replace(difficultWordParticles,'');
-         if(core.length<2||knownEasyWords.has(core)||level12Vocabulary.has(core)||!unknownSuffixPattern?.test(core))continue;
+     function findUnknownDifficultWords(line,patterns=unknownHardPatterns,knownWords=knownEasyWords,suffixPattern=unknownSuffixPattern){
+       const matches=[];
+       patterns.forEach(({word,pattern})=>{pattern.lastIndex=0;let match;while((match=pattern.exec(line))){const start=match.index+match[1].length;matches.push({start,end:start+word.length,kind:'suggestion',word});}});
+       for(const match of line.matchAll(/[가-힣]{2,}/g)){
+         const token=match[0];const core=token.replace(difficultWordParticles,'');
+          if(core.length<2||knownWords.has(core)||level12Vocabulary.has(core)||!suffixPattern?.test(core))continue;
         const start=match.index;matches.push({start,end:start+core.length,kind:'suggestion',word:core});
       }
       const unique=new Map();matches.forEach(match=>unique.set(`${match.start}:${match.word}`,match));
@@ -1388,11 +1393,17 @@
     function listUnknownDifficultWords(text){
       return [...new Set(String(text).split(/\n+/).flatMap(line=>findUnknownDifficultWords(line).map(match=>match.word)))];
     }
-    function findCountableDifficultWords(text){
-      const countableText=String(text).replace(/국가교통정보센터/g,'');
-      const listed=matchDifficultWords(countableText).map(entry=>entry.hard);
-      return [...new Set([...listed,...listUnknownDifficultWords(countableText)])];
-    }
+     function findCountableDifficultWords(text){
+       const countableText=String(text).replace(/국가교통정보센터/g,'');
+       const listed=matchDifficultWords(countableText).map(entry=>entry.hard);
+       return [...new Set([...listed,...listUnknownDifficultWords(countableText)])];
+     }
+     function findStatisticsDifficultWords(text){
+       const countableText=String(text).replace(/국가교통정보센터/g,'');
+       const listed=matchDifficultWords(countableText).filter(entry=>entry.kind!=='재난 표현').map(entry=>entry.hard);
+       const unknown=[...new Set(countableText.split(/\n+/).flatMap(line=>findUnknownDifficultWords(line).map(match=>match.word)))];
+       return [...new Set([...listed,...unknown])];
+     }
     function applyEasyDictionary(text,sourceText=''){
       let output=String(text);const applied=[];
       const entries=findEasyDictionaryEntriesInText(output);
@@ -2731,7 +2742,7 @@
       const select=document.getElementById('disasterRegion');const total=disasterRegionCountsTotal;
       select.replaceChildren(new Option(`${fixedUiText('전체 지역')} · ${Number(total).toLocaleString(siteLanguage==='ko'?'ko-KR':siteLanguage)}건`,''),...regions.map(region=>{
         const count=disasterRegionCounts[region];const label=count===undefined&&!disasterRegionCountsLoaded?region:`${region} · ${Number(count||0).toLocaleString(siteLanguage==='ko'?'ko-KR':siteLanguage)}건`;
-        const option=new Option(label,region);option.dataset.noSiteTranslate='true';return option;
+         return new Option(label,region);
       }));
       select.value=selected;
     }
@@ -2779,11 +2790,11 @@
           const row=document.createElement('article');row.className='geochang-item';
           const meta=document.createElement('span');meta.className='geochang-meta';const time=document.createElement('span');time.textContent=item.createdAt;const agency=document.createElement('small');agency.textContent=item.agency;meta.append(time,agency);
           const main=document.createElement('div');main.className='geochang-item-main';const message=document.createElement('p');message.className='geochang-message';message.textContent=item.message;
-          const actions=document.createElement('div');actions.className='geochang-item-actions';const details=document.createElement('details');details.className='geochang-easy';details.dataset.originalMessage=item.message;const summary=document.createElement('summary');summary.textContent='쉬운 말 보기';
+           const actions=document.createElement('div');actions.className='geochang-item-actions';const details=document.createElement('details');details.className='geochang-easy';details.dataset.originalMessage=item.message;const summary=document.createElement('summary');summary.textContent='쉬운 말 보기';
            const detailBody=document.createElement('div');detailBody.className='geochang-easy-body';const controls=document.createElement('div');controls.className='geochang-easy-controls';
          const audienceLabel=document.createElement('label');audienceLabel.textContent=fixedUiText('안내 대상');const audience=document.createElement('select');audience.className='geochang-audience';audience.setAttribute('aria-label',fixedUiText('안내 대상'));
          [['child','초1 수준'],['general','쉬운 한국어'],['senior','어르신(65세 이상)']].forEach(([value,label])=>{const option=document.createElement('option');option.value=value;option.textContent=fixedUiText(label);audience.append(option);});audienceLabel.append(audience);
-        controls.append(audienceLabel);const output=document.createElement('p');output.className='geochang-easy-output';output.dataset.noSiteTranslate='true';const easyStatus=document.createElement('p');easyStatus.className='geochang-easy-status';easyStatus.textContent=fixedUiText('원문 보존 · 쉬운 표현 참고용');detailBody.append(controls,easyStatus,output);details.append(summary,detailBody);
+         controls.append(audienceLabel);const output=document.createElement('p');output.className='geochang-easy-output';const easyStatus=document.createElement('p');easyStatus.className='geochang-easy-status';easyStatus.textContent=fixedUiText('원문 보존 · 쉬운 표현 참고용');detailBody.append(controls,easyStatus,output);details.append(summary,detailBody);
           details.addEventListener('toggle',()=>{if(!details.open)return;document.querySelectorAll('.geochang-easy[open]').forEach(other=>{if(other!==details)other.open=false;});renderGeochangEasy(item.message,details);});
           audience.addEventListener('change',()=>{languageLabel.hidden=audience.value!=='foreign';if(details.open)renderGeochangEasy(item.message,details);});
            const source=document.createElement('a');source.className='geochang-source-link';source.href=item.sourceUrl;source.target='_blank';source.rel='noreferrer';source.textContent=fixedUiText('공식 원문');actions.append(details,source);main.append(message,actions);row.append(meta,main);list.append(row);
@@ -2874,7 +2885,7 @@
       messages.forEach(message=>{
         const text=String(message||'').replace(/\s*\[[^\]]+\]\s*$/,'').trim();if(!text)return;
         total+=1;
-        const matches=matchDifficultWords(text);const difficultBefore=findCountableDifficultWords(text);if(difficultBefore.length)hardMessages+=1;totalWordsBefore+=difficultBefore.length;totalCharactersBefore+=Array.from(text.replace(/\s/g,'')).length;
+         const matches=matchDifficultWords(text);const difficultBefore=findStatisticsDifficultWords(text);if(difficultBefore.length)hardMessages+=1;totalWordsBefore+=difficultBefore.length;totalCharactersBefore+=Array.from(text.replace(/\s/g,'')).length;
         const types=classifyStatisticsMessage(text);const groups=new Set([...types,'공통']);
         groups.forEach(category=>{const group=categories.get(category);if(group)group.messages+=1;});
         matches.forEach(entry=>{
@@ -2884,7 +2895,7 @@
             group.terms.set(entry,(group.terms.get(entry)||0)+1);
           });
         });
-        const simplified=applyStatisticsWordList(text);totalWordsAfter+=findCountableDifficultWords(simplified).length;totalCharactersAfter+=Array.from(simplified.replace(/\s/g,'')).length;
+         const simplified=applyStatisticsWordList(text);totalWordsAfter+=findStatisticsDifficultWords(simplified).length;totalCharactersAfter+=Array.from(simplified.replace(/\s/g,'')).length;
       });
       statisticsResult={allTerms,categories,total,hardMessages,totalWordsBefore,totalWordsAfter,totalCharactersBefore,totalCharactersAfter,meta};
       const rate=total?hardMessages/total*100:0;
@@ -2957,7 +2968,7 @@
       for(let index=0;index<messages.length;index++){
         const text=String(messages[index]||'').replace(/\s*\[[^\]]+\]\s*$/,'').trim();if(!text)continue;
         total+=1;
-        const matches=matchDifficultWords(text);const difficultBefore=[...new Set([...matches.map(entry=>entry.hard),...listUnknownDifficultWords(text)])];if(difficultBefore.length)hardMessages+=1;totalWordsBefore+=difficultBefore.length;totalCharactersBefore+=Array.from(text.replace(/\s/g,'')).length;
+         const matches=matchDifficultWords(text);const difficultBefore=findStatisticsDifficultWords(text);if(difficultBefore.length)hardMessages+=1;totalWordsBefore+=difficultBefore.length;totalCharactersBefore+=Array.from(text.replace(/\s/g,'')).length;
         const types=classifyStatisticsMessage(text);const groups=new Set([...types,'공통']);
         groups.forEach(category=>{const group=categories.get(category);if(group)group.messages+=1;});
         matches.forEach(entry=>{
@@ -2965,7 +2976,7 @@
           groups.forEach(category=>{const group=categories.get(category);if(!group||!(entry.tags.includes(category)||entry.tags.includes('공통')))return;group.terms.set(entry,(group.terms.get(entry)||0)+1);});
         });
         let simplifiedMetrics=residualCountCache.get(text);
-        if(!simplifiedMetrics){const simplified=applyStatisticsWordList(text);simplifiedMetrics={residualCount:findCountableDifficultWords(simplified).length,characterCount:Array.from(simplified.replace(/\s/g,'')).length};if(residualCountCache.size<20000)residualCountCache.set(text,simplifiedMetrics);}
+         if(!simplifiedMetrics){const simplified=applyStatisticsWordList(text);simplifiedMetrics={residualCount:findStatisticsDifficultWords(simplified).length,characterCount:Array.from(simplified.replace(/\s/g,'')).length};if(residualCountCache.size<20000)residualCountCache.set(text,simplifiedMetrics);}
         totalWordsAfter+=simplifiedMetrics.residualCount;totalCharactersAfter+=simplifiedMetrics.characterCount;
         if((index+1)%64===0){status.textContent=fixedUiText('문자 {done}/{total}건의 순화 결과를 나누어 분석하고 있어요.',siteLanguage,{done:(index+1).toLocaleString(siteLanguage==='ko'?'ko-KR':siteLanguage),total:messages.length.toLocaleString(siteLanguage==='ko'?'ko-KR':siteLanguage)});await new Promise(resolve=>setTimeout(resolve,0));}
       }
@@ -4193,7 +4204,7 @@
     else if(siteLanguage!=='ko'){
       applyGlobalCopy(siteLanguage);
       const version=++siteTranslationVersion;
-      translateVisibleSlide(activeSlideId,version).then(async()=>{
+       translateAllSiteText(version).then(async()=>{
         if(version!==siteTranslationVersion)return;
         document.title=uiTranslationCatalog[siteLanguage]?.[originalDocumentTitle]||originalDocumentTitle;
       });
