@@ -690,6 +690,48 @@ async function synthesizeSpeech(request, response) {
   }
 }
 
+async function translateWithMyMemory(text, source, target) {
+  const locales = { ko: 'ko-KR', en: 'en-GB', 'zh-CN': 'zh-CN', vi: 'vi-VN', ne: 'ne-NP', tl: 'tl-PH', th: 'th-TH', ja: 'ja-JP' };
+  const sourceLocale = locales[source];
+  const targetLocale = locales[target];
+  if (!sourceLocale || !targetLocale) throw new Error('translation_language_unsupported');
+  const translateChunk = async (chunk) => {
+    const url = new URL('https://api.mymemory.translated.net/get');
+    url.searchParams.set('q', chunk);
+    url.searchParams.set('langpair', `${sourceLocale}|${targetLocale}`);
+    const upstream = await fetch(url, { headers: { 'Accept': 'application/json' }, signal: AbortSignal.timeout(15000) });
+    if (!upstream.ok) throw new Error(`mymemory_${upstream.status}`);
+    const result = await upstream.json();
+    const translated = String(result.responseData?.translatedText || '').trim();
+    if (result.responseStatus !== 200 || !translated) throw new Error('mymemory_translation_unavailable');
+    return translated;
+  };
+  if (text.length <= 450) return translateChunk(text);
+  const chunks = [];
+  let remaining = text;
+  while (remaining.length > 450) {
+    let splitAt = Math.max(remaining.lastIndexOf('. ', 450), remaining.lastIndexOf('! ', 450), remaining.lastIndexOf('? ', 450), remaining.lastIndexOf('。', 450), remaining.lastIndexOf('\n', 450), remaining.lastIndexOf(' ', 450));
+    if (splitAt < 180) splitAt = 450;
+    else if (remaining[splitAt] === '.' || remaining[splitAt] === '!' || remaining[splitAt] === '?') splitAt += 1;
+    chunks.push(remaining.slice(0, splitAt));
+    remaining = remaining.slice(splitAt);
+  }
+  if (remaining) chunks.push(remaining);
+  const translatedChunks = [];
+  for (const chunk of chunks) translatedChunks.push(await translateChunk(chunk.trim()));
+  return translatedChunks.join(' ');
+}
+
+function hasTranslationScript(text, target) {
+  const hangulShare = (text.match(/[가-힣]/g) || []).length / Math.max(1, text.length);
+  const requiredScript = target === 'ne' ? /[\u0900-\u097F]/.test(text)
+    : target === 'th' ? /[\u0E00-\u0E7F]/.test(text)
+      : target === 'ja' ? /[\u3040-\u30FF]/.test(text)
+        : target === 'zh-CN' ? /[\u4E00-\u9FFF]/.test(text)
+          : true;
+  return target === 'ko' || (hangulShare < 0.15 && requiredScript);
+}
+
 async function translateText(request, response) {
   let payload;
   try {
@@ -709,10 +751,6 @@ async function translateText(request, response) {
   }
   try {
     const apiKey = process.env.GEMINI_API_KEY;
-    if (!apiKey) {
-      sendJson(response, 503, { error: '화면 번역 키가 아직 설정되지 않았어요.' });
-      return;
-    }
     const cacheKey = `${source}\0${target}\0${text}`;
     if (cacheable && siteTranslationMemory.has(cacheKey)) {
       const cached = siteTranslationMemory.get(cacheKey);
@@ -727,7 +765,7 @@ async function translateText(request, response) {
     let retryAfterSeconds = 2;
     let rateLimited = false;
     const models = ['gemini-2.5-flash-lite', 'gemini-2.5-flash', 'gemini-3.1-flash-lite-preview', 'gemini-3-flash-preview'];
-    for (const model of models) {
+    for (const model of apiKey ? models : []) {
       for (let attempt = 0; attempt < 2; attempt += 1) {
         try {
           const modelUrl = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${encodeURIComponent(apiKey)}`;
@@ -750,24 +788,27 @@ async function translateText(request, response) {
           }
           const result = await upstream.json();
           const candidate = result.candidates?.[0]?.content?.parts?.map(part => part.text || '').join('').trim() || '';
-          const hangulShare = (candidate.match(/[가-힣]/g) || []).length / Math.max(1, candidate.length);
-          const containsRequiredScript = target === 'ne' ? /[\u0900-\u097F]/.test(candidate) : target === 'th' ? /[\u0E00-\u0E7F]/.test(candidate) : target === 'ja' ? /[\u3040-\u30FF]/.test(candidate) : target === 'zh-CN' ? /[\u4E00-\u9FFF]/.test(candidate) : true;
-          if (candidate && (target === 'ko' || (hangulShare < 0.15 && containsRequiredScript))) { translatedText = candidate; break; }
+          if (candidate && hasTranslationScript(candidate, target)) { translatedText = candidate; break; }
           lastStatus = 502;
         } catch (error) {
           if (!error.name || error.name !== 'TimeoutError') lastStatus = Number(String(error.message).match(/gemini_(\d+)/)?.[1]) || lastStatus;
         }
-        if (rateLimited) break;
+        if (rateLimited || [400, 401, 403].includes(lastStatus)) break;
         if (attempt === 0) await new Promise(resolve => setTimeout(resolve, 300));
       }
-      if (translatedText) break;
+      if (translatedText || [400, 401, 403].includes(lastStatus)) break;
+    }
+    if (!translatedText) {
+      try {
+        const fallback = await translateWithMyMemory(text, source, target);
+        if (hasTranslationScript(fallback, target)) translatedText = fallback;
+      } catch {
+        translatedText = '';
+      }
     }
     if (!translatedText) {
       const error = { error: '번역을 완료하지 못했어요. 잠시 후 다시 시도해 주세요.' };
-      if (lastStatus === 429) {
-        response.writeHead(429, { 'Cache-Control': 'no-store', 'Content-Type': 'application/json; charset=utf-8', 'Retry-After': String(retryAfterSeconds), 'X-Content-Type-Options': 'nosniff' });
-        response.end(JSON.stringify(error));
-      } else sendJson(response, 502, error);
+      sendJson(response, 502, error);
       return;
     }
     const translated = [[[translatedText, text, null, null]]];
