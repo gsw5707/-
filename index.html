@@ -1056,6 +1056,7 @@
       return actions[actionType];
     }
     let translationQuotaRetryAt=0;
+    let translationRateRetryAt=0;
     function translationQuotaText(language=siteLanguage,diagnostic=null){
       if(diagnostic?.retryAfterSeconds)translationQuotaRetryAt=Math.max(translationQuotaRetryAt,Date.now()+diagnostic.retryAfterSeconds*1000);
       const hours=Math.max(1,Math.ceil((translationQuotaRetryAt-Date.now())/3600000));
@@ -1065,16 +1066,19 @@
       if(translationQuotaRetryAt>Date.now()){
         const error=new Error('translation quota exhausted');error.diagnostic={reason:'allocation_exhausted',retryAfterSeconds:Math.ceil((translationQuotaRetryAt-Date.now())/1000)};throw error;
       }
+      if(translationRateRetryAt>Date.now()){
+        const error=new Error('translation rate limited');error.status=429;error.diagnostic={reason:'temporary_rate_limit',retryAfterSeconds:Math.ceil((translationRateRetryAt-Date.now())/1000)};throw error;
+      }
       let lastError;
       for(let attempt=0;attempt<4;attempt++){
         try{
           const response=await fetch(localApiUrl('/api/translate'),{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({text,source,target:lang,cacheable}),signal:AbortSignal.timeout(25000)});
           const data=await response.json();
-          if(!response.ok){const error=new Error('translation unavailable');error.status=response.status;error.retryAfter=Number(response.headers.get('Retry-After'))||0;error.diagnostic=data?.diagnostic||null;if(error.diagnostic?.reason==='allocation_exhausted')translationQuotaText(lang,error.diagnostic);throw error;}
+          if(!response.ok){const error=new Error('translation unavailable');error.status=response.status;error.retryAfter=Number(response.headers.get('Retry-After'))||0;error.diagnostic=data?.diagnostic||null;if(error.diagnostic?.reason==='allocation_exhausted')translationQuotaText(lang,error.diagnostic);else if(response.status===429)translationRateRetryAt=Math.max(translationRateRetryAt,Date.now()+(error.diagnostic?.retryAfterSeconds||error.retryAfter||4)*1000);throw error;}
           const result=Array.isArray(data?.[0])?data[0].map(part=>part?.[0]||'').join(''):'';
           if(!result)throw new Error('translation unavailable');
           return result;
-        }catch(error){lastError=error;if(error.diagnostic?.reason==='allocation_exhausted'||attempt===3||error.status!==429&&attempt>0)break;const wait=error.retryAfter?Math.min(30000,error.retryAfter*1000):Math.min(12000,1000*2**attempt);await new Promise(resolve=>setTimeout(resolve,wait));}
+        }catch(error){lastError=error;if(error.diagnostic?.reason==='allocation_exhausted'||error.status===429||attempt===3||error.status&&error.status!==429&&attempt>0)break;const wait=error.retryAfter?Math.min(30000,error.retryAfter*1000):Math.min(12000,1000*2**attempt);await new Promise(resolve=>setTimeout(resolve,wait));}
       }
       throw lastError||new Error('translation unavailable');
     }

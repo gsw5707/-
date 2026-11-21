@@ -736,7 +736,14 @@ function classifyGeminiQuotaError(status, body) {
   const providerStatus = String(body?.error?.status || 'UNKNOWN');
   const details = Array.isArray(body?.error?.details) ? body.error.details : [];
   const violations = details.flatMap(detail => Array.isArray(detail?.violations) ? detail.violations : []);
-  const quotaText = violations.map(item => `${item.quotaId || ''} ${item.quotaMetric || ''} ${item.description || ''}`).join(' ').toLowerCase();
+  const quotaLimits = violations.slice(0, 4).map(item => ({
+    quotaId: /^[A-Za-z0-9_.:-]{1,120}$/.test(String(item.quotaId || '')) ? item.quotaId : undefined,
+    metric: /^[A-Za-z0-9_.:/-]{1,160}$/.test(String(item.quotaMetric || '')) ? item.quotaMetric : undefined,
+    limit: Number.isFinite(Number(item.quotaValue)) ? Number(item.quotaValue) : undefined,
+    window: /per[_ -]?day|daily|perday/i.test(`${item.quotaId || ''} ${item.quotaMetric || ''} ${item.description || ''}`) ? 'day'
+      : /per[_ -]?minute|per[_ -]?second|perminute|persecond/i.test(`${item.quotaId || ''} ${item.quotaMetric || ''} ${item.description || ''}`) ? 'short-term' : undefined,
+  })).filter(item => item.quotaId || item.metric || item.limit !== undefined || item.window);
+  const quotaText = `${violations.map(item => `${item.quotaId || ''} ${item.quotaMetric || ''} ${item.description || ''}`).join(' ')} ${quotaLimits.map(item => `${item.quotaId || ''} ${item.metric || ''} ${item.window || ''}`).join(' ')}`.toLowerCase();
   const message = String(body?.error?.message || '').toLowerCase();
   const hasRetryInfo = details.some(detail => /RetryInfo$/.test(String(detail?.['@type'] || '')));
   const retryDelay = details.find(detail => /RetryInfo$/.test(String(detail?.['@type'] || '')))?.retryDelay;
@@ -750,7 +757,38 @@ function classifyGeminiQuotaError(status, body) {
         : status === 400 && /api key not valid|invalid api key/.test(message) ? 'invalid_api_key'
           : status === 403 ? 'permission_or_billing'
             : `provider_http_${status}`;
-  return { httpStatus: status, providerStatus, reason, retryAfterSeconds };
+  return { httpStatus: status, providerStatus, reason, retryAfterSeconds, ...(quotaLimits.length ? { quotaLimits } : {}) };
+}
+
+let geminiRequestQueue = Promise.resolve();
+let geminiLastRequestAt = 0;
+let geminiCooldownUntil = 0;
+let geminiCooldownDiagnostic = null;
+async function pacedGeminiFetch(url, options) {
+  const previous = geminiRequestQueue;
+  let release;
+  geminiRequestQueue = new Promise(resolve => { release = resolve; });
+  await previous;
+  try {
+    if (geminiCooldownUntil > Date.now()) {
+      const error = new Error('gemini_quota_cooldown');
+      error.code = 'gemini_quota_cooldown';
+      error.diagnostic = geminiCooldownDiagnostic;
+      throw error;
+    }
+    const wait = Math.max(0, 4000 - (Date.now() - geminiLastRequestAt));
+    if (wait) await new Promise(resolve => setTimeout(resolve, wait));
+    geminiLastRequestAt = Date.now();
+    return await fetch(url, options);
+  } finally {
+    release();
+  }
+}
+
+function sendGeminiRateLimit(response, diagnostic) {
+  const retryAfterSeconds = Math.max(1, Math.min(86400, Number(diagnostic?.retryAfterSeconds) || 4));
+  response.writeHead(429, { 'Cache-Control': 'no-store', 'Content-Type': 'application/json; charset=utf-8', 'Retry-After': String(retryAfterSeconds), 'X-Content-Type-Options': 'nosniff' });
+  response.end(JSON.stringify({ error: '번역 요청이 잠시 제한됐어요.', diagnostic: { ...diagnostic, retryAfterSeconds } }));
 }
 
 async function translateText(request, response) {
@@ -779,6 +817,10 @@ async function translateText(request, response) {
       response.end(JSON.stringify([[[cached, text, null, null]]]));
       return;
     }
+    if (geminiCooldownUntil > Date.now()) {
+      sendGeminiRateLimit(response, { ...geminiCooldownDiagnostic, retryAfterSeconds: Math.ceil((geminiCooldownUntil - Date.now()) / 1000) });
+      return;
+    }
     const languageNames = { ko: 'Korean', en: 'English', 'zh-CN': 'Simplified Chinese', vi: 'Vietnamese', ne: 'Nepali', tl: 'Filipino', th: 'Thai', ja: 'Japanese' };
     const prompt = `Translate the following ${languageNames[source]} text into ${languageNames[target]}. Output only natural ${languageNames[target]}; do not repeat the source text. Preserve all facts, place names, numbers, emergency stages, negations, and every ZZI18N marker. Do not summarize, omit, or change safety meaning.\n\n${text}`;
     let translatedText = '';
@@ -791,7 +833,7 @@ async function translateText(request, response) {
       for (let attempt = 0; attempt < 2; attempt += 1) {
         try {
           const modelUrl = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${encodeURIComponent(apiKey)}`;
-          const upstream = await fetch(modelUrl, {
+          const upstream = await pacedGeminiFetch(modelUrl, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
@@ -808,6 +850,8 @@ async function translateText(request, response) {
             if (upstream.status === 429) {
               retryAfterSeconds = Math.max(1, Math.min(86400, Number(upstream.headers.get('retry-after')) || geminiDiagnostic.retryAfterSeconds || retryAfterSeconds));
               rateLimited = true;
+              geminiCooldownUntil = Date.now() + retryAfterSeconds * 1000;
+              geminiCooldownDiagnostic = { ...geminiDiagnostic, retryAfterSeconds };
             }
             throw new Error(`gemini_${upstream.status}`);
           }
@@ -816,14 +860,20 @@ async function translateText(request, response) {
           if (candidate && hasTranslationScript(candidate, target)) { translatedText = candidate; break; }
           lastStatus = 502;
         } catch (error) {
+          if (error.code === 'gemini_quota_cooldown') {
+            lastStatus = 429;
+            rateLimited = true;
+            geminiDiagnostic = error.diagnostic;
+            retryAfterSeconds = Math.max(1, Math.ceil((geminiCooldownUntil - Date.now()) / 1000));
+          }
           if (!error.name || error.name !== 'TimeoutError') lastStatus = Number(String(error.message).match(/gemini_(\d+)/)?.[1]) || lastStatus;
         }
         if (rateLimited || [400, 401, 403].includes(lastStatus)) break;
         if (attempt === 0) await new Promise(resolve => setTimeout(resolve, 300));
       }
-      if (translatedText || [400, 401, 403].includes(lastStatus)) break;
+      if (translatedText || rateLimited || [400, 401, 403].includes(lastStatus)) break;
     }
-    if (!translatedText && geminiDiagnostic?.reason !== 'allocation_exhausted') {
+    if (!translatedText && !rateLimited && geminiDiagnostic?.reason !== 'allocation_exhausted') {
       try {
         const fallback = await translateWithMyMemory(text, source, target);
         if (hasTranslationScript(fallback, target)) translatedText = fallback;
@@ -833,7 +883,10 @@ async function translateText(request, response) {
     }
     if (!translatedText) {
       const error = { error: '번역을 완료하지 못했어요. 잠시 후 다시 시도해 주세요.' };
-      sendJson(response, 502, geminiDiagnostic ? { ...error, diagnostic: geminiDiagnostic } : error);
+      if (rateLimited) {
+        const retrySeconds = Math.max(1, Math.min(86400, Number(geminiDiagnostic?.retryAfterSeconds) || retryAfterSeconds));
+        sendGeminiRateLimit(response, { ...geminiDiagnostic, retryAfterSeconds: retrySeconds });
+      } else sendJson(response, 502, geminiDiagnostic ? { ...error, diagnostic: geminiDiagnostic } : error);
       return;
     }
     const translated = [[[translatedText, text, null, null]]];
