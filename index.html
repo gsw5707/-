@@ -670,7 +670,7 @@
     function renderDictionaryFilters(){
       const filters=document.getElementById('dictionaryFilters');
       const options=['전체',...dictionaryCategories];
-       filters.replaceChildren(...options.map(category=>{const button=document.createElement('button');button.type='button';button.className='dictionary-filter';button.dataset.noSiteTranslate='true';button.textContent=fixedUiText(category);button.setAttribute('aria-label',fixedUiText(category));button.setAttribute('aria-pressed',String(category===activeDictionaryCategory));button.addEventListener('click',()=>{activeDictionaryCategory=category;renderDictionaryFilters();renderDictionary();});return button;}));
+       filters.replaceChildren(...options.map(category=>{const button=document.createElement('button');button.type='button';button.className='dictionary-filter';button.textContent=fixedUiText(category);button.setAttribute('aria-label',fixedUiText(category));button.setAttribute('aria-pressed',String(category===activeDictionaryCategory));button.addEventListener('click',()=>{activeDictionaryCategory=category;renderDictionaryFilters();renderDictionary();});return button;}));
     }
     function renderDictionary(){
       if(!dictionaryEntriesElement)return;
@@ -679,7 +679,7 @@
       const dictionaryCountLabels={ko:'개 표현',en:'entries','zh-CN':'个词条',vi:'mục từ',ne:'शब्द',tl:'salita',th:'คำ',ja:'件'};
       const countLabel=dictionaryCountLabels[siteLanguage]||'개 표현';
       const countNumber=siteLanguage==='ne'?new Intl.NumberFormat('ne-NP').format(entries.length):entries.length.toLocaleString(siteLanguage==='ko'?'ko-KR':siteLanguage);
-      const countElement=document.getElementById('dictionaryCount');countElement.dataset.noSiteTranslate='true';countElement.textContent=`${countNumber} ${countLabel}`;
+       const countElement=document.getElementById('dictionaryCount');delete countElement.dataset.noSiteTranslate;countElement.textContent=`${countNumber} ${countLabel}`;
       if(!entries.length){const empty=document.createElement('p');empty.className='dictionary-empty';empty.textContent='조건에 맞는 표현이 없어요. 검색어나 유형을 바꿔 보세요.';dictionaryEntriesElement.replaceChildren(empty);return;}
       dictionaryEntriesElement.replaceChildren(...entries.map(entry=>{
         const card=document.createElement('article');card.className='dictionary-entry dictionary-content';
@@ -1057,14 +1057,14 @@
     }
     async function translateText(text,lang,source='ko',cacheable=false){
       let lastError;
-      for(let attempt=0;attempt<2;attempt++){
+      for(let attempt=0;attempt<4;attempt++){
         try{
           const response=await fetch(localApiUrl('/api/translate'),{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({text,source,target:lang,cacheable}),signal:AbortSignal.timeout(25000)});
-          if(!response.ok){const error=new Error('translation unavailable');error.status=response.status;throw error;}
+          if(!response.ok){const error=new Error('translation unavailable');error.status=response.status;error.retryAfter=Number(response.headers.get('Retry-After'))||0;throw error;}
           const data=await response.json();const result=Array.isArray(data?.[0])?data[0].map(part=>part?.[0]||'').join(''):'';
           if(!result)throw new Error('translation unavailable');
           return result;
-        }catch(error){lastError=error;if(error.status===429)break;if(attempt===0)await new Promise(resolve=>setTimeout(resolve,200));}
+        }catch(error){lastError=error;if(attempt===3||error.status!==429&&attempt>0)break;const wait=error.retryAfter?Math.min(30000,error.retryAfter*1000):Math.min(12000,1000*2**attempt);await new Promise(resolve=>setTimeout(resolve,wait));}
       }
       throw lastError||new Error('translation unavailable');
     }
@@ -1074,11 +1074,11 @@
       translationQueue=request.catch(()=>{});
       return request;
     }
-    async function translateTextBatch(texts,lang,source='ko'){
-      if(texts.length===1)return [await queueTranslateText(texts[0],lang,source)];
+    async function translateTextBatch(texts,lang,source='ko',cacheable=true){
+       if(texts.length===1)return [await queueTranslateText(texts[0],lang,source,cacheable)];
       const markers=texts.map((_,index)=>`ZZI18N${index}ZZ`);
       const batch=[...texts.map((text,index)=>`${markers[index]}\n${text}`),'ZZI18NENDZZ'].join('\n\n');
-      const translated=await queueTranslateText(batch,lang,source);
+      const translated=await queueTranslateText(batch,lang,source,cacheable);
       const parts=translated.split(/ZZI18N(?:\d+|END)ZZ/);
       if(parts.length!==texts.length+2||parts[0].trim()||parts.at(-1).trim())throw new Error('translation batch markers were not preserved');
       const results=parts.slice(1,-1).map(part=>part.trim());
@@ -1110,7 +1110,15 @@
       while(siteTranslationCache.size>6000)siteTranslationCache.delete(siteTranslationCache.keys().next().value);
       try{localStorage.setItem(siteTranslationStorageKey,JSON.stringify([...siteTranslationCache]));}catch(error){}
     }
-       const siteSkipSelector='script,style,noscript,svg,code,pre,[hidden],.language-start-dialog,.lang-chip,.side-language-option,.geochang-easy-output,#translatedText,.result-original,.leaflet-control-zoom,.leaflet-control-attribution,[data-no-site-translate],#libraryOriginal,#resultLang,.library-original,.core-validation-source-text';
+    function cachedSiteTranslation(text,language,source='ko'){
+      const normalized=String(text).replace(/\s+/g,' ').trim();const key=`${source}|${language}|${normalized}`;
+      if(siteTranslationCache.has(key))return Promise.resolve(siteTranslationCache.get(key));
+      if(siteTranslationInFlight.has(key))return siteTranslationInFlight.get(key);
+      let pending=queueTranslateText(normalized,language,source,true).then(translated=>{siteTranslationCache.set(key,translated);persistSiteTranslations();return translated;});
+      pending=pending.finally(()=>{if(siteTranslationInFlight.get(key)===pending)siteTranslationInFlight.delete(key);});
+      siteTranslationInFlight.set(key,pending);return pending;
+    }
+       const siteSkipSelector='script,style,noscript,svg,code,pre,[hidden],.language-start-dialog,.lang-chip,.side-language-option,.geochang-easy-output,#translatedText,.result-original,.leaflet-control-zoom,.leaflet-control-attribution,[data-no-site-translate],#libraryOriginal,#resultLang,.library-original';
     let siteTranslationVersion=0;
     function sourceLanguage(text){
       if(/^(?:A[+-]|(?:dictionary|difficult-words|ui-translations|ui-label-overrides)\.json|km|mm)$/i.test(text.trim()))return null;
@@ -2768,7 +2776,7 @@
          const selectedRegion=regionSelect.value;const availableRegions=data.regions||[];const currentOptions=[...regionSelect.options].slice(1).map(option=>option.value);
           if(JSON.stringify(currentOptions)!==JSON.stringify(availableRegions)){
             updateDisasterRegionOptions(availableRegions,selectedRegion);
-            if(selectedRegion&&!availableRegions.includes(selectedRegion)){const option=new Option(`${selectedRegion} · ${fixedUiText('기록 없음')}`,selectedRegion);option.dataset.noSiteTranslate='true';regionSelect.add(option);}
+            if(selectedRegion&&!availableRegions.includes(selectedRegion))regionSelect.add(new Option(`${selectedRegion} · ${fixedUiText('기록 없음')}`,selectedRegion));
          }
          if(disasterRegionCountsPeriod!==String(days))loadDisasterRegionCounts(days,availableRegions);
         disasterPage=data.page;
@@ -2819,7 +2827,7 @@
     function renderStatisticsFilters(){
       const container=document.getElementById('statisticsCategoryFilters');
       container.replaceChildren(...['전체',...statisticsCategories].map(category=>{
-        const button=document.createElement('button');button.type='button';button.className='statistics-category-button';button.dataset.noSiteTranslate='true';button.textContent=fixedUiText(category);button.setAttribute('aria-label',fixedUiText(category));button.setAttribute('aria-pressed',String(category===activeStatisticsCategory));
+         const button=document.createElement('button');button.type='button';button.className='statistics-category-button';button.textContent=fixedUiText(category);button.setAttribute('aria-label',fixedUiText(category));button.setAttribute('aria-pressed',String(category===activeStatisticsCategory));
         button.addEventListener('click',()=>{activeStatisticsCategory=category;renderStatisticsFilters();if(statisticsResult)renderStatisticsChart(category);});return button;
       }));
     }
@@ -2861,7 +2869,7 @@
       const counts=category==='전체'?statisticsResult.allTerms:statisticsResult.categories.get(category)?.terms||new Map();
       const messageCount=category==='전체'?statisticsResult.total:statisticsResult.categories.get(category)?.messages||0;
       const chartNote=document.querySelector('.statistics-chart-head p');
-      chartNote.dataset.noSiteTranslate='true';chartNote.textContent=`${fixedUiText(category)} · ${messageCount.toLocaleString(siteLanguage==='ko'?'ko-KR':siteLanguage)} ${fixedUiText('건')} 중 ${fixedUiText('표현별 포함 문자 수')} · ${fixedUiText('상위 10개')}`;
+       delete chartNote.dataset.noSiteTranslate;chartNote.textContent=`${fixedUiText(category)} · ${messageCount.toLocaleString(siteLanguage==='ko'?'ko-KR':siteLanguage)} ${fixedUiText('건')} 중 ${fixedUiText('표현별 포함 문자 수')} · ${fixedUiText('상위 10개')}`;
       const rows=[...counts.entries()].filter(([,count])=>count>0).sort((a,b)=>b[1]-a[1]||a[0].hard.localeCompare(b[0].hard,'ko')).slice(0,10);
       if(!rows.length){const empty=document.createElement('p');empty.className='statistics-empty';empty.textContent=`${category} 문자에서 등록된 어려운 말을 찾지 못했어요.`;container.replaceChildren(empty);return;}
       const maxCount=rows[0][1];
@@ -4090,20 +4098,30 @@
        const dictionaryResult=standard?{applied:standard.dictionary}:applyEasyDictionary(base,message);
        const simple=standard?standard.easy:refineNationwideMessage(message,dictionaryResult.text,audience);
       if(language==='ko'){
-        output.textContent=simple;
-        const audienceName=audience==='child'?'초1 수준':audience==='senior'?'어르신용 큰 글자':'쉬운 한국어';
-        status.textContent=`${audienceName} · 쉬운 말로 정리 · 원문은 그대로예요`;
-        return;
+         output.textContent=simple;
+         const audienceName=audience==='child'?'초1 수준':audience==='senior'?'어르신용 큰 글자':'쉬운 한국어';
+         status.textContent=`${audienceName} · 쉬운 말로 정리 · 원문은 그대로예요`;
+         return;
       }
-      const cacheKey=`${message}|${language}`;
-      status.textContent='번역 중…';output.textContent=simple;
+      const cacheKey=`${message}|${language}|${simple}`;const originalElement=details.closest('.geochang-item')?.querySelector('.geochang-message');
+      status.textContent='번역 중…';output.textContent='';
       try{
-        const translated=disasterEasyCache.get(cacheKey)||await queueTranslateText(simple,language);
-        disasterEasyCache.set(cacheKey,translated);
+        const [translatedOriginal,translated]=await Promise.all([
+          cachedSiteTranslation(message,language),
+          disasterEasyCache.get(cacheKey)||cachedSiteTranslation(simple,language)
+        ]);
         if(details.dataset.requestId!==String(requestId)||!details.open)return;
+        if(originalElement){
+          let originalNode=originalElement.firstChild;
+          if(!originalNode||originalNode.nodeType!==Node.TEXT_NODE){originalElement.replaceChildren(document.createTextNode(message));originalNode=originalElement.firstChild;}
+          if(!originalSiteText.has(originalNode))originalSiteText.set(originalNode,message);
+          originalNode.nodeValue=translatedOriginal;
+        }
+        disasterEasyCache.set(cacheKey,translated);
         output.textContent=translated;status.textContent='쉬운 말로 정리 · 원문·공식 안내 확인';
       }catch(error){
         if(details.dataset.requestId!==String(requestId)||!details.open)return;
+        output.textContent=simple;
         status.textContent='번역 실패 · 쉬운 한국어와 원문 확인';
       }
     }

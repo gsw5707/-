@@ -724,7 +724,9 @@ async function translateText(request, response) {
     const prompt = `Translate the following ${languageNames[source]} text into ${languageNames[target]}. Output only natural ${languageNames[target]}; do not repeat the source text. Preserve all facts, place names, numbers, emergency stages, negations, and every ZZI18N marker. Do not summarize, omit, or change safety meaning.\n\n${text}`;
     let translatedText = '';
     let lastStatus = 502;
-    const models = ['gemini-3.1-flash-lite-preview', 'gemini-3-flash-preview'];
+    let retryAfterSeconds = 2;
+    let rateLimited = false;
+    const models = ['gemini-2.5-flash-lite', 'gemini-2.5-flash', 'gemini-3.1-flash-lite-preview', 'gemini-3-flash-preview'];
     for (const model of models) {
       for (let attempt = 0; attempt < 2; attempt += 1) {
         try {
@@ -734,11 +736,18 @@ async function translateText(request, response) {
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
               contents: [{ parts: [{ text: prompt }] }],
-              generationConfig: { maxOutputTokens: Math.max(512, Math.min(3072, text.length * 2)), temperature: 0, thinkingConfig: { thinkingLevel: 'MINIMAL' } },
+              generationConfig: { maxOutputTokens: Math.max(512, Math.min(3072, text.length * 2)), temperature: 0, ...(model.startsWith('gemini-3') ? { thinkingConfig: { thinkingLevel: 'MINIMAL' } } : {}) },
             }),
             signal: AbortSignal.timeout(25000),
           });
-          if (!upstream.ok) { lastStatus = upstream.status; throw new Error(`gemini_${upstream.status}`); }
+          if (!upstream.ok) {
+            lastStatus = upstream.status;
+            if (upstream.status === 429) {
+              retryAfterSeconds = Math.max(1, Math.min(60, Number(upstream.headers.get('retry-after')) || retryAfterSeconds));
+              rateLimited = true;
+            }
+            throw new Error(`gemini_${upstream.status}`);
+          }
           const result = await upstream.json();
           const candidate = result.candidates?.[0]?.content?.parts?.map(part => part.text || '').join('').trim() || '';
           const hangulShare = (candidate.match(/[가-힣]/g) || []).length / Math.max(1, candidate.length);
@@ -748,12 +757,17 @@ async function translateText(request, response) {
         } catch (error) {
           if (!error.name || error.name !== 'TimeoutError') lastStatus = Number(String(error.message).match(/gemini_(\d+)/)?.[1]) || lastStatus;
         }
+        if (rateLimited) break;
         if (attempt === 0) await new Promise(resolve => setTimeout(resolve, 300));
       }
       if (translatedText) break;
     }
     if (!translatedText) {
-      sendJson(response, lastStatus === 429 ? 429 : 502, { error: '번역을 완료하지 못했어요. 잠시 후 다시 시도해 주세요.' });
+      const error = { error: '번역을 완료하지 못했어요. 잠시 후 다시 시도해 주세요.' };
+      if (lastStatus === 429) {
+        response.writeHead(429, { 'Cache-Control': 'no-store', 'Content-Type': 'application/json; charset=utf-8', 'Retry-After': String(retryAfterSeconds), 'X-Content-Type-Options': 'nosniff' });
+        response.end(JSON.stringify(error));
+      } else sendJson(response, 502, error);
       return;
     }
     const translated = [[[translatedText, text, null, null]]];
