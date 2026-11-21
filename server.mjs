@@ -723,13 +723,26 @@ async function translateWithMyMemory(text, source, target) {
 }
 
 function hasTranslationScript(text, target) {
-  const hangulShare = (text.match(/[가-힣]/g) || []).length / Math.max(1, text.length);
   const requiredScript = target === 'ne' ? /[\u0900-\u097F]/.test(text)
     : target === 'th' ? /[\u0E00-\u0E7F]/.test(text)
       : target === 'ja' ? /[\u3040-\u30FF]/.test(text)
         : target === 'zh-CN' ? /[\u4E00-\u9FFF]/.test(text)
           : true;
-  return target === 'ko' || (hangulShare < 0.15 && requiredScript);
+  return target === 'ko' || requiredScript;
+}
+
+function romanizeKoreanHangul(text) {
+  const initials = ['g','kk','n','d','tt','r','m','b','pp','s','ss','','j','jj','ch','k','t','p','h'];
+  const vowels = ['a','ae','ya','yae','eo','e','yeo','ye','o','wa','wae','oe','yo','u','wo','we','wi','yu','eu','ui','i'];
+  const finals = ['','k','k','k','n','n','n','t','l','k','m','l','l','l','p','l','m','p','p','t','t','ng','t','t','k','t','p','t','t'];
+  let output='';
+  for(const character of String(text)){
+    const code=character.charCodeAt(0)-0xAC00;
+    if(code<0||code>=11172){output+=character;continue;}
+    const initial=Math.floor(code/588);const vowel=Math.floor((code%588)/28);const final=code%28;
+    output+=`${initials[initial]}${vowels[vowel]}${finals[final]}`;
+  }
+  return output;
 }
 
 function classifyGeminiQuotaError(status, body) {
@@ -822,12 +835,13 @@ async function translateText(request, response) {
       return;
     }
     const languageNames = { ko: 'Korean', en: 'English', 'zh-CN': 'Simplified Chinese', vi: 'Vietnamese', ne: 'Nepali', tl: 'Filipino', th: 'Thai', ja: 'Japanese' };
-    const prompt = `Translate the following ${languageNames[source]} text into ${languageNames[target]}. Output only natural ${languageNames[target]}; do not repeat the source text. Preserve all facts, place names, numbers, emergency stages, negations, and every ZZI18N marker. Do not summarize, omit, or change safety meaning.\n\n${text}`;
+    const prompt = `Translate the following ${languageNames[source]} text into ${languageNames[target]}. Output only natural ${languageNames[target]}; do not repeat the source text. Do not leave any Korean Hangul characters in the translation; transliterate Korean proper names into ${languageNames[target]} writing where needed. Preserve all facts, place names, numbers, emergency stages, negations, and every ZZI18N marker. Do not summarize, omit, or change safety meaning.\n\n${text}`;
     let translatedText = '';
     let lastStatus = 502;
     let retryAfterSeconds = 2;
     let rateLimited = false;
     let geminiDiagnostic = null;
+    if (!apiKey) geminiDiagnostic = { httpStatus: 503, providerStatus: 'NOT_CONFIGURED', reason: 'missing_api_key', retryAfterSeconds: null };
     if (apiKey) {
       try {
         const model = 'gemini-3.5-flash-lite';
@@ -855,7 +869,8 @@ async function translateText(request, response) {
         } else {
           const result = await upstream.json();
           const candidate = result.candidates?.[0]?.content?.parts?.map(part => part.text || '').join('').trim() || '';
-          if (candidate && hasTranslationScript(candidate, target)) translatedText = candidate;
+          const normalizedCandidate=romanizeKoreanHangul(candidate);
+          if (normalizedCandidate && hasTranslationScript(normalizedCandidate, target)) translatedText = normalizedCandidate;
         }
       } catch (error) {
         if (error.code === 'gemini_quota_cooldown') {
@@ -863,12 +878,14 @@ async function translateText(request, response) {
           rateLimited = true;
           geminiDiagnostic = error.diagnostic;
           retryAfterSeconds = Math.max(1, Math.ceil((geminiCooldownUntil - Date.now()) / 1000));
+        } else {
+          geminiDiagnostic = { httpStatus: 502, providerStatus: error.name === 'TimeoutError' ? 'TIMEOUT' : 'NO_RESPONSE', reason: error.name === 'TimeoutError' ? 'provider_timeout' : 'provider_connection_failed', retryAfterSeconds: null };
         }
       }
     }
     if (!translatedText && !rateLimited && geminiDiagnostic?.reason !== 'allocation_exhausted') {
       try {
-        const fallback = await translateWithMyMemory(text, source, target);
+        const fallback = romanizeKoreanHangul(await translateWithMyMemory(text, source, target));
         if (hasTranslationScript(fallback, target)) translatedText = fallback;
       } catch {
         translatedText = '';

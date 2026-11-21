@@ -1107,7 +1107,7 @@
     const siteAttributeElements=new Set();
     const siteTranslationCache=new Map();
     const siteTranslationInFlight=new Map();
-    const siteTranslationStorageKey='ansimgil-site-translations-v8';
+     const siteTranslationStorageKey='ansimgil-site-translations-v10';
     let uiTranslationCatalog={};
     const uiTranslationCatalogPromise=Promise.all([fetch('/ui-translations.json',{cache:'no-cache'}).then(response=>{if(!response.ok)throw new Error('UI translation catalog unavailable');return response.json();}),fetch('/ui-label-overrides.json',{cache:'no-cache'}).then(response=>response.ok?response.json():({}))]).then(([data,overrides])=>{
       uiTranslationCatalog=data?.languages||{};
@@ -1160,10 +1160,7 @@
       return null;
     }
     function isSiteTextSkipped(element){return !element||Boolean(element.closest(siteSkipSelector));}
-    function isSiteSourceContent(entry){
-      const element=entry.kind==='text'?entry.node.parentElement:entry.element;
-        return Boolean(element?.closest('.geochang-meta'));
-    }
+     function isSiteSourceContent(){return false;}
     function rememberSiteText(node){
       if(!originalSiteText.has(node))originalSiteText.set(node,node.nodeValue);
       return originalSiteText.get(node);
@@ -1206,7 +1203,7 @@
       else if(entry.kind==='block'){translatedSiteBlocks.set(entry.element,translated);entry.element.textContent=translated;entry.element.classList.add('site-translated-title');}
       else entry.element.setAttribute(entry.name,translated);
     }
-    function collectSiteTranslationEntries(roots){
+     function collectSiteTranslationEntries(roots){
       const entries=[];const seen=new Set();
       const addText=node=>{
         if(seen.has(node)||isSiteTextSkipped(node.parentElement)||node.parentElement?.closest('h1,h2,h3'))return;seen.add(node);
@@ -1241,13 +1238,21 @@
           entries.push({kind:'attribute',element,name,original,source});
         }
       });
-      return entries;
-    }
-    async function translateSiteEntries(roots,language,version){
-      await uiTranslationCatalogPromise;
-      if(version!==siteTranslationVersion)return 0;
-      let failures=0;const pendingEntries=new Map();
-      for(const entry of collectSiteTranslationEntries(roots)){
+       return entries;
+     }
+     function siteTranslationPriority(entry){
+       const element=entry.kind==='text'?entry.node.parentElement:entry.element;
+       if(element?.closest('.geochang-message,.disaster-region-heading'))return 0;
+       if(element?.closest('.geochang-meta'))return 1;
+       if(element?.closest('#disasterList'))return 2;
+       return 3;
+     }
+     async function translateSiteEntries(roots,language,version){
+       await uiTranslationCatalogPromise;
+       if(version!==siteTranslationVersion)return 0;
+       let failures=0;const pendingEntries=new Map();
+       const translationEntries=collectSiteTranslationEntries(roots).sort((a,b)=>siteTranslationPriority(a)-siteTranslationPriority(b));
+       for(const entry of translationEntries){
         const normalized=entry.original.replace(/\s+/g,' ').trim();
         const cacheKey=`${entry.source}|${language}|${normalized}`;
         if(entry.source===language){applySiteTranslation(entry,entry.original,version);continue;}
@@ -1262,7 +1267,7 @@
       groups.forEach(([cacheKey,group])=>{if(!sourceGroups.has(group.entry.source))sourceGroups.set(group.entry.source,[]);sourceGroups.get(group.entry.source).push([cacheKey,group]);});
       for(const [source,sourceEntries] of sourceGroups){
         const batches=[];let batch=[];let batchLength=0;
-        for(const item of sourceEntries){const length=item[1].entry.original.length+16;if(batch.length&&(batch.length>=32||batchLength+length>3600)){batches.push(batch);batch=[];batchLength=0;}batch.push(item);batchLength+=length;}
+        for(const item of sourceEntries){const length=item[1].entry.original.length+16;if(batch.length&&batchLength+length>2200){batches.push(batch);batch=[];batchLength=0;}batch.push(item);batchLength+=length;}
         if(batch.length)batches.push(batch);
         for(const entries of batches){
           const fresh=entries.filter(([cacheKey])=>!siteTranslationInFlight.has(cacheKey));
@@ -1345,7 +1350,7 @@
       if(language!==siteLanguage)restoreSiteLanguage();
       siteLanguage=language;selectedLang=language;translationLanguageChosen=true;try{localStorage.setItem('ansimgil-translation-language',language);}catch(error){}const version=++siteTranslationVersion;
       document.documentElement.lang=language;syncLanguageButtons(language);updateThemeButton();
-       renderDictionaryFilters();renderDictionary();renderStatisticsFilters();if(statisticsResult){renderStatisticsChart(activeStatisticsCategory);updateStatisticsLocalizedText();}if(typeof coreValidationRecords!=='undefined'&&document.getElementById('coreValidationCounts')){renderCoreValidationRecords();coreValidationStatus.textContent=coreValidationRecordStatus(coreValidationRecords.length);}
+        renderDictionaryFilters();renderDictionary();renderStatisticsFilters();if(statisticsResult){renderStatisticsChart(activeStatisticsCategory);updateStatisticsLocalizedText();}if(typeof coreValidationRecords!=='undefined'&&document.getElementById('coreValidationCounts')){renderCoreValidationRecords();coreValidationStatus.textContent=coreValidationRecordStatus(coreValidationRecords.length);}const regionSelect=document.getElementById('disasterRegion');if(regionSelect.options.length>1)updateDisasterRegionOptions([...regionSelect.options].slice(1).map(option=>option.value),regionSelect.value);
       try{localStorage.setItem('ansimgil-site-language',language);}catch(error){}
       if(language==='ko'){
         restoreSiteLanguage();renderTranslation();
@@ -2784,13 +2789,33 @@
     let disasterRequestId=0;
     let disasterArchiveLoaded=false;
     let disasterRegionCounts={};let disasterRegionCountsTotal=0;let disasterRegionCountsAssignments=0;let disasterRegionCountsMultiRegion=0;let disasterRegionCountsPeriod='';let disasterRegionCountsRequest=0;let disasterRegionCountsLoaded=false;
+    const disasterRegionNameCache=new Map();const disasterRegionNameRequests=new Map();
+    function localizedDisasterMessageCount(count){const value=Number(count).toLocaleString(siteLanguage==='ko'?'ko-KR':siteLanguage);return siteLanguage==='ko'?`${value}건`:fixedUiText('{count}건',siteLanguage,{count:value});}
+    async function translateDisasterRegionNames(regions,language){
+      if(language==='ko')return new Map(regions.map(region=>[region,region]));
+      const cached=disasterRegionNameCache.get(language);
+      if(cached&&regions.every(region=>cached.has(region)))return cached;
+      const requestKey=`${language}|${regions.join('|')}`;
+      if(disasterRegionNameRequests.has(requestKey))return disasterRegionNameRequests.get(requestKey);
+      const request=(async()=>{
+        const translated=new Map();
+        for(let offset=0;offset<regions.length;offset+=90){
+          const batch=regions.slice(offset,offset+90);const translations=await translateTextBatch(batch,language,'ko',true);
+          batch.forEach((region,index)=>{const name=translations[index].split(/\s*->\s*/).at(-1).trim();translated.set(region,name);siteTranslationCache.set(`ko|${language}|${region}`,name);});
+        }
+        disasterRegionNameCache.set(language,translated);persistSiteTranslations();return translated;
+      })().then(translated=>translated).finally(()=>disasterRegionNameRequests.delete(requestKey));
+      disasterRegionNameRequests.set(requestKey,request);return request;
+    }
     function updateDisasterRegionOptions(regions,selected=''){
-      const select=document.getElementById('disasterRegion');const total=disasterRegionCountsTotal;
-      select.replaceChildren(new Option(`${fixedUiText('전체 지역')} · ${Number(total).toLocaleString(siteLanguage==='ko'?'ko-KR':siteLanguage)}건`,''),...regions.map(region=>{
-        const count=disasterRegionCounts[region];const label=count===undefined&&!disasterRegionCountsLoaded?region:`${region} · ${Number(count||0).toLocaleString(siteLanguage==='ko'?'ko-KR':siteLanguage)}건`;
+      const select=document.getElementById('disasterRegion');const total=disasterRegionCountsTotal;const language=siteLanguage;const names=disasterRegionNameCache.get(language);
+      if(language==='ko')delete select.dataset.noSiteTranslate;else select.dataset.noSiteTranslate='true';
+      select.replaceChildren(new Option(`${fixedUiText('전체 지역')} · ${localizedDisasterMessageCount(total)}`,''),...regions.map(region=>{
+        const count=disasterRegionCounts[region];const name=names?.get(region)||region;const label=count===undefined&&!disasterRegionCountsLoaded?name:`${name} · ${localizedDisasterMessageCount(count||0)}`;
          return new Option(label,region);
       }));
       select.value=selected;
+      if(language!=='ko'&&(!names||!regions.every(region=>names.has(region))))translateDisasterRegionNames(regions,language).then(()=>{if(siteLanguage===language)updateDisasterRegionOptions(regions,selected);}).catch(()=>{});
     }
     async function loadDisasterRegionCounts(days,regions){
       const request=++disasterRegionCountsRequest;disasterRegionCountsPeriod=String(days);
@@ -2798,7 +2823,7 @@
       try{
         const response=await fetch(localApiUrl(`/api/disaster-region-counts?days=${encodeURIComponent(days)}`),{cache:'no-store',signal:AbortSignal.timeout(240000)});const data=await response.json();if(!response.ok)throw new Error(data.error||'지역별 건수를 불러오지 못했어요.');if(request!==disasterRegionCountsRequest)return;
         disasterRegionCounts=data.counts||{};disasterRegionCountsTotal=Number(data.collected)||Number(data.expected)||0;disasterRegionCountsAssignments=Number(data.regionAssignments)||disasterRegionCountsTotal;disasterRegionCountsMultiRegion=Number(data.multiRegionMessages)||0;disasterRegionCountsLoaded=true;const select=document.getElementById('disasterRegion');updateDisasterRegionOptions(regions,select.value);
-        document.querySelectorAll('.disaster-region-heading').forEach(heading=>{const match=heading.dataset.region;if(match)heading.textContent=`${match} · ${(disasterRegionCounts[match]??0).toLocaleString(siteLanguage==='ko'?'ko-KR':siteLanguage)}${siteLanguage==='ko'?'건':` ${fixedUiText('건')}`}`;});
+         const regionHeadings=[...document.querySelectorAll('.disaster-region-heading')];regionHeadings.forEach(heading=>{const match=heading.dataset.region;if(match)heading.textContent=`${match} · ${(disasterRegionCounts[match]??0).toLocaleString(siteLanguage==='ko'?'ko-KR':siteLanguage)}${siteLanguage==='ko'?'건':` ${fixedUiText('건')}`}`;});if(siteLanguage!=='ko')translateSiteEntries([...regionHeadings,document.getElementById('disasterRegion')],siteLanguage,siteTranslationVersion);
       }catch(error){if(request===disasterRegionCountsRequest){disasterRegionCounts={};disasterRegionCountsTotal=0;disasterRegionCountsAssignments=0;disasterRegionCountsMultiRegion=0;disasterRegionCountsLoaded=false;disasterRegionCountsPeriod='';const select=document.getElementById('disasterRegion');updateDisasterRegionOptions(regions,select.value);}}
     }
     async function loadDisasterMessages(resetPage=false){
@@ -2811,7 +2836,7 @@
           const response=await fetch(localApiUrl(`/api/disaster-messages?${params}`),{cache:'no-store',signal:AbortSignal.timeout(22000)});const data=await response.json();
          if(!response.ok)throw new Error('전국 재난문자 목록을 불러오지 못했어요.');
         if(requestId!==disasterRequestId)return;
-         const selectedRegion=regionSelect.value;const availableRegions=data.regions||[];const currentOptions=[...regionSelect.options].slice(1).map(option=>option.value);
+          const selectedRegion=regionSelect.value;const availableRegions=data.regions||[];const currentOptions=[...regionSelect.options].slice(1).map(option=>option.value);
           if(JSON.stringify(currentOptions)!==JSON.stringify(availableRegions)){
             updateDisasterRegionOptions(availableRegions,selectedRegion);
             if(selectedRegion&&!availableRegions.includes(selectedRegion))regionSelect.add(new Option(`${selectedRegion} · ${fixedUiText('기록 없음')}`,selectedRegion));
@@ -2844,8 +2869,9 @@
           details.addEventListener('toggle',()=>{if(!details.open)return;document.querySelectorAll('.geochang-easy[open]').forEach(other=>{if(other!==details)other.open=false;});renderGeochangEasy(item.message,details);});
           audience.addEventListener('change',()=>{if(details.open)renderGeochangEasy(item.message,details);});
            const source=document.createElement('a');source.className='geochang-source-link';source.href=item.sourceUrl;source.target='_blank';source.rel='noreferrer';source.textContent=fixedUiText('공식 원문');actions.append(details,source);main.append(message,actions);row.append(meta,main);list.append(row);
-        });
-      }catch(error){
+         });
+         if(siteLanguage!=='ko')translateSiteEntries([list,regionSelect],siteLanguage,siteTranslationVersion);
+       }catch(error){
         if(requestId!==disasterRequestId)return;
          disasterArchiveLoaded=false;status.textContent=fixedUiText('전국 재난문자 목록을 불러오지 못했어요.');const empty=document.createElement('div');empty.className='geochang-empty';empty.textContent=fixedUiText('새로고침으로 다시 시도');list.append(empty);
       }finally{if(requestId===disasterRequestId){reloadButton.disabled=false;searchButton.disabled=false;regionSelect.disabled=false;}}
