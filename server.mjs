@@ -823,7 +823,7 @@ async function translateText(request, response) {
       }
       if (translatedText || [400, 401, 403].includes(lastStatus)) break;
     }
-    if (!translatedText) {
+    if (!translatedText && geminiDiagnostic?.reason !== 'allocation_exhausted') {
       try {
         const fallback = await translateWithMyMemory(text, source, target);
         if (hasTranslationScript(fallback, target)) translatedText = fallback;

@@ -1055,16 +1055,26 @@
       }
       return actions[actionType];
     }
+    let translationQuotaRetryAt=0;
+    function translationQuotaText(language=siteLanguage,diagnostic=null){
+      if(diagnostic?.retryAfterSeconds)translationQuotaRetryAt=Math.max(translationQuotaRetryAt,Date.now()+diagnostic.retryAfterSeconds*1000);
+      const hours=Math.max(1,Math.ceil((translationQuotaRetryAt-Date.now())/3600000));
+      return fixedUiText('번역 사용량 한도에 도달했어요. 약 {hours}시간 후 다시 시도해 주세요.',language,{hours});
+    }
     async function translateText(text,lang,source='ko',cacheable=false){
+      if(translationQuotaRetryAt>Date.now()){
+        const error=new Error('translation quota exhausted');error.diagnostic={reason:'allocation_exhausted',retryAfterSeconds:Math.ceil((translationQuotaRetryAt-Date.now())/1000)};throw error;
+      }
       let lastError;
       for(let attempt=0;attempt<4;attempt++){
         try{
           const response=await fetch(localApiUrl('/api/translate'),{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({text,source,target:lang,cacheable}),signal:AbortSignal.timeout(25000)});
-          if(!response.ok){const error=new Error('translation unavailable');error.status=response.status;error.retryAfter=Number(response.headers.get('Retry-After'))||0;throw error;}
-          const data=await response.json();const result=Array.isArray(data?.[0])?data[0].map(part=>part?.[0]||'').join(''):'';
+          const data=await response.json();
+          if(!response.ok){const error=new Error('translation unavailable');error.status=response.status;error.retryAfter=Number(response.headers.get('Retry-After'))||0;error.diagnostic=data?.diagnostic||null;if(error.diagnostic?.reason==='allocation_exhausted')translationQuotaText(lang,error.diagnostic);throw error;}
+          const result=Array.isArray(data?.[0])?data[0].map(part=>part?.[0]||'').join(''):'';
           if(!result)throw new Error('translation unavailable');
           return result;
-        }catch(error){lastError=error;if(attempt===3||error.status!==429&&attempt>0)break;const wait=error.retryAfter?Math.min(30000,error.retryAfter*1000):Math.min(12000,1000*2**attempt);await new Promise(resolve=>setTimeout(resolve,wait));}
+        }catch(error){lastError=error;if(error.diagnostic?.reason==='allocation_exhausted'||attempt===3||error.status!==429&&attempt>0)break;const wait=error.retryAfter?Math.min(30000,error.retryAfter*1000):Math.min(12000,1000*2**attempt);await new Promise(resolve=>setTimeout(resolve,wait));}
       }
       throw lastError||new Error('translation unavailable');
     }
@@ -2508,11 +2518,13 @@
         status.textContent='번역 완료 · 중요한 내용은 원문·공식 안내 확인';
       }catch(error){
         if(requestId!==translationRequestId)return;
+        if(error.diagnostic?.reason==='allocation_exhausted'){await uiTranslationCatalogPromise;if(requestId!==translationRequestId)return;}
         easyFeedback.hidden=true;
         easySpeechText='';updateSpeechButtons(false);
-        translated.textContent=labels.error;
-        actionList.replaceChildren();const item=document.createElement('li');item.textContent=labels.error;actionList.append(item);
-        status.textContent='번역 실패 · 잠시 후 다시 시도';
+        const failure=error.diagnostic?.reason==='allocation_exhausted'?translationQuotaText(selectedLang,error.diagnostic):labels.error;
+        translated.textContent=failure;
+        actionList.replaceChildren();const item=document.createElement('li');item.textContent=failure;actionList.append(item);
+        status.textContent=error.diagnostic?.reason==='allocation_exhausted'?failure:'번역 실패 · 잠시 후 다시 시도';
       }
     }
      const messageLanguageRow=document.querySelector('.language-row');
@@ -2819,7 +2831,7 @@
          [['child','초1 수준'],['general','쉬운 한국어'],['senior','어르신(65세 이상)']].forEach(([value,label])=>{const option=document.createElement('option');option.value=value;option.textContent=fixedUiText(label);audience.append(option);});audienceLabel.append(audience);
          controls.append(audienceLabel);const output=document.createElement('p');output.className='geochang-easy-output';const easyStatus=document.createElement('p');easyStatus.className='geochang-easy-status';easyStatus.textContent=fixedUiText('원문 보존 · 쉬운 표현 참고용');detailBody.append(controls,easyStatus,output);details.append(summary,detailBody);
           details.addEventListener('toggle',()=>{if(!details.open)return;document.querySelectorAll('.geochang-easy[open]').forEach(other=>{if(other!==details)other.open=false;});renderGeochangEasy(item.message,details);});
-          audience.addEventListener('change',()=>{languageLabel.hidden=audience.value!=='foreign';if(details.open)renderGeochangEasy(item.message,details);});
+          audience.addEventListener('change',()=>{if(details.open)renderGeochangEasy(item.message,details);});
            const source=document.createElement('a');source.className='geochang-source-link';source.href=item.sourceUrl;source.target='_blank';source.rel='noreferrer';source.textContent=fixedUiText('공식 원문');actions.append(details,source);main.append(message,actions);row.append(meta,main);list.append(row);
         });
       }catch(error){
@@ -4135,8 +4147,9 @@
         output.textContent=translated;status.textContent='쉬운 말로 정리 · 원문·공식 안내 확인';
       }catch(error){
         if(details.dataset.requestId!==String(requestId)||!details.open)return;
-        output.textContent=simple;
-        status.textContent='번역 실패 · 쉬운 한국어와 원문 확인';
+        if(error.diagnostic?.reason==='allocation_exhausted'){await uiTranslationCatalogPromise;if(details.dataset.requestId!==String(requestId)||!details.open)return;}
+        output.textContent=error.diagnostic?.reason==='allocation_exhausted'?translationQuotaText(language,error.diagnostic):fixedUiText('번역할 수 없어요. 원문은 아래에서 확인해 주세요.',language);
+        status.textContent=error.diagnostic?.reason==='allocation_exhausted'?translationQuotaText(language,error.diagnostic):fixedUiText('번역 실패 · 쉬운 한국어와 원문 확인',language);
       }
     }
 
