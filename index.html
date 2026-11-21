@@ -1262,27 +1262,31 @@
       groups.forEach(([cacheKey,group])=>{if(!sourceGroups.has(group.entry.source))sourceGroups.set(group.entry.source,[]);sourceGroups.get(group.entry.source).push([cacheKey,group]);});
       for(const [source,sourceEntries] of sourceGroups){
         const batches=[];let batch=[];let batchLength=0;
-        for(const item of sourceEntries){const length=item[1].entry.original.length+16;if(batch.length&&(batch.length>=20||batchLength+length>450)){batches.push(batch);batch=[];batchLength=0;}batch.push(item);batchLength+=length;}
+        for(const item of sourceEntries){const length=item[1].entry.original.length+16;if(batch.length&&(batch.length>=32||batchLength+length>3600)){batches.push(batch);batch=[];batchLength=0;}batch.push(item);batchLength+=length;}
         if(batch.length)batches.push(batch);
         for(const entries of batches){
           const fresh=entries.filter(([cacheKey])=>!siteTranslationInFlight.has(cacheKey));
           if(fresh.length){
             const request=translateTextBatch(fresh.map(([,group])=>group.entry.original),language,source);
+            request.catch(()=>{});
             fresh.forEach(([cacheKey],index)=>{
               let pending=request.then(results=>{const translated=results[index];siteTranslationCache.set(cacheKey,translated);persistSiteTranslations();return translated;});
               pending=pending.finally(()=>{if(siteTranslationInFlight.get(cacheKey)===pending)siteTranslationInFlight.delete(cacheKey);});
               siteTranslationInFlight.set(cacheKey,pending);
             });
           }
+          let quotaExhausted=false;
           await Promise.all(entries.map(async([cacheKey,group])=>{
             try{
               const translated=siteTranslationCache.get(cacheKey)||await siteTranslationInFlight.get(cacheKey);
               if(version===siteTranslationVersion)group.entries.forEach(entry=>applySiteTranslation(entry,translated,version));
             }catch(error){
               failures+=1;
+              if(error.diagnostic?.reason==='allocation_exhausted')quotaExhausted=true;
               if(version===siteTranslationVersion)group.entries.forEach(entry=>applySiteTranslation(entry,entry.original,version));
             }
           }));
+          if(quotaExhausted)return failures;
         }
       }
       return failures;
